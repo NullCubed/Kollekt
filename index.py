@@ -8,3 +8,5 @@ app = Flask(__name__)
 def hello():
     return f"Welcome to Kollekt!<br>Created by Garrett McGhee, Parker Gagliano, Trent Salas, William Pridgen, and Josh Mertz."
 
+if __name__ == '__main__':
+    app.run(debug=1)
