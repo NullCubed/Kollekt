@@ -14,5 +14,10 @@ def userProfile():
     return render_template('test.html')
 
 
+@app.route("/community")
+def userProfile():
+    return render_template('community.html')
+
+
 if __name__ == '__main__':
     app.run(debug=1)
