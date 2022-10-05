@@ -20,11 +20,17 @@ class User:
         pass
 class Discussion:
     def __init__(self):
+        pass
+
 class Posts:
     def __init__(self):
+        pass
 class CollectionItem:
     def __init__(self):
+        pass
 class Community:
     def __init__(self):
+        pass
 class Collection:
     def __init__(self):
+        pass
