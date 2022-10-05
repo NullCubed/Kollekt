@@ -8,6 +8,7 @@ app = Flask(__name__)
 def home():
     return render_template('home.html')
 
+
 @app.route("/userProfile")
 def userProfile():
     return render_template('test.html')
