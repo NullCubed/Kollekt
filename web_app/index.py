@@ -15,7 +15,7 @@ def userProfile():
 
 
 @app.route("/community")
-def userProfile():
+def communityPage():
     return render_template('community.html')
 
 
