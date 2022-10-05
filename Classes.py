@@ -12,3 +12,9 @@ class User:
 
     def getPosts(self):
         return posts
+
+    def addPost(self):
+        pass
+
+    def addInfo(self):
+        pass
