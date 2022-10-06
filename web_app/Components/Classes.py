@@ -19,17 +19,17 @@ class User:
     def addInfo(self):
         pass
 class Discussion:
-    def __init__(self):
+    def __init__(self,community,posts):
         pass
 
 class Posts:
-    def __init__(self):
+    def __init__(self,user,topic,community):
         pass
 class CollectionItem:
-    def __init__(self):
+    def __init__(self,user,community,photo,text):
         pass
 class Community:
-    def __init__(self):
+    def __init__(self, users,discussion ):
         pass
 class collection:
     def __int__(self,user,community,items,template):
