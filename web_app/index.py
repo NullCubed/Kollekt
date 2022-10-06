@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from forms import RegistrationForm, LoginForm
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
+app.config['SECRET_KEY'] = '4b66a51843834a779d312d77e718b181'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
 
@@ -25,10 +25,17 @@ def communityPage():
     return render_template('community.html')
 
 
-@app.route("/register")
+@app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    return render_template('register.html', form=form)
+    if form.validate_on_submit():
+        user = User(username=form.username.data,
+                    email=form.email.data, password=form.password.data)
+        # db.session.add(user) added  in user class
+        # db.session.commit()
+        flash('Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    return render_template('register.html', title='Register', form=form)
 
 
 if __name__ == '__main__':
