@@ -18,27 +18,36 @@ class User:
 
     def addInfo(self):
         pass
+
+
 class Discussion:
-    def __init__(self,community,posts):
+    def __init__(self, community, posts):
         pass
 
+
 class Posts:
-    def __init__(self,user,topic,community):
+    def __init__(self, user, topic, community):
         pass
+
+
 class CollectionItem:
-    def __init__(self,user,community,photo,text):
+    def __init__(self, user, community, photo, text):
         pass
+
+
 class Community:
-    def __init__(self, users,discussion ):
+    def __init__(self, users, discussion):
         pass
-class collection:
-    def __int__(self,user,community,items,template):
+
+
+class Collection:
+    def __int__(self, user, community, items, template):
         self.user = user
         self.community = community
         self.items = []
         self.template = template
 
-    def add_collection_item(self,photo,text):
+    def add_collection_item(self, photo, text):
         """
         This method adds a collection item to the item list of the collection. It will raise an exception if the photo or text
         is in the incorrect format.
@@ -46,7 +55,8 @@ class collection:
         :param text: text that represent the item
         :return: position in collection list
         """
-    def add_reaction(self,user,reaction,item):
+
+    def add_reaction(self, user, reaction, item):
         """
         This method adds a reaction to the collection item
         :param user: the user that is adding the reaction
@@ -54,16 +64,10 @@ class collection:
         :param item: the item that the reaction is being added to
         :return: nothing
         """
+
     def item_info(self, item):
         """
         this method returns a list of info about the item
         :param item: the item that information is requested for
         :return: a list of item info
         """
-
-
-
-
-
-
-
