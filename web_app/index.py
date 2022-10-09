@@ -4,6 +4,8 @@ from datetime import datetime
 from flask import Flask, render_template, url_for, flash, redirect
 from flask_sqlalchemy import SQLAlchemy
 from forms import RegistrationForm, LoginForm
+from User import User
+import hashlib
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '4b66a51843834a779d312d77e718b181'
@@ -29,12 +31,13 @@ def communityPage():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data,
-                    email=form.email.data, password=form.password.data)
+        user = User(hashlib.sha256(form.email.data
+                                   .encode('utf-8')).hexdigest(), form.username.data, True)
         # db.session.add(user) added  in user class
         # db.session.commit()
-        flash('Your account has been created! You are now able to log in', 'success')
-        return redirect(url_for('login'))
+        flash((user.getProfileInfo() + ' '+user.getId()), 'success')
+        #flash('Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 
 
