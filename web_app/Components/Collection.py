@@ -28,6 +28,25 @@ class Collection:
         :return: a list of item info
         """
 class CollectionItem:
+    def __init__  (self)
+        self._user = None
+        self._community = None
+        self._template = None
+    def get_user(self):
+        return self._user
+    def get_community(self):
+        return self._community
+    def get_template(self):
+        return self._template
+    def set_user(self,user):
+        self._user = user
+    def set_community(self,community):
+        self._community = community
+    def set_template(self,template):
+        self._template = template
+    user = property(get_user,set_user)
+    community = property(get_community,set_community)
+    template = property(get_template,set_template)
 
 
 
