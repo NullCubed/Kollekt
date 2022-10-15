@@ -1,4 +1,4 @@
-class collection:
+class Collection:
     def __int__(self,user,community,items,template):
         self.user = user
         self.community = community
@@ -27,6 +27,7 @@ class collection:
         :param item: the item that information is requested for
         :return: a list of item info
         """
+class CollectionItem:
 
 
 
