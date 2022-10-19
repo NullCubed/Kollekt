@@ -6,6 +6,7 @@ class userManager:
         :return: boolean( True if user is Admin, False if not )
         '''
         pass
+
     def getInfo(user):
         '''
         This method returns Information about the User given

@@ -6,6 +6,7 @@ class communityManager:
         :return: boolean( True if user is Admin, False if not )
         '''
         pass
+
     def getInfo(community):
         '''
         This method returns Information about the given community.
