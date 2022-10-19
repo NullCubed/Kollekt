@@ -21,6 +21,14 @@ def home():
 def userProfile():
     return render_template('test.html')
 
+@app.route("/logout")
+def logout():
+    return render_template('logout.html')
+
+@app.route("/userSettings")
+def userSettings():
+    return render_template('settings.html')
+
 
 @app.route("/community")
 def communityPage():
