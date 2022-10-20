@@ -1,9 +1,8 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from kollekt import db
 
-# from . import db
+
 # HACK: Temp var until things can be rearranged
-db = SQLAlchemy()
 
 
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
