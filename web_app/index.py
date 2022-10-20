@@ -7,9 +7,18 @@ from forms import RegistrationForm, LoginForm
 from User import User
 import hashlib
 
+# TODO: Re-organize files:
+#   __init__.py (?)
+#   move User, Collection, Item, etc. into models.py
+#   move routes into routes.py
+#   config.py (?)
+
+# TODO: Look into blueprints, subapps, etc.
+#   Could be ideal to break aspects of project into their own "subapp" to minimize issues/confusion
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '4b66a51843834a779d312d77e718b181'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+db = SQLAlchemy()
 
 
 @app.route("/")
@@ -21,9 +30,11 @@ def home():
 def userProfile():
     return render_template('test.html')
 
+
 @app.route("/logout")
 def logout():
     return render_template('logout.html')
+
 
 @app.route("/userSettings")
 def userSettings():
@@ -43,7 +54,7 @@ def register():
                                    .encode('utf-8')).hexdigest(), form.username.data, True)
         # db.session.add(user) added  in user class
         # db.session.commit()
-        flash((user.getProfileInfo() + ' '+user.getId()), 'success')
+        flash((user.getProfileInfo() + ' ' + user.getId()), 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 
