@@ -1,5 +1,5 @@
 from flask import Flask
-from kollekt import db
+from . import db
 
 
 # HACK: Temp var until things can be rearranged
@@ -19,9 +19,3 @@ class User(db.Model):
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.password}')"
 
-
-if __name__ == "__main__":
-    # Run this file directly to create the database tables.
-    print("Creating database tables...")
-    db.create_all()
-    print("Done!")
