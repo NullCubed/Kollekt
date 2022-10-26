@@ -44,10 +44,11 @@ def login():
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username="Test", email="test@test.com",
-                    password="1234password")
+        user = User(username=form.username.data, email=form.email.data,
+                    password=form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('registered', 'success')
+        test = db.get_or_404(User, 1)
+        flash(test.username+" "+test.email+" "+test.password, 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
