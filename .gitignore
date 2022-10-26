@@ -21,6 +21,7 @@ build/
 docs/_build/
 .vscode
 .fleet/
+instance/site.db
 # Coverage reports
 htmlcov/
 .coverage
