@@ -30,11 +30,22 @@ def communityPage():
     return render_template('community.html')
 
 
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash(f'Logged into {form.username.data}!', 'success')
+        return redirect(url_for('home'))
+
+    return render_template('login.html', title='Login', form=form)
+
+
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username="Test", email="test@test.com", password="1234password")
+        user = User(username="Test", email="test@test.com",
+                    password="1234password")
         db.session.add(user)
         db.session.commit()
         flash('registered', 'success')
