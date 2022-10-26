@@ -34,8 +34,12 @@ def communityPage():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash(f'Logged into {form.username.data}!', 'success')
-        return redirect(url_for('home'))
+        user = User.query.filter_by(username=form.username.data).first()
+        if user.password == form.password.data:
+            flash(f'Logged into {user.id}!', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash("Wrong Password", "Danger")
 
     return render_template('login.html', title='Login', form=form)
 
