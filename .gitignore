@@ -20,7 +20,7 @@ build/
 .idea/
 docs/_build/
 .vscode
-
+.fleet/
 # Coverage reports
 htmlcov/
 .coverage
