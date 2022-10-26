@@ -22,9 +22,10 @@ def create_app():
 
     with app.app_context():
         from . import routes
-        os.remove('instance\site.db')
-        print("Deleted local db")
-        sleep(10)
+        if os.path.isfile('instance\site.db'):
+            os.remove('instance\site.db')
+            print("Deleted local db")
+            sleep(10)
         db.create_all()
         print("Initialized tables in local db")
         print("** Filled tables in db with dummy info")
