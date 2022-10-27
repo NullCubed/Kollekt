@@ -34,15 +34,15 @@ def communityPage():
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        flash(current_user)
         return redirect(url_for('home'))
+        
         
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.password == form.password.data:
-            flash(f'Logged into {current_user}!', 'success')
             login_user(user, remember=True)
+            flash('Login successful', 'success')
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
