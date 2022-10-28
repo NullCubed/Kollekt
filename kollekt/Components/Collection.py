@@ -1,3 +1,5 @@
+
+
 class Collection:
 
     def __init__(self, community, template, user):
@@ -86,6 +88,7 @@ class Collection:
 
 
 class CollectionItem:
+
     def __init__(self, user, community, template, photo, text, collection):
         self._collection = collection
         self._user = user
@@ -94,6 +97,8 @@ class CollectionItem:
         self._photo = photo
         self._text = text
         self.reactions = []
+
+
 
     def get_user(self):
         """
@@ -213,3 +218,5 @@ class CollectionItem:
     community = property(get_community, set_community)
     template = property(get_template, set_template)
     reaction = property(get_reaction, add_reaction)
+
+
