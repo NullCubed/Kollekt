@@ -16,7 +16,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 def home():
     return render_template('home.html')
 
-
 @app.route("/userProfile")
 def userProfile():
     return render_template('test.html')
