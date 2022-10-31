@@ -25,8 +25,8 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-class ItemForm(FlaskForm):
-    community = StringField('Community', validators=[DataRequired()])
+class ItemAddForm(FlaskForm):
+    community = StringField('community', validators=[DataRequired()])
     #photo = ...
-    text = StringField('Description', validators=[DataRequired()])
+    text = StringField('text', validators=[DataRequired()])
     submit = SubmitField('Add')

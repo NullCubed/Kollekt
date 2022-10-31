@@ -1,7 +1,9 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, ItemForm
+from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm
+from .Components.Collection import CollectionItem
 from .models import User, db
+
 import hashlib
 
 
@@ -29,9 +31,7 @@ def userSettings():
 def communityPage():
     return render_template('community.html')
 
-@app.route("/addItem")
-def addItem():
-    return render_template('addItem.html')
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -61,9 +61,18 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-# @app.route("/addItem", methods=['GET', 'POST'])
-# def addItem():
-#     form = ItemForm()
-#     if form.validate_on_submit():
-#         CollectionItem =
+@app.route("/addItem", methods=['GET', 'POST'])
+def addNewCollectionItem():
+    form = ItemAddForm()
+    if form.validate_on_submit():
+        # collection_item = CollectionItem('testUser','testCommunity','testTemplate',
+        #                                  'testPhoto',text=form.text.data,
+        #                                  collection=form.collection.data)
 
+        # text2 = form.text.data
+        # collection2 = form.collection.data
+        # print(text2,collection2)
+        return redirect(url_for('home'))
+    return render_template("addItem.html", title='Add Item', form=form)
+
+5

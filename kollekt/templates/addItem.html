@@ -1,4 +1,5 @@
 {% extends "layout.html" %} {% block content %}
+
 <style>
   #mainBox{
 width: 50%;
@@ -12,7 +13,7 @@ background-color: MediumTurquoise;
 max-height: 22.5em;
  width: 50%;}
 
-#mainBox h1,img,p{
+#mainBox form,h1,img,p{
 text-align:center;}
 </style>
 
@@ -23,9 +24,59 @@ text-align:center;}
 
 	 <section id="mainBox">
 		<h1>Add item to Collection</h1>
-        <img id="logo" src="/static/images/bantest.png" alt="is this the bannana"><br>
+        <img id="logo" src="../static/bantest.png" alt="test"><br>
         <p>Basic Page to add items!</p>
+<form action="" method="post">
+    {{form.hidden_tag()}}
+
+    <div class="form-group m-5">
+        {{form.name.label()}}
+        {% if form.name.errors %}
+
+        {{form.name(class="form-control is-invalid")}}
+            {% for error in form.email.errors %}
+                <div class="invalid-feedback">
+                    <span>{{error}}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+        {{form.name(class="form-control")}}
+        {% endif %}
+
+    </div>
+    <div class="form-group m-5">
+        {{form.email.label()}}
+
+        {% if form.email.errors %}
+
+        {{form.email(class="form-control is-invalid")}}
+            {% for error in form.email.errors %}
+                <div class="invalid-feedback">
+                    <span>{{error}}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+        {{form.email(class="form-control")}}
+        {% endif %}
+
+    </div >
+    <div class="form-group m-5">
+        {{form.message.label()}}
+        {% if form.email.errors %}
+
+        {{form.message(class="form-control is-invalid")}}
+            {% for error in form.message.errors %}
+                <div class="invalid-feedback">
+                    <span>{{error}}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+        {{form.message(class="form-control")}}
+        {% endif %}
+
+    </div>
+    {{form.send(class="btn-lg btn-primary m-5")}}
+</form>
 
 	</section>
 {% endblock content %}
-
