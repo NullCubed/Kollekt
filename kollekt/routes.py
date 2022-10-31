@@ -29,6 +29,9 @@ def userSettings():
 def communityPage():
     return render_template('community.html')
 
+@app.route("/addItem")
+def addItem():
+    return render_template('addItem.html')
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
