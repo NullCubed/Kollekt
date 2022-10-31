@@ -1,6 +1,6 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm
+from kollekt.forms import RegistrationForm, LoginForm, ItemForm
 from .models import User, db
 import hashlib
 
@@ -59,3 +59,11 @@ def register():
         flash(test.username+" "+test.email+" "+test.password, 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
+
+
+# @app.route("/addItem", methods=['GET', 'POST'])
+# def addItem():
+#     form = ItemForm()
+#     if form.validate_on_submit():
+#         CollectionItem =
+
