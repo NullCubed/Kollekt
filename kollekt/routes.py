@@ -73,7 +73,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         test = db.get_or_404(User, 1)
-        flash(test.username + " " + test.email + " " + test.password, 'success')
+        flash(test.username+" "+test.email+" "+test.password, 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 
