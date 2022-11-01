@@ -30,52 +30,37 @@ text-align:center;}
     {{form.hidden_tag()}}
 
     <div class="form-group m-5">
-        {{form.name.label()}}
-        {% if form.name.errors %}
+        {{form.text.label()}}
+        {% if form.text.errors %}
 
-        {{form.name(class="form-control is-invalid")}}
-            {% for error in form.email.errors %}
+        {{form.text(class="form-control is-invalid")}}
+            {% for error in form.text.errors %}
                 <div class="invalid-feedback">
                     <span>{{error}}</span>
                 </div>
             {% endfor %}
         {% else %}
-        {{form.name(class="form-control")}}
+        {{form.text(class="form-control")}}
         {% endif %}
 
     </div>
     <div class="form-group m-5">
-        {{form.email.label()}}
+        {{form.community.label()}}
 
-        {% if form.email.errors %}
+        {% if form.community.errors %}
 
-        {{form.email(class="form-control is-invalid")}}
-            {% for error in form.email.errors %}
+        {{form.community(class="form-control is-invalid")}}
+            {% for error in form.community.errors %}
                 <div class="invalid-feedback">
                     <span>{{error}}</span>
                 </div>
             {% endfor %}
         {% else %}
-        {{form.email(class="form-control")}}
+        {{form.community(class="form-control")}}
         {% endif %}
 
     </div >
-    <div class="form-group m-5">
-        {{form.message.label()}}
-        {% if form.email.errors %}
-
-        {{form.message(class="form-control is-invalid")}}
-            {% for error in form.message.errors %}
-                <div class="invalid-feedback">
-                    <span>{{error}}</span>
-                </div>
-            {% endfor %}
-        {% else %}
-        {{form.message(class="form-control")}}
-        {% endif %}
-
-    </div>
-    {{form.send(class="btn-lg btn-primary m-5")}}
+    {{form.submit(class="btn-lg btn-primary m-5")}}
 </form>
 
 	</section>

@@ -69,9 +69,9 @@ def addNewCollectionItem():
         #                                  'testPhoto',text=form.text.data,
         #                                  collection=form.collection.data)
 
-        # text2 = form.text.data
-        # collection2 = form.collection.data
-        # print(text2,collection2)
+        text2 = form.text.data
+        community2 = form.community.data
+        print(text2,community2)
         return redirect(url_for('home'))
     return render_template("addItem.html", title='Add Item', form=form)
 
