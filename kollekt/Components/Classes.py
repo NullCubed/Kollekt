@@ -46,7 +46,6 @@ class Community:
     def __init__(self, users, discussion):
         pass
 
-
 # class Collection:
 #     def __int__(self, user, community, items, template):
 #         self.user = user
