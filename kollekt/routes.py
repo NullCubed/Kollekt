@@ -6,7 +6,9 @@ from .User import User
 # from .models import User, db
 import hashlib
 
-test_community = Community("Shoes")
+test_communities = [Community("Watches", "And other timekeeping devices"),
+                    Community("Trading Cards", "Baseball! Pokemon! You name it!"),
+                    Community("Rocks", "Naturally formed or manually cut")]
 test_user = User(1234, "test@test.com", False)
 
 
@@ -30,14 +32,18 @@ def userSettings():
     return render_template('settings.html')
 
 
-@app.route("/community", methods=['GET', 'POST'])
-def communityPage():
+@app.route("/community/<community_name>", methods=['GET', 'POST'])
+def communityPage(community_name):
+    community = None
+    for i in test_communities:
+        if community_name == i.getName():
+            community = i
     if request.method == 'POST':
         if request.form['join'] == 'Join Community':
-            test_community.addUser(test_user)
+            community.addUser(test_user)
         elif request.form['join'] == 'Leave Community':
-            test_community.removeUser(test_user)
-    return render_template('community.html', community=test_community, user=test_user)
+            community.removeUser(test_user)
+    return render_template('community.html', community=community, user=test_user)
 
 
 @app.route("/register", methods=['GET', 'POST'])

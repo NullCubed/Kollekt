@@ -3,9 +3,10 @@ from kollekt.User import User
 
 class Community:
 
-    def __init__(self, community_name):
+    def __init__(self, community_name, community_desc):
         # self._template = template
         self._name = community_name
+        self._desc = community_desc
         self._posts = []
         self._collections = []
         self._users = []
@@ -116,12 +117,28 @@ class Community:
 
     def setName(self, _name):
         """
-        Getter for the name of the community
-        :return: name of community
+        Setter for the name of the community
+        :return: none
         """
         self._name = _name
+
+    def getDesc(self):
+        """
+        Getter for the description of the community
+        :return: description of community
+        """
+        return self._desc
+
+    def setDesc(self, _desc):
+        """
+        Setter for the description of the community
+        :return: none
+        """
+        self._desc = _desc
 
     posts = property(getPosts, addPost)
     users = property(getUsers)
     collections = property(getCollections, addCollection)
     name = property(getName, setName)
+    desc = property(getDesc, setDesc)
+

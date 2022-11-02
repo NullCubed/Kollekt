@@ -2,7 +2,7 @@
 <div class="card mb-3">
   <h3 class="card-header">{{ community.getName() }}&nbsp;
   </h3>
-  <form action="/community" method="post">
+  <form action="/community/{{ community.getName() }}" method="post">
     {% if community.userHasJoined(user)  %}
     <input type="submit" name="join" value="Leave Community" style="font-size:18px;">
     {% elif community.userHasJoined(user) == false %}
