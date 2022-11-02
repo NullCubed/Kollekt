@@ -3,11 +3,11 @@ from flask import render_template, url_for, flash, redirect, request
 from kollekt.forms import RegistrationForm, LoginForm
 from .Components.Community import Community
 from .User import User
-from .models import User, db
+# from .models import User, db
 import hashlib
 
 test_community = Community("Shoes")
-test_user = User()
+test_user = User(1234, "test@test.com", False)
 
 
 @app.route("/")

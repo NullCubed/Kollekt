@@ -121,7 +121,7 @@ class Community:
         """
         self._name = _name
 
-    posts = property(getPosts, addPost, removePost)
-    users = property(getUsers, addUser, removeUser)
-    collections = property(getCollections, addCollection, removeCollection)
+    posts = property(getPosts, addPost)
+    users = property(getUsers)
+    collections = property(getCollections, addCollection)
     name = property(getName, setName)

@@ -15,7 +15,7 @@ class User:
         return 'sample info'
 
     def getId(self):
-        return self.user_id
+        return str(self.user_id)
 
     def getPosts(self):
         return 'post info'
