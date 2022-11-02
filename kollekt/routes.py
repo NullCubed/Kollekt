@@ -76,4 +76,3 @@ def addNewCollectionItem():
         return render_template("item.html", title="Your Item", item=collection_item)
     return render_template("addItem.html", title='Add Item', form=form)
 
-5
