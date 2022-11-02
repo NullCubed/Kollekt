@@ -1,8 +1,13 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from kollekt.forms import RegistrationForm, LoginForm
+from .Components.Community import Community
+from .User import User
 from .models import User, db
 import hashlib
+
+test_community = Community("Shoes")
+test_user = User()
 
 
 @app.route("/")
@@ -25,9 +30,14 @@ def userSettings():
     return render_template('settings.html')
 
 
-@app.route("/community")
+@app.route("/community", methods=['GET', 'POST'])
 def communityPage():
-    return render_template('community.html')
+    if request.method == 'POST':
+        if request.form['join'] == 'Join Community':
+            test_community.addUser(test_user)
+        elif request.form['join'] == 'Leave Community':
+            test_community.removeUser(test_user)
+    return render_template('community.html', community=test_community, user=test_user)
 
 
 @app.route("/register", methods=['GET', 'POST'])
