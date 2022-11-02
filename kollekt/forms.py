@@ -23,3 +23,10 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     #remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+
+class ItemAddForm(FlaskForm):
+    community = StringField('Community', validators=[DataRequired()])
+    #photo = ...
+    text = StringField('Description', validators=[DataRequired()])
+    submit = SubmitField('Add')
