@@ -18,8 +18,15 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email',
-                        validators=[DataRequired(), Email()])
+    username = StringField('Username',
+                           validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    remember = BooleanField('Remember Me')
+    #remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+
+class ItemAddForm(FlaskForm):
+    community = StringField('Community', validators=[DataRequired()])
+    #photo = ...
+    text = StringField('Description', validators=[DataRequired()])
+    submit = SubmitField('Add')
