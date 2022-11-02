@@ -46,7 +46,9 @@ def login():
 
     return render_template('login.html', title='Login', form=form)
 
-
+@app.route("/item")
+def itemPage():
+    return render_template('item.html')
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -65,14 +67,13 @@ def register():
 def addNewCollectionItem():
     form = ItemAddForm()
     if form.validate_on_submit():
-        # collection_item = CollectionItem('testUser','testCommunity','testTemplate',
-        #                                  'testPhoto',text=form.text.data,
-        #                                  collection=form.collection.data)
-
+        collection_item = CollectionItem('testUser','testCommunity','testTemplate',
+                                         'testPhoto',text=form.text.data,
+                                         collection=form.community.data)
         text2 = form.text.data
         community2 = form.community.data
         print(text2,community2)
-        return redirect(url_for('home'))
+        return render_template("item.html", title="Your Item", item=collection_item)
     return render_template("addItem.html", title='Add Item', form=form)
 
 5
