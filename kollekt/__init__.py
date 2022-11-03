@@ -22,4 +22,5 @@ def create_app():
     with app.app_context():
         from . import routes
         db.create_all()
+        print("Database Created")
         return app

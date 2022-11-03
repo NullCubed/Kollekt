@@ -24,7 +24,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     communities = db.Column(db.BLOB)
     collections = db.Column(db.BLOB)
-    admin = db.Column(db.Boolean())
+    admin = db.Column(db.Boolean)
     profile_picture = db.Column(db.BLOB)
     settings = db.Column(db.BLOB)
 
