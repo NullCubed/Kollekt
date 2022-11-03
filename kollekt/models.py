@@ -1,14 +1,13 @@
-from flask import Flask
+import uuid
 from . import db, login_manager
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+from uuid import uuid4
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
-
-
-# HACK: Temp var until things can be rearranged
+    return User.query.get(user_id)
 
 
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
@@ -18,7 +17,8 @@ def load_user(user_id):
 
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
+    # id = db.Column(db.Integer, unique=True, nullable=False)
+    id = db.Column(db.BLOB, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
@@ -28,12 +28,21 @@ class User(db.Model, UserMixin):
     profile_picture = db.Column(db.BLOB)
     settings = db.Column(db.BLOB)
 
+    def __init__(self, username, password, email):
+        self.id = uuid4().bytes
+        self.username = username
+        self.password = generate_password_hash(password)
+        self.email = email
+
+    def verify_password(self, pwd):
+        return check_password_hash(self.password, pwd)
+
     def getUserInfo(self):
         user = db.get_or_404(User, self.id)
         return user
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}', '{self.password}')"
+        return f'<User {self.username}, {self.email}, {self.password}>'
 
 
 class Items(db.Model):

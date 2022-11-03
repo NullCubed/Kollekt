@@ -1,15 +1,15 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm
-from .Components.Community import Community
-from .Components.Collection import CollectionItem
-import hashlib
+# from .Components.Community import Community
+# from .Components.Collection import CollectionItem
 from flask_login import login_user, current_user, logout_user, login_required
 from .models import User, db
 
-test_communities = [Community("Watches", "And other timekeeping devices"),
-                    Community("Trading Cards", "Baseball! Pokemon! You name it!"),
-                    Community("Rocks", "Naturally formed or manually cut")]
+
+# test_communities = [Community("Watches", "And other timekeeping devices"),
+#                     Community("Trading Cards", "Baseball! Pokemon! You name it!"),
+#                     Community("Rocks", "Naturally formed or manually cut")]
 
 
 @app.route("/")
@@ -50,19 +50,25 @@ def communityPage(community_name):
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        flash(f'Login successful ${current_user.email}', 'success')
+        flash(f'Login successful', 'success')
         return redirect(url_for('home'))
+
     form = LoginForm()
+    username = form.username.data
+    password = form.password.data
+
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and user.password == form.password.data:
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.verify_password(password):
             login_user(user, remember=True)
-            flash(f'Login successful ${current_user.email}', 'success')
+            flash(f'Login successful {user.__repr__()}', 'success')
             next_page = request.args.get('next')
 
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash("Wrong Password", "Danger")
+            return redirect(url_for('login'))
 
     return render_template('login.html', title='Login', form=form)
 
@@ -75,23 +81,24 @@ def itemPage():
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data,
-                    password=form.password.data)
+    username = form.username.data
+    password = form.password.data
+    email = form.email.data
 
-        checkUsername = User.query.filter_by(
-            username=form.username.data).first()
-        if checkUsername:
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=username).first()
+        eml = User.query.filter_by(email=email).first()
+        if not user and not eml:
+            user = User(username, password, email)
+        elif user:
             flash("Username already taken", "Danger")
             return redirect(url_for('register'))
-        checkEmail = User.query.filter_by(email=form.email.data).first()
-        if checkEmail:
-            flash("Email already taken", "Danger")
+        elif email:
+            flash("Email already used", "Danger")
             return redirect(url_for('register'))
         db.session.add(user)
         db.session.commit()
-        flash(user.username + " " + user.email +
-              " " + user.password, 'success')
+        flash(user.__repr__(), 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 
