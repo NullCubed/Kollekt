@@ -79,7 +79,8 @@ def register():
         user = User(username=form.username.data, email=form.email.data,
                     password=form.password.data)
 
-        checkUsername = User.query.filter_by(username=form.username.data).first()
+        checkUsername = User.query.filter_by(
+            username=form.username.data).first()
         if checkUsername:
             flash("Username already taken", "Danger")
             return redirect(url_for('register'))
@@ -87,11 +88,10 @@ def register():
         if checkEmail:
             flash("Email already taken", "Danger")
             return redirect(url_for('register'))
-
         db.session.add(user)
         db.session.commit()
-        test = db.get_or_404(User, 1)
-        flash(test.username + " " + test.email + " " + test.password, 'success')
+        flash(user.username + " " + user.email +
+              " " + user.password, 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 
