@@ -7,7 +7,7 @@ from uuid import uuid4
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return User.query.get(int(user_id))
 
 
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
@@ -18,7 +18,7 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     # id = db.Column(db.Integer, unique=True, nullable=False)
-    id = db.Column(db.BLOB, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
@@ -29,7 +29,6 @@ class User(db.Model, UserMixin):
     settings = db.Column(db.BLOB)
 
     def __init__(self, username, password, email):
-        self.id = uuid4().bytes
         self.username = username
         self.password = generate_password_hash(password)
         self.email = email
