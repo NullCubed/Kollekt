@@ -37,33 +37,34 @@
             >
           </li>
           <li class="nav-item active ml-md-4">
-            <a class="nav-link" href="/community/Watches#">Community Page</a>
+            <a class="nav-link" href="{{url_for('home')}}">Community Pages</a>
           </li>
+        {%if current_user.is_authenticated%}
+        <li class="nav-item active dropdown ml-md-4">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            id="navbarDropdown"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Profile
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="{{url_for('userProfile')}}#">My Profile</a>
+            <a class="dropdown-item" href="{{url_for('userSettings')}}#">Settings</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{{url_for('logout')}}">Logout</a>
+          </div>
+        </li>
+        {%else%}
           <li class="nav-item active ml-md-4">
-            <a class="nav-link" href="logout">Logout</a>
+            <a class="nav-link" href="{{url_for('login')}}">Login</a>
           </li>
-          <li class="nav-item active ml-md-4">
-            <a class="nav-link" href="/login">Login</a>
-          </li>
-          <li class="nav-item active dropdown ml-md-4">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdown"
-              role="button"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
-              Profile
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="userProfile#">My Profile</a>
-              <a class="dropdown-item" href="userSettings#">Settings</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="logout#">Logout</a>
-            </div>
-          </li>
+        {%endif%}
+          
         </ul>
         <form class="form-inline my-2 my-lg-0">
           <input
