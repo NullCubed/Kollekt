@@ -3,9 +3,11 @@ import os
 
 
 def delete_db():
-    if os.path.isfile("instance/site.db"):
-        os.remove('instance/site.db')
-        print("Deleted site.db at ", datetime.datetime.now().time())
+    for root, dirs, files in os.walk(os.getcwd()):
+        for name in files:
+            if name == "site.db":
+                os.remove(os.path.join(root, name))
+                print("Database Deleted")
 
 
 def fill_db():
