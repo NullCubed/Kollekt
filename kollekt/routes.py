@@ -117,19 +117,28 @@ def adminpage():
     delform = deleteCommunityForm()
     allCommunities = Communities.query.all()
     if form.validate_on_submit():
-        print('joe')
-        community = Communities(name=form.name.data,
-                                desc=form.description.data)
-        db.session.add(community)
-        db.session.commit()
+        checkCommunity = Communities.query.filter_by(
+            name=form.name.data).first()
+        if checkCommunity:
+            flash("Community already exists", "Danger")
+            return redirect(url_for('adminpage'))
+        else:
+            community = Communities(name=form.name.data,
+                                    desc=form.description.data)
+            db.session.add(community)
+            db.session.commit()
         flash(f"Community Created {community.name}", "success")
         return redirect(url_for('adminpage'))
 
     if delform.validate_on_submit():
-        community = Communities.query.filter_by(
+        checkCommunity = Communities.query.filter_by(
             name=delform.name.data).first()
-        db.session.delete(community)
-        db.session.commit()
-        flash(f"Community Deleted {community.name}", "success")
-        return redirect(url_for('adminpage'))
+        if checkCommunity:
+            db.session.delete(checkCommunity)
+            db.session.commit()
+            flash(f"Community Deleted {checkCommunity.name}", "success")
+            return redirect(url_for('adminpage'))
+        else:
+            flash("Community does not exist", "Danger")
+            return redirect(url_for('adminpage'))
     return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
