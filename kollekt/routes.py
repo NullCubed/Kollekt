@@ -8,7 +8,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 from .models import User, db
 
 test_communities = [Community("Watches", "And other timekeeping devices"),
-                    Community("Trading Cards", "Baseball! Pokemon! You name it!"),
+                    Community("Trading Cards",
+                              "Baseball! Pokemon! You name it!"),
                     Community("Rocks", "Naturally formed or manually cut")]
 
 
@@ -108,3 +109,8 @@ def addNewCollectionItem():
         print(text2, community2)
         return render_template("item.html", title="Your Item", item=collection_item)
     return render_template("addItem.html", title='Add Item', form=form)
+
+
+@app.route("/adminpage", methods=['GET', 'POST'])
+def adminpage():
+    return render_template('adminpage.html')
