@@ -1,11 +1,11 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm
+from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommunityForm, deleteCommunityForm
 from .Components.Community import Community
 from .Components.Collection import CollectionItem
 import hashlib
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import User, db
+from .models import User, Communities, db
 
 test_communities = [Community("Watches", "And other timekeeping devices"),
                     Community("Trading Cards",
@@ -113,4 +113,23 @@ def addNewCollectionItem():
 
 @app.route("/adminpage", methods=['GET', 'POST'])
 def adminpage():
-    return render_template('adminpage.html')
+    form = createCommunityForm()
+    delform = deleteCommunityForm()
+    allCommunities = Communities.query.all()
+    if form.validate_on_submit():
+        print('joe')
+        community = Communities(name=form.name.data,
+                                desc=form.description.data)
+        db.session.add(community)
+        db.session.commit()
+        flash(f"Community Created {community.name}", "success")
+        return redirect(url_for('adminpage'))
+
+    if delform.validate_on_submit():
+        community = Communities.query.filter_by(
+            name=delform.name.data).first()
+        db.session.delete(community)
+        db.session.commit()
+        flash(f"Community Deleted {community.name}", "success")
+        return redirect(url_for('adminpage'))
+    return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)

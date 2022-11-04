@@ -1,81 +1,96 @@
 {% extends "layout.html" %} {% block content %}
+
 <div class="container-lg">
+
+
+    {% for msg in get_flashed_messages() %}
+        <div class="alert alert-success" role="alert">{{ msg }}</div>
+    {% endfor %}
   <div class="row mt-4 border-bottom">
     <div class="col">
       <h1 class="text-center underline">Admin Panel</h1>
     </div>
   </div>
   <div class="row mt-4 justify-content-between">
-    <div class="col-5">
+    <div class="col-12 col-sm-5 ">
       <div class="row">
         <div class="col">
-          <h3 class="text-center underline text-center">Create Community</h3>
+          <h3 class="text-center underline text-center mb-4">Create Community</h3>
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <form action="/admin/createCommunity" method="post">
-            <div class="form-group">
-              <label for="communityName">Community Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="communityName"
-                name="communityName"
-                placeholder="Community Name"
-              />
-            </div>
-            <div class="form-group">
-              <label for="communityDescription">Community Description</label>
-              <input
-                type="text"
-                class="form-control"
-                id="communityDescription"
-                name="communityDescription"
-                placeholder="Community Description"
-              />
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-          </form>
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.name.label(class="form-control-label") }}
+                    {% if form.name.errors %}
+                        {{ form.name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.name(class="form-control form-control-lg") }}
+                    {% endif %}
+                <div class="form-group">
+                    {{ form.description.label(class="form-control-label") }}
+                    {% if form.description.errors %}
+                        {{ form.description(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.description.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.description(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-outline-success") }}
+                </div>
+            </form>
         </div>
       </div>
-      <div class="row">
-        <div class="col"></div>
-      </div>
-      <div class="row">
-        <div class="col"></div>
-      </div>
-      <div class="row"></div>
     </div>
-    <div class="col-6">
-      <div class="row">
-        <div class="col">
-          <h3 class="text-center underline">Manage Communities</h3>
-        </div>
+    
+  </div>
+  <div class="col-12 col-sm-6">
+    <div class="row mb-4">
+      <div class="col">
+        <h3 class="text-center">Manage Communities</h3>
       </div>
-      <div class="row">
-        <div class="col">
-          <select
-            class="form-select w-100 h-100"
-            multiple
-            aria-label="multiple select example"
-          >
-            <option selected>community sample</option>
-            <option value="1">community sample</option>
-            <option value="2">community sample</option>
-            <option value="3">community sample</option>
-            <option value="3">community sample</option>
-            <option value="3">community sample</option>
-            <option value="3">community sample</option>
-            <option value="3">community sample</option>
-          </select>
-        </div>
+    </div>
+    {% for i in allCommunities%}
+    <div class="row  mt-3">
+      <div class="col">
+        <h3 class="text-left">{{i.name}}</h3>
       </div>
-      <div class="row mt-5 justify-content-center">
-        <div class="col-auto">
-          <button type="button" class="btn btn-primary">Delete</button>
+    </div>
+    {% endfor %}
+    <div class="row mt-4">
+        <div class=col>
+            <form action="" method="post">
+                {{ delform.hidden_tag() }}
+                <div class="form-group">
+                    {{ delform.name.label(class="form-control-label") }}
+                    {% if delform.name.errors %}
+                        {{ delform.name(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in delform.name.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ delform.name(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ delform.submit(class="btn btn-outline-danger") }}
+                </div>
+            </form>
         </div>
-      </div>
     </div>
   </div>
 </div>
