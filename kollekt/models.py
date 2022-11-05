@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
     collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
     profile_picture = db.Column(db.BLOB)
-    settings = db.Column(db.BLOB)
+    bio = db.Column(db.VARCHAR)
 
     def __init__(self, username, password, email):
         self.username = username
