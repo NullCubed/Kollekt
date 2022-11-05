@@ -1,114 +1,134 @@
 {% extends "layout.html" %} {% block content %}
-<div class="container">
-  {% for msg in get_flashed_messages() %}
-  <div class="alert alert-success" role="alert">{{ msg }}</div>
-  {% endfor %}
-  <div class="container mt-5">
-    <div class="row">
-      <div class="col">
-        <h2 class="text-center underline">Top/Recent Collection Items {{current_user.username}}</h2>
+
+{% for msg in get_flashed_messages() %}
+<div class="alert alert-success" role="alert">{{ msg }}</div>
+{% endfor %}
+<div class="container-fluid">
+  <div class="row h-100">
+    <div class="col mt-5 pr-0">
+      <div class="row">
+        <div class="col">
+          <h4 class="text-center border-bottom pb-2">
+            Top Communities / Recent Posts
+          </h4>
+        </div>
+      </div>
+      <div class="row justify-content-around">
+        <div class="col-12 col-md-5 mt-5">
+          <div class="col border mt-3">
+            <div class="row">
+              <div class="col"><h3 class="text-center">Post Title</h3></div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="row">
+                    <div class="col">
+                        <p>Description</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p class="text-center">&#128077 &#128078</p>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col border mt-3">
+            <div class="row">
+              <div class="col"><h3 class="text-center">Post Title</h3></div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="row">
+                    <div class="col">
+                        <p>Description</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p class="text-center">&#128077 &#128078</p>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col border mt-3">
+            <div class="row">
+              <div class="col"><h3 class="text-center">Post Title</h3></div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <div class="row">
+                    <div class="col">
+                        <p>Description</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p class="text-center">&#128077 &#128078</p>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <div class="col-12 col-md-5 mt-5">
+            <div class="col border mt-3">
+                <div class="row">
+                  <div class="col"><h3 class="text-center">Popular Community preview?</h3></div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div class="row">
+                        <div class="col">
+                            <p>Description</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <p class="text-center">&#128077 &#128078</p>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col border">
-        <div class="row">
-          <div class="col"><h3 class="text-center">Post Title</h3></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <div class="row"><div class="col">test</div></div>
-            <div class="row"><div class="col">Post Reactions</div></div>
-          </div>
+    <div class="col-12 col-sm-3 mt-2">
+      <div class="row">
+        <div class="col">
+          <h5 class="text-center">My communities</h5>
         </div>
       </div>
-      <div class="col border">
-        <div class="row">
-          <div class="col"><h3 class="text-center">Post Title</h3></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <div class="row"><div class="col">Post Body</div></div>
-            <div class="row"><div class="col">Post Reactions</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="col border">
-        <div class="row">
-          <div class="col"><h3 class="text-center">Post Title</h3></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <div class="row"><div class="col">Post Body</div></div>
-            <div class="row"><div class="col">Post Reactions</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="container mt-5">
-    <div class="row">
-      <div class="col text-center">
-        <div class="dropdown">
-          <button
-            class="btn btn-secondary dropdown-toggle"
-            type="button"
-            id="dropdownMenuButton"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="true"
-          >
-            All Communities
-          </button>
-          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="community/Watches#">Watches</a>
-            <a class="dropdown-item" href="community/Trading Cards#">Trading Cards</a>
-            <a class="dropdown-item" href="community/Rocks#">Rocks</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="container mt-5">
-    <div class="row">
-      <div class="col">
-        <h2 class="text-center underline">Most Popular Communities</h2>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col border">
-        <div class="row">
-          <div class="col"><h3 class="text-center">Watches</h3></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <div class="row"><div class="col">Community Description</div></div>
-            <div class="row"><div class="col">Extra Info</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="col border">
-        <div class="row">
-          <div class="col"><h3 class="text-center">Trading Cards</h3></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <div class="row"><div class="col">Community Description</div></div>
-            <div class="row"><div class="col">Extra Info</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="col border">
-        <div class="row">
-          <div class="col"><h3 class="text-center">Rocks</h3></div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <div class="row"><div class="col">Community Description</div></div>
-            <div class="row"><div class="col">Extra Info</div></div>
-          </div>
+      <div class="row mt-2">
+        <div class="col p-0">
+          <ul class="list-group">
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              Cras justo odio
+              <span class="badge badge-primary badge-pill">14</span>
+            </li>
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              Dapibus ac facilisis in
+              <span class="badge badge-primary badge-pill">2</span>
+            </li>
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              Morbi leo risus
+              <span class="badge badge-primary badge-pill">1</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 </div>
+
 {%endblock content %}
