@@ -1,16 +1,16 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm
-# from .Components.Community import Community
-# from .Components.Collection import CollectionItem
+from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommunityForm, deleteCommunityForm
+from .Components.Community import Community
+from .Components.Collection import CollectionItem
+
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import User, db
+from .models import User, Communities, db
 
 
 # test_communities = [Community("Watches", "And other timekeeping devices"),
 #                     Community("Trading Cards", "Baseball! Pokemon! You name it!"),
 #                     Community("Rocks", "Naturally formed or manually cut")]
-
 
 @app.route("/")
 def home():
@@ -115,3 +115,36 @@ def addNewCollectionItem():
         print(text2, community2)
         return render_template("item.html", title="Your Item", item=collection_item)
     return render_template("addItem.html", title='Add Item', form=form)
+
+
+@app.route("/adminpage", methods=['GET', 'POST'])
+def adminpage():
+    form = createCommunityForm()
+    delform = deleteCommunityForm()
+    allCommunities = Communities.query.all()
+    if form.validate_on_submit():
+        checkCommunity = Communities.query.filter_by(
+            name=form.name.data).first()
+        if checkCommunity:
+            flash("Community already exists", "Danger")
+            return redirect(url_for('adminpage'))
+        else:
+            community = Communities(name=form.name.data,
+                                    desc=form.description.data)
+            db.session.add(community)
+            db.session.commit()
+        flash(f"Community Created {community.name}", "success")
+        return redirect(url_for('adminpage'))
+
+    if delform.validate_on_submit():
+        checkCommunity = Communities.query.filter_by(
+            name=delform.name.data).first()
+        if checkCommunity:
+            db.session.delete(checkCommunity)
+            db.session.commit()
+            flash(f"Community Deleted {checkCommunity.name}", "success")
+            return redirect(url_for('adminpage'))
+        else:
+            flash("Community does not exist", "Danger")
+            return redirect(url_for('adminpage'))
+    return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)

@@ -30,3 +30,14 @@ class ItemAddForm(FlaskForm):
     #photo = ...
     text = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Add')
+
+
+class createCommunityForm(FlaskForm):
+    name = StringField('Community Name', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
+    submit = SubmitField('Create')
+
+
+class deleteCommunityForm(FlaskForm):
+    name = StringField('Community to Delete', validators=[DataRequired()])
+    submit = SubmitField('Delete')
