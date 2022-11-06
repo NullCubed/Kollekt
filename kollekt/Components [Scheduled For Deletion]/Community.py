@@ -141,4 +141,3 @@ class Community:
     collections = property(getCollections, addCollection)
     name = property(getName, setName)
     desc = property(getDesc, setDesc)
-

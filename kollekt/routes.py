@@ -1,8 +1,8 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommunityForm, deleteCommunityForm
-from .Components.Community import Community
-from .Components.Collection import CollectionItem
+# from .Components.Community import Community
+# from .Components.Collection import CollectionItem
 
 from flask_login import login_user, current_user, logout_user, login_required
 from .models import User, Communities, db
