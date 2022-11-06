@@ -1,8 +1,7 @@
-import uuid
 from . import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from uuid import uuid4
+import sqlalchemy as sa
 
 
 @login_manager.user_loader
@@ -27,6 +26,7 @@ class User(db.Model, UserMixin):
     admin = db.Column(db.Boolean)
     profile_picture = db.Column(db.BLOB)
     bio = db.Column(db.VARCHAR)
+    posts = db.relationship('Posts', backref='author', lazy=True)
 
     def __init__(self, username, password, email):
         self.username = username
@@ -72,7 +72,7 @@ class Photos(db.Model):
 
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.String)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     body = db.Column(db.String)
     meta = db.Column(db.String)
     responses = db.Column(db.BLOB)
