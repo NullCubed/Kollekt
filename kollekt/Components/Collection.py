@@ -89,7 +89,7 @@ class Collection:
 
 class CollectionItem:
 
-    def __init__(self, user, community, template, photo, text, collection):
+    def __init__(self, user, community, template, photo, text, collection,likes,dislikes,likers,dislikeers):
         self._collection = collection
         self._user = user
         self._community = community
@@ -97,6 +97,11 @@ class CollectionItem:
         self._photo = photo
         self._text = text
         self.reactions = []
+        self.likes = 0
+        self.disliskes = 0
+        self.likers = []
+        self.dislikers = []
+
 
 
 
@@ -212,6 +217,31 @@ class CollectionItem:
         :return: list of reactions
         """
         return self.reactions
+    def add_like(self):
+        self.likes += 1
+        return(self.likes)
+    def add_dislike(self):
+        self.disliskes += 1
+        return (self.disliskes)
+    def add_like(self,user_who_liked):
+        if user_who_liked not in self.likers():
+            self.likers.append(user_who_liked)
+            self.likes += 1
+            return self.likes
+        else:
+            self.likers.remove(user_who_liked)
+            self.likes -= 1
+            return self.likes
+    def add_dislike(self,user_who_disliked):
+        if user_who_disliked not in self.dislikers():
+            self.dislikers.append(user_who_disliked)
+            self.dislikes += 1
+            return self.dislikes
+        else:
+            self.dislikers.remove(user_who_disliked)
+            self.dislikes -= 1
+            return self.dislikes
+
 
     photo = property(get_photo, set_photo)
     user = property(get_user, set_user)
