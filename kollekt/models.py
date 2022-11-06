@@ -21,8 +21,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    communities = db.Column(db.BLOB)
-    collections = db.Column(db.BLOB)
+    #communities = db.Column(db.BLOB)
+    #collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
     profile_picture = db.Column(db.BLOB)
     bio = db.Column(db.VARCHAR)
@@ -84,3 +84,16 @@ class Posts(db.Model):
     meta = db.Column(db.String)
     responses = db.Column(db.BLOB)
     item = db.Column(db.String)
+
+
+class Person(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    addresses = db.relationship('Address', backref='person', lazy=True)
+
+
+class Address(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), nullable=False)
+    person_id = db.Column(db.Integer, db.ForeignKey('person.id'),
+                          nullable=False)

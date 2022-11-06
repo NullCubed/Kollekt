@@ -5,7 +5,7 @@ from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommun
 # from .Components.Collection import CollectionItem
 
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import User, Communities, db
+from .models import User, Communities, Collections, db
 
 
 # test_communities = [Community("Watches", "And other timekeeping devices"),
@@ -14,7 +14,10 @@ from .models import User, Communities, db
 
 @app.route("/")
 def home():
-    return render_template('home.html')
+
+    allCommunities = Communities.query.all()
+    print(allCommunities)
+    return render_template('home.html', allCommunities=allCommunities)
 
 
 @app.route("/userProfile")
@@ -130,7 +133,7 @@ def adminpage():
             return redirect(url_for('adminpage'))
         else:
             community = Communities(name=form.name.data,
-                                    desc=form.description.data)
+                                    desc=form.description.data, user_id=current_user.id)
             db.session.add(community)
             db.session.commit()
         flash(f"Community Created {community.name}", "success")

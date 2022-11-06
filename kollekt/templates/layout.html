@@ -31,40 +31,45 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href="userProfile#"
-                >User Profile <span class="sr-only">(current)</span></a
-                >
-            </li>
-            <li class="nav-item active ml-md-4">
-                <a class="nav-link" href="{{url_for('home')}}">Community Pages</a>
-            </li>
-            {%if current_user.is_authenticated%}
-            <li class="nav-item active dropdown ml-md-4">
-                <a
-                        aria-expanded="false"
-                        aria-haspopup="true"
-                        class="nav-link dropdown-toggle"
-                        data-toggle="dropdown"
-                        href="#"
-                        id="navbarDropdown"
-                        role="button"
-                >
-                    Profile
-                </a>
-                <div aria-labelledby="navbarDropdown" class="dropdown-menu">
-                    <a class="dropdown-item" href="{{url_for('userProfile')}}#">My Profile</a>
-                    <a class="dropdown-item" href="{{url_for('userSettings')}}#">Settings</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{url_for('logout')}}">Logout</a>
-                </div>
-            </li>
-            {%else%}
-            <li class="nav-item active ml-md-4">
-                <a class="nav-link" href="{{url_for('login')}}">Login</a>
-            </li>
-            {%endif%}
+          <li class="nav-item active">
+            <a class="nav-link" href="userProfile#"
+              >User Profile <span class="sr-only">(current)</span></a
+            >
+          </li>
+          <li class="nav-item active ml-md-4">
+            <a class="nav-link" href="{{url_for('home')}}">Community Pages</a>
+          </li>
+          {%if current_user.is_authenticated%}
+          <li class="nav-item active dropdown ml-md-4">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Profile
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{{url_for('userProfile')}}#"
+                >My Profile</a
+              >
+              <a class="dropdown-item" href="{{url_for('userSettings')}}#"
+                >Settings</a
+              >
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{{url_for('logout')}}">Logout</a>
+              <a class="dropdown-item" href="{{url_for('adminpage')}}">Admin</a>
+            </div>
+          </li>
 
+          {%else%}
+          <li class="nav-item active ml-md-4">
+            <a class="nav-link" href="{{url_for('login')}}">Login</a>
+          </li>
+          {%endif%}
         </ul>
         <form class="form-inline my-2 my-lg-0">
             <input
