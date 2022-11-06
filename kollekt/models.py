@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections = db.relationship(
-        'Post', backref='collectionAuthor', lazy=True)
+        'Posts', backref='collectionAuthor', lazy=True)
 
     def __init__(self, username, password, email):
         self.username = username
@@ -59,17 +59,17 @@ class Collections(db.Model):
     name = db.Column(db.String)
     desc = db.Column(db.String)
     owner = db.Column(db.Integer)
-    items = db.relationship('Post', backref='collection', lazy=True)
+    items = db.relationship('Items', backref='collections', lazy=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
-        db.Integer, db.ForeignKey('user.id'), nullable=False)
+        db.Integer, db.ForeignKey('communities.id'), nullable=False)
 
 
 class Communities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    collections = db.relationship('Post', backref='community', lazy=True)
+    collections = db.relationship('Collections', backref='communities', lazy=True)
 
 
 class Photos(db.Model):
