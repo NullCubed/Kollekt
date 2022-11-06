@@ -5,7 +5,7 @@ from .Components.Community import Community
 from .Components.Collection import CollectionItem
 import hashlib
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import User, Communities, db
+from .models import User, Communities, Collections, db
 
 test_communities = [Community("Watches", "And other timekeeping devices"),
                     Community("Trading Cards",
@@ -15,7 +15,10 @@ test_communities = [Community("Watches", "And other timekeeping devices"),
 
 @app.route("/")
 def home():
-    return render_template('home.html')
+
+    allCommunities = Communities.query.all()
+    print(allCommunities)
+    return render_template('home.html', allCommunities=allCommunities)
 
 
 @app.route("/userProfile")
@@ -124,7 +127,7 @@ def adminpage():
             return redirect(url_for('adminpage'))
         else:
             community = Communities(name=form.name.data,
-                                    desc=form.description.data)
+                                    desc=form.description.data, user_id=current_user.id)
             db.session.add(community)
             db.session.commit()
         flash(f"Community Created {community.name}", "success")
