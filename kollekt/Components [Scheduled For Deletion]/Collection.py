@@ -1,5 +1,3 @@
-
-
 class Collection:
 
     def __init__(self, community, template, user):
@@ -101,8 +99,6 @@ class CollectionItem:
         self.disliskes = 0
         self.likers = []
         self.dislikers = []
-
-
 
 
     def get_user(self):
@@ -248,5 +244,3 @@ class CollectionItem:
     community = property(get_community, set_community)
     template = property(get_template, set_template)
     reaction = property(get_reaction, add_reaction)
-
-
