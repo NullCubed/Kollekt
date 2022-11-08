@@ -1,20 +1,27 @@
 {% extends "layout.html" %} {% block content %}
 
 <style>
-  #mainBox{
-width: 50%;
-margin: auto;
-background-color: MediumTurquoise;
- min-height: 100%;}
- #mainBox ul { display: none; }
- #mainBox img{
-  margin-left: 1em;
-  margin-right: 1em;
-max-height: 22.5em;
- width: 50%;}
+    #mainBox {
+        width: 50%;
+        margin: auto;
+        background-color: MediumTurquoise;
+        min-height: 100%;
+    }
 
-#mainBox form,h1,img,p{
-text-align:center;}
+    #mainBox ul {
+        display: none;
+    }
+
+    #mainBox img {
+        margin-left: 1em;
+        margin-right: 1em;
+        max-height: 22.5em;
+        width: 50%;
+    }
+
+    #mainBox form, h1, img, p {
+        text-align: center;
+    }
 </style>
 
 <br>
@@ -22,46 +29,46 @@ text-align:center;}
 <body style="background-color:#1c87c9;">
 
 
-	 <section id="mainBox">
-		<h1>Add item to Collection</h1>
-        <img id="logo" src="../static/bantest.png" alt="test"><br>
-        <p>Basic Page to add items!</p>
-<form action="" method="post">
-    {{form.hidden_tag()}}
+<section id="mainBox">
+    <h1>Add item to Collection</h1>
+    <img alt="test" id="logo" src="../static/bantest.png"><br>
+    <p>Basic Page to add items!</p>
+    <form action="" method="post">
+        {{form.hidden_tag()}}
 
-    <div class="form-group m-5">
-        {{form.text.label()}}
-        {% if form.text.errors %}
+        <div class="form-group m-5">
+            {{form.text.label()}}
+            {% if form.text.errors %}
 
-        {{form.text(class="form-control is-invalid")}}
+            {{form.text(class="form-control is-invalid")}}
             {% for error in form.text.errors %}
-                <div class="invalid-feedback">
-                    <span>{{error}}</span>
-                </div>
+            <div class="invalid-feedback">
+                <span>{{error}}</span>
+            </div>
             {% endfor %}
-        {% else %}
-        {{form.text(class="form-control")}}
-        {% endif %}
+            {% else %}
+            {{form.text(class="form-control")}}
+            {% endif %}
 
-    </div>
-    <div class="form-group m-5">
-        {{form.community.label()}}
+        </div>
+        <div class="form-group m-5">
+            {{form.community.label()}}
 
-        {% if form.community.errors %}
+            {% if form.community.errors %}
 
-        {{form.community(class="form-control is-invalid")}}
+            {{form.community(class="form-control is-invalid")}}
             {% for error in form.community.errors %}
-                <div class="invalid-feedback">
-                    <span>{{error}}</span>
-                </div>
+            <div class="invalid-feedback">
+                <span>{{error}}</span>
+            </div>
             {% endfor %}
-        {% else %}
-        {{form.community(class="form-control")}}
-        {% endif %}
+            {% else %}
+            {{form.community(class="form-control")}}
+            {% endif %}
 
-    </div >
-    {{form.submit(class="btn-lg btn-primary m-5")}}
-</form>
+        </div>
+        {{form.submit(class="btn-lg btn-primary m-5")}}
+    </form>
 
-	</section>
+</section>
 {% endblock content %}
