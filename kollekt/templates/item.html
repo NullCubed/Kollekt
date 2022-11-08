@@ -32,11 +32,21 @@
     <h1>Item in Collection</h1>
     <h2> This is your item you have just added!:</h2>
     <br>
+
     <h3>Community:</h3>
     <p>{{ item.get_collection() }} </p>
+
+    <h3>photo:</h3>
+    <img alt="test" id="logo" src="../static/bantest.png"><br>
+
     <h3>Description:</h3>
     <p>{{ item.get_text() }} </p>
 
+    <h3>Likes:</h3>
+    <p>{{ item.likes }} </p>
+
+    <h3>Dislikes:</h3>
+    <p>{{ item.dislikes }} </p>
 
 </section>
 {% endblock content %}
