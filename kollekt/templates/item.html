@@ -1,19 +1,26 @@
 {% extends "layout.html" %} {% block content %}
 <style>
-  #mainBox{
-width: 50%;
-margin: auto;
-background-color: MediumTurquoise;
- min-height: 100%;}
- #mainBox ul { display: none; }
- #mainBox img{
-  margin-left: 1em;
-  margin-right: 1em;
-max-height: 22.5em;
- width: 50%;}
+    #mainBox {
+        width: 50%;
+        margin: auto;
+        background-color: MediumTurquoise;
+        min-height: 100%;
+    }
 
-#mainBox h1,img,p{
-text-align:center;}
+    #mainBox ul {
+        display: none;
+    }
+
+    #mainBox img {
+        margin-left: 1em;
+        margin-right: 1em;
+        max-height: 22.5em;
+        width: 50%;
+    }
+
+    #mainBox h1, img, p {
+        text-align: center;
+    }
 </style>
 
 <br>
@@ -21,15 +28,15 @@ text-align:center;}
 <body style="background-color:#1c87c9;">
 
 
-	 <section id="mainBox">
-		<h1>Item in  Collection</h1>
-		 <h2> This is your item you have just added!:</h2>
-		 <br>
-		 <h3>Community:</h3>
-		 <p>{{ item.get_collection() }} </p>
-		 <h3>Description:</h3>
-		 <p>{{ item.get_text() }} </p>
+<section id="mainBox">
+    <h1>Item in Collection</h1>
+    <h2> This is your item you have just added!:</h2>
+    <br>
+    <h3>Community:</h3>
+    <p>{{ item.get_collection() }} </p>
+    <h3>Description:</h3>
+    <p>{{ item.get_text() }} </p>
 
 
-	</section>
+</section>
 {% endblock content %}

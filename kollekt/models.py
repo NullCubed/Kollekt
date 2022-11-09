@@ -1,14 +1,12 @@
-from flask import Flask
 from . import db, login_manager
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+import sqlalchemy as sa
 
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-
-# HACK: Temp var until things can be rearranged
 
 
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
@@ -18,6 +16,7 @@ def load_user(user_id):
 
 
 class User(db.Model, UserMixin):
+    # id = db.Column(db.Integer, unique=True, nullable=False)
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -26,35 +25,51 @@ class User(db.Model, UserMixin):
     #collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
     profile_picture = db.Column(db.BLOB)
-    settings = db.Column(db.BLOB)
+    bio = db.Column(db.VARCHAR)
+    posts = db.relationship('Posts', backref='author', lazy=True)
+    collections = db.relationship(
+        'Posts', backref='collectionAuthor', lazy=True)
+
+    def __init__(self, username, password, email):
+        self.username = username
+        self.password = generate_password_hash(password)
+        self.email = email
+
+    def verify_password(self, pwd):
+        return check_password_hash(self.password, pwd)
 
     def getUserInfo(self):
         user = db.get_or_404(User, self.id)
         return user
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.email}', '{self.password}')"
+        return f'<User {self.username}, {self.email}, {self.password}>'
 
 
 class Items(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    collectionID = db.Column(db.Integer)
+    collection_id = db.Column(db.Integer, db.ForeignKey(
+        'collections.id'), nullable=False)
 
 
 class Collections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    communityID = db.Column(db.Integer)
     owner = db.Column(db.Integer)
+    items = db.relationship('Items', backref='collections', lazy=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    community_id = db.Column(
+        db.Integer, db.ForeignKey('communities.id'), nullable=False)
 
 
 class Communities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
+    collections = db.relationship('Collections', backref='communities', lazy=True)
 
     def getUsers(self):
         return ['user1', 'user2', 'user3']
@@ -67,7 +82,7 @@ class Photos(db.Model):
 
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    author = db.Column(db.String)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     body = db.Column(db.String)
     meta = db.Column(db.String)
     responses = db.Column(db.BLOB)

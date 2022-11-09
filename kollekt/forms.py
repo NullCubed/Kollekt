@@ -21,13 +21,13 @@ class LoginForm(FlaskForm):
     username = StringField('Username',
                            validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    #remember = BooleanField('Remember Me')
+    # remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
 
 
 class ItemAddForm(FlaskForm):
     community = StringField('Community', validators=[DataRequired()])
-    #photo = ...
+    # photo = ...
     text = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Add')
 
