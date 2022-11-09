@@ -8,10 +8,6 @@ from flask_login import login_user, current_user, logout_user, login_required
 from .models import User, Communities, db
 
 
-# test_communities = [Community("Watches", "And other timekeeping devices"),
-#                     Community("Trading Cards", "Baseball! Pokemon! You name it!"),
-#                     Community("Rocks", "Naturally formed or manually cut")]
-
 @app.route("/")
 def home():
     return render_template('home.html')
@@ -33,17 +29,17 @@ def userSettings():
     return render_template('settings.html')
 
 
-@app.route("/community/<community_name>", methods=['GET', 'POST'])
-def communityPage(community_name):
-    community = None
-    for i in test_communities:
-        if community_name == i.getName():
-            community = i
+@app.route("/community/<name>", methods=['GET', 'POST'])
+def communityPage(name):
+    community = Communities.query.filter_by(name=name).first()
     if request.method == 'POST':
-        if request.form['join'] == 'Join Community':
-            community.addUser(current_user)
-        elif request.form['join'] == 'Leave Community':
-            community.removeUser(current_user)
+        if current_user.is_authenticated:
+            if request.form['join'] == 'Join Community':
+                community.addUser(current_user)
+            elif request.form['join'] == 'Leave Community':
+                community.removeUser(current_user)
+        else:
+            return redirect(url_for('login'))
     return render_template('community.html', community=community, user=current_user)
 
 
@@ -133,7 +129,7 @@ def adminpage():
                                     desc=form.description.data)
             db.session.add(community)
             db.session.commit()
-        flash(f"Community Created {community.name}", "success")
+        flash(f"Community Created: {community.name}", "success")
         return redirect(url_for('adminpage'))
 
     if delform.validate_on_submit():
