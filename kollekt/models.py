@@ -69,7 +69,8 @@ class Communities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    collections = db.relationship('Collections', backref='communities', lazy=True)
+    collections = db.relationship(
+        'Collections', backref='communities', lazy=True)
 
     def getUsers(self):
         return ['user1', 'user2', 'user3']
@@ -88,4 +89,3 @@ class Posts(db.Model):
     meta = db.Column(db.String)
     responses = db.Column(db.BLOB)
     item = db.Column(db.String)
-
