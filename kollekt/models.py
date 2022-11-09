@@ -56,6 +56,9 @@ class Communities(db.Model):
     name = db.Column(db.String)
     desc = db.Column(db.String)
 
+    def getUsers(self):
+        return ['user1', 'user2', 'user3']
+
 
 class Photos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -70,15 +73,3 @@ class Posts(db.Model):
     responses = db.Column(db.BLOB)
     item = db.Column(db.String)
 
-
-class Person(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    addresses = db.relationship('Address', backref='person', lazy=True)
-
-
-class Address(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), nullable=False)
-    person_id = db.Column(db.Integer, db.ForeignKey('person.id'),
-                          nullable=False)

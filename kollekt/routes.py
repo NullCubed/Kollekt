@@ -17,8 +17,18 @@ test_communities = [Community("Watches", "And other timekeeping devices"),
 def home():
 
     allCommunities = Communities.query.all()
+    usersCommunities = []
+    for community in allCommunities:
+        userlist=community.getUsers()
+
+        if current_user.username in userlist:
+            usersCommunities.append(community)
+
+            allCommunities.remove(community)
+
+    print(usersCommunities)
     print(allCommunities)
-    return render_template('home.html', allCommunities=allCommunities)
+    return render_template('home.html', usersCommunities = usersCommunities, allCommunities=allCommunities)
 
 
 @app.route("/userProfile")
@@ -127,7 +137,7 @@ def adminpage():
             return redirect(url_for('adminpage'))
         else:
             community = Communities(name=form.name.data,
-                                    desc=form.description.data, user_id=current_user.id)
+                                    desc=form.description.data)
             db.session.add(community)
             db.session.commit()
         flash(f"Community Created {community.name}", "success")
