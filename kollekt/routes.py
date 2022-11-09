@@ -5,7 +5,7 @@ from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommun
 # from .Components.Collection import CollectionItem
 
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import User, Communities, Collections, db
+from .models import User, Communities, Collections, Posts, db
 
 
 # test_communities = [Community("Watches", "And other timekeeping devices"),
@@ -14,20 +14,22 @@ from .models import User, Communities, Collections, db
 
 @app.route("/")
 def home():
-
+    posts = [Posts(author_id=1, title="This is a title",  body="This is a test post", responses="👍 👎 "), Posts(author_id=1, title="this is a title",  body="This is a test post", responses="This is a test post's meta data"), Posts(author_id=1, title="this is a title",  body="This is a test post", responses="This is a test post's meta data")]
     allCommunities = Communities.query.all()
     usersCommunities = []
+    numberOfCommunities =0
     for community in allCommunities:
         userlist=community.getUsers()
-
+        numberOfCommunities = len(userlist)
         if current_user.username in userlist:
             usersCommunities.append(community)
 
             allCommunities.remove(community)
+    
 
     print(usersCommunities)
     print(allCommunities)
-    return render_template('home.html', usersCommunities = usersCommunities, allCommunities=allCommunities)
+    return render_template('home.html', usersCommunities = usersCommunities, allCommunities=allCommunities, posts = posts, numberOfCommunities = numberOfCommunities)
 
 
 @app.route("/userProfile")

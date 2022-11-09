@@ -82,6 +82,7 @@ class Photos(db.Model):
 
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     body = db.Column(db.String)
     meta = db.Column(db.String)
