@@ -19,13 +19,14 @@ def home():
     allCommunities = Communities.query.all()
     usersCommunities = []
     numberOfCommunities = 0
-    for community in allCommunities:
-        userlist = community.getUsers()
-        numberOfCommunities = len(userlist)
-        if current_user.username in userlist:
-            usersCommunities.append(community)
+    if current_user.is_authenticated:
+        for community in allCommunities:
+            userlist = community.getUsers()
+            numberOfCommunities = len(userlist)
+            if current_user.username in userlist:
+                usersCommunities.append(community)
 
-            allCommunities.remove(community)
+                allCommunities.remove(community)
 
     print(usersCommunities)
     print(allCommunities)
