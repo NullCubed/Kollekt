@@ -47,10 +47,13 @@ def logout():
 @app.route("/userSettings")
 def userSettings():
     # TEST CODE ONLY I PUT INTO EMPTY ROUTE FOR NOW TO SHOW HOW IT WORKS
-    community = Communities.query.filter_by(id=1).first()
-    print(community)
-    community.users_in_communities.append(current_user.id)
-    print(community.users_in_communities)
+    #community = Communities.query.filter_by(id=2).first()
+    #testcommunity = Communities.query.filter_by(id=1).first()
+    # print(community)
+    # community.users_in_communities.append(current_user)
+    # print(community.users_in_communities[0].username)
+    # print(testcommunity.users_in_communities[0].username)
+
     return render_template('settings.html')
 
 
