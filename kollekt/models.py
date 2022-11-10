@@ -53,12 +53,26 @@ class User(db.Model, UserMixin):
         return f'<User {self.username}, {self.email}, {self.password}>'
 
 
-class Items(db.Model):
+class CollectionItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
+
+    def __init__(self, user, community, template, photo, text, collection, likes, dislikes, likers, dislikeers):
+        self._collection = collection
+        self._user = user
+        self._community = community
+        self._template = template
+        self._photo = photo
+        self._text = text
+        self.reactions = []
+        self.likes = 0
+        self.disliskes = 0
+        self.likers = []
+        self.dislikers = []
+    
 
 
 class Collections(db.Model):
