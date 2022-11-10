@@ -30,6 +30,11 @@ def logout():
 
 @app.route("/userSettings")
 def userSettings():
+    # TEST CODE ONLY I PUT INTO EMPTY ROUTE FOR NOW TO SHOW HOW IT WORKS
+    community = Communities.query.filter_by(id=1).first()
+    print(community)
+    community.users_in_communities.append(current_user.id)
+    print(community.users_in_communities)
     return render_template('settings.html')
 
 
