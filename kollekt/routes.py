@@ -29,9 +29,9 @@ def userSettings():
     return render_template('settings.html')
 
 
-@app.route("/community/<name>", methods=['GET', 'POST'])
-def communityPage(name):
-    community = Communities.query.filter_by(name=name).first()
+@app.route("/community/<url>", methods=['GET', 'POST'])
+def communityPage(url):
+    community = Communities.query.filter_by(url=url).first()
     if request.method == 'POST':
         if current_user.is_authenticated:
             if request.form['join'] == 'Join Community':

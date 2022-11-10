@@ -16,6 +16,7 @@ users_in_community = db.Table('users_in_community',
                                         db.ForeignKey('user.id'))
                               )
 
+
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
 #   Currently having issues with import loop ie importing db from index and then importing User from models
 #   Restructuring should resolve this issue
@@ -75,12 +76,149 @@ class Collections(db.Model):
 class Communities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    url = db.Column(db.String)
     desc = db.Column(db.String)
     collections = db.relationship(
         'Collections', backref='communities', lazy=True)
-
-    users_in_communities = db.relationship(
+    users = db.relationship(
         'User', secondary=users_in_community, backref='users')
+
+    def __init__(self, name, desc):
+        self.name = name
+        self.url = name.lower().translate({ord(i): None for i in "'.,;:"}).replace('"', "").translate(
+            {ord(i): "_" for i in " -"})
+        self.desc = desc
+        self.posts = []
+        self.collections = []
+        self.users = []
+
+    def getCollections(self):
+        """
+        Returns a list of collections in the community
+        :return: list of references to collections in the community
+        """
+        return self.collections
+
+    def addCollection(self, collection):
+        """
+        Adds a collection to the community
+        :return: none
+        """
+        if collection not in self.collections:
+            self.collections.append(collection)
+            db.session.commit()
+
+    def removeCollection(self, collection):
+        """
+        Removes a collection from the community
+        :return: none
+        """
+        if collection in self.collections:
+            self.collections.remove(collection)
+            db.session.commit()
+
+    def getPosts(self):
+        """
+        Returns all posts in the community
+        :return: list of references to posts in the community
+        """
+        return self.posts
+
+    def addPost(self, post):
+        """
+        Adds a post to the community
+        :return: none
+        """
+        if post not in self.posts:
+            self.posts.append(post)
+            db.session.commit()
+
+    def removePost(self, post):
+        """
+        Removes a post from the community
+        :return: none
+        """
+        if post in self.posts:
+            self.posts.remove(post)
+            db.session.commit()
+
+    def userHasJoined(self, user):
+        """
+        Returns a boolean if the user joined the given community
+        :param user: a user to locate in the list of the community's followers
+        :return: boolean (True if user joined community, else false)
+        """
+        if user in self.users:
+            return True
+        return False
+
+    def getUsers(self):
+        """
+        Returns a list of users in the community
+        :return: list of users
+        """
+        return self.users
+
+    def addUser(self, user):
+        """
+        Adds a user to the community
+        :param user: a user to locate in the list of the community's followers
+        :return: none
+        """
+        if not self.userHasJoined(user):
+            self.users.append(user)
+            db.session.commit()
+
+    def removeUser(self, user):
+        """
+        Removes a user from the community
+        :param user: a user to locate in the list of the community's followers
+        :return: none
+        """
+        if self.userHasJoined(user):
+            self.users.remove(user)
+            db.session.commit()
+
+    def getName(self):
+        """
+        Getter for the name of the community
+        :return: name of community
+        """
+        return self.name
+
+    def getUrl(self):
+        """
+        Getter for the url-friendly name of the community
+        :return: url name of community
+        """
+        return self.url
+
+    def setName(self, name):
+        """
+        Setter for the name of the community. Also adjusts the url-name
+        :return: none
+        """
+        self.name = name
+        self.url = name.lower().translate({ord(i): None for i in "'.,;:"}).replace('"', "").translate(
+            {ord(i): "_" for i in " -"})
+        db.session.commit()
+
+    def getDesc(self):
+        """
+        Getter for the description of the community
+        :return: description of community
+        """
+        return self.desc
+
+    def setDesc(self, desc):
+        """
+        Setter for the description of the community
+        :return: none
+        """
+        self.desc = desc
+
+    def __repr__(self):
+        return f'<Community "{self.url}">'
 
 
 class Photos(db.Model):
