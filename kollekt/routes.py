@@ -25,11 +25,7 @@ def home():
             numberOfCommunities = len(userlist)
             if current_user.username in userlist:
                 usersCommunities.append(community)
-
                 allCommunities.remove(community)
-
-    print(usersCommunities)
-    print(allCommunities)
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
     memberCount = 8

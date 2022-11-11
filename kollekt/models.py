@@ -72,9 +72,6 @@ class Communities(db.Model):
     collections = db.relationship(
         'Collections', backref='communities', lazy=True)
 
-    def getUsers(self):
-        return ['user1', 'user2', 'user3']
-
 
 class Photos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
