@@ -1,19 +1,14 @@
 {% extends "layout.html" %} {% block content %}
 <div class="card mb-3">
-    <h3 class="card-header">{{ community.getName() }}&nbsp;
+    <h3 class="card-header">{{ community.name }}&nbsp;
     </h3>
-    <form action="/community/{{ community.getName() }}" method="post">
-        {% if community.userHasJoined(user) %}
+    <form action="/community/{{ community.name }}" method="post">
         <input name="join" style="font-size:18px;" type="submit" value="Leave Community">
-        {% elif community.userHasJoined(user) == false %}
-        <input name="join" style="font-size:18px;" type="submit" value="Join Community">
-        {% endif %}
+
     </form>
     <div>
         <ul>
-            {% for i in community.getUsers() %}
-            <li>{{ user }}</li>
-            {% endfor %}
+
         </ul>
     </div>
     <div class="card-body">
@@ -22,7 +17,7 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
-                            <h2 class="text-center underline">Top Collections in {{ community.getName() }}</h2>
+                            <h2 class="text-center underline">Top Collections in {{ community.name }}</h2>
                         </div>
                     </div>
                     <div class="row">
@@ -76,7 +71,7 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
-                            <h2 class="text-center underline">Top Posts in {{ community.getName() }}</h2>
+                            <h2 class="text-center underline">Top Posts in {{ community.name }}</h2>
                         </div>
                     </div>
                     <div class="row">

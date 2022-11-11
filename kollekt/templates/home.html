@@ -44,14 +44,11 @@ get_flashed_messages() %}
         <div class="col">
           <ul class="list-group">
             {% for i in usersCommunities%}
-            <li
-              class="list-group-item d-flex justify-content-between align-items-center"
-            >
-              {{ i.name }}
-
-              <span class="badge badge-primary badge-pill"
-                >{{numberOfCommunities}}</span
-              >
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <a class="nav-link" href="{{url_for('communityPage', community_name=i.name)}}"</a>
+                 {{ i.name }}
+                 {{i.user_id}}
+              <span class="badge badge-primary badge-pill">{{numberOfCommunities}}</span>
             </li>
 
             {% endfor %}

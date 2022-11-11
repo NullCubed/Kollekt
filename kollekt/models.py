@@ -16,6 +16,7 @@ users_in_community = db.Table('users_in_community',
                                         db.ForeignKey('user.id'))
                               )
 
+
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
 #   Currently having issues with import loop ie importing db from index and then importing User from models
 #   Restructuring should resolve this issue
@@ -28,16 +29,16 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    #communities = db.Column(db.BLOB)
-    #collections = db.Column(db.BLOB)
+    # communities = db.Column(db.BLOB)
+    # collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
     profile_picture = db.Column(db.BLOB)
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections = db.relationship(
-        'Posts', backref='collectionAuthor', lazy=True)
+        'Collections', backref='collectionAuthor', lazy=True)
 
-    def __init__(self, username, password, email):
+    def __init__(self, username, email, password):
         self.username = username
         self.password = generate_password_hash(password)
         self.email = email
@@ -81,6 +82,10 @@ class Communities(db.Model):
 
     users_in_communities = db.relationship(
         'User', secondary=users_in_community, backref='users')
+
+    def __init__(self, name, desc):
+        self.name = name
+        self.desc = desc
 
 
 class Photos(db.Model):

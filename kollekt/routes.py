@@ -8,10 +8,6 @@ from flask_login import login_user, current_user, logout_user, login_required
 from .models import User, Communities, Collections, Posts, db
 
 
-# test_communities = [Community("Watches", "And other timekeeping devices"),
-#                     Community("Trading Cards", "Baseball! Pokemon! You name it!"),
-#                     Community("Rocks", "Naturally formed or manually cut")]
-
 @app.route("/")
 def home():
     posts = [Posts(author_id=1, title="This is a title",  body="This is a test post", responses="👍 👎 "), Posts(author_id=1, title="this is a title",  body="This is a test post",
@@ -52,8 +48,8 @@ def userSettings():
 @app.route("/community/<community_name>", methods=['GET', 'POST'])
 def communityPage(community_name):
     community = None
-    for i in test_communities:
-        if community_name == i.getName():
+    for i in Communities.query.all():
+        if community_name == i.name:
             community = i
     if request.method == 'POST':
         if request.form['join'] == 'Join Community':
@@ -164,3 +160,17 @@ def adminpage():
             flash("Community does not exist", "Danger")
             return redirect(url_for('adminpage'))
     return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
+
+
+@app.route("/fillDB")
+def filldb():
+    db.drop_all()
+    db.create_all()
+    db.session.add(User("Admin", "admin@kollekt.com", "testing"))
+    db.session.add(Communities("Watches", "Timepieces"))
+    db.session.add(Communities("Shoes", "Gloves for your feet"))
+    db.session.commit()
+    login_user(User.query.filter_by(id=1).first())
+    allCommunities = Communities.query.all()
+    print(allCommunities)
+    return redirect(url_for('home'))
