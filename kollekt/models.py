@@ -16,7 +16,6 @@ users_in_community = db.Table('users_in_community',
                                         db.ForeignKey('user.id'))
                               )
 
-
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
 #   Currently having issues with import loop ie importing db from index and then importing User from models
 #   Restructuring should resolve this issue
