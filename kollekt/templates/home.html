@@ -14,7 +14,7 @@ get_flashed_messages() %}
       </div>
       <div class="row justify-content-around">
         {% for i in posts %}
-        <div class="col-11 col-md-5 border mt-5">
+        <div class="col-11 col-md-5 border mt-5 rounded">
           <div class="row">
             <div class="col">
               <h3 class="text-center">{{i.title}}</h3>
@@ -89,14 +89,16 @@ get_flashed_messages() %}
 <div class="container-fluid">
   <div class="row mt-4">
     <div class="col">
-      <h3 class="text-center" style="font-weight: bold">
-        Log in to have a personalized experience
-      </h3>
+      <a href="{{ url_for('login')}}"
+        ><h3 class="text-center" style="font-weight: bold">
+          Log in to have a personalized experience
+        </h3></a
+      >
     </div>
   </div>
   <div class="row">
     <div class="col-12 col-lg-6">
-      <div class="row">
+      <div class="row mt-3">
         <div class="col border-right">
           <h5 class="text-center">
             Heres a list of some of the communities you could join after making
@@ -106,15 +108,15 @@ get_flashed_messages() %}
       </div>
       {%for i in sampleCommunities%}
       <div class="row mt-3 justify-content-center">
-        <div class="col-11 bg-danger">
+        <div class="col-11 bg-secondary rounded">
           <div class="row">
-            <div class="col"><h1>{{i.name}}</h1></div>
+            <div class="col"><h1 class="text-center">{{i.name}}</h1></div>
           </div>
           <div class="row">
-            <div class="col">{{i.desc}}</div>
+            <div class="col"><p>{{i.desc}}</p></div>
           </div>
           <div class="row">
-            <div class="col">{{memberCount}}</div>
+            <div class="col"><p>{{memberCount}} Members</p></div>
           </div>
         </div>
       </div>
@@ -122,7 +124,7 @@ get_flashed_messages() %}
       {%endfor%}
     </div>
     <div class="col-12 col-lg-6">
-      <div class="row">
+      <div class="row mt-3">
         <div class="col">
           <h5 class="text-center">
             Heres a list of some of the collections our users have made
@@ -130,11 +132,20 @@ get_flashed_messages() %}
         </div>
       </div>
       {%for i in sampleCollections%}
-      <div class="row">
-        <div class="col">i.title</div>
-      </div>
-      <div class="row">
-        <div class="col">i.desc</div>
+      <div class="row mt-3 justify-content-center rounded">
+        <div class="col-11 bg-secondary">
+          <div class="row">
+            <div class="col">
+              <h1 class="text-center">{{i.name}}</h1>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col"><p>{{i.desc}}</p></div>
+          </div>
+          <div class="row">
+            <div class="col"><p>{{i.likes}}</p></div>
+          </div>
+        </div>
       </div>
       {%endfor%}
     </div>
