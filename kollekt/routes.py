@@ -27,8 +27,8 @@ def home():
 
                 allCommunities.remove(community)
 
-    print(usersCommunities)
-    print(allCommunities)
+    # print(usersCommunities)
+    # print(allCommunities)
     return render_template('home.html', usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
                            numberOfCommunities=numberOfCommunities)
 
@@ -130,7 +130,7 @@ def addNewCollectionItem():
                                          collection=form.community.data)
         text2 = form.text.data
         community2 = form.community.data
-        print(text2, community2)
+        # print(text2, community2)
         return render_template("item.html", title="Your Item", item=collection_item)
     return render_template("addItem.html", title='Add Item', form=form)
 
