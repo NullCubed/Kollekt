@@ -217,6 +217,9 @@ class Communities(db.Model):
         """
         self.desc = desc
 
+    def memberCount(self):
+        return len(self.users)
+
     def __repr__(self):
         return f'<Community "{self.url}">'
 
@@ -229,7 +232,32 @@ class Photos(db.Model):
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    # author = db.Column(db.String)
+    title = db.Column(db.String)
     body = db.Column(db.String)
-    meta = db.Column(db.String)
-    responses = db.Column(db.BLOB)
-    item = db.Column(db.String)
+    # meta = db.Column(db.String)
+    # responses = db.Column(db.BLOB)
+    item_id = db.Column(db.Integer)
+    community_id = db.Column(db.Integer)
+    # likes = db.Column(db.String)
+    # dislikes = db.Column(db.String)
+
+    def __init__(self, author, title, body, community, item=None):
+        self.author_id = author.id
+        # self.author = author
+        self.title = title
+        self.body = body
+        self.community_id = community.id
+        # self.likes = []
+        # self.dislikes = []
+        if item is not None:
+            self.item_id = item.id
+
+    def getAuthor(self):
+        return User.query.filter_by(id=self.author_id).first()
+
+    def getCommunity(self):
+        return Communities.query.filter_by(id=self.community_id).first()
+
+    def __repr__(self):
+        return f'<Community "{self.url}">'

@@ -3,7 +3,7 @@
 <h2>Sorry, the specified community does not exist.</h2>
 {% else %}
 <div class="card mb-3">
-    <h3 class="card-header">{{ community.getName() }}&nbsp;
+    <h3 class="card-header">{{ community.name }}&nbsp;
     </h3>
     <form action="/community/{{ community.getUrl() }}" method="post">
         {% if community.userHasJoined(current_user) %}
@@ -25,6 +25,10 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
+                            <form action="/community/{{ community.url }}/create_post">
+                                <input name="join" style="font-size:18px;" type="submit" value="Create Post">
+                            </form>
+                            <br>
                             <h2 class="text-center underline">Top Collections in {{ community.getName() }}</h2>
                         </div>
                     </div>

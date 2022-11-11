@@ -1,10 +1,13 @@
 {% extends "layout.html" %} {% block content %}
 
 <div class="container-lg mt-4">
+    {% for msg in get_flashed_messages() %}
+    <div class="alert alert-success" role="alert">{{ msg }}</div>
+    {% endfor %}
     <form action="" method="POST">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4 text-center">Create Post</legend>
+            <legend class="border-bottom mb-4 text-center">Create A New Post</legend>
             <div class="form-group">
                 {{ form.username.label(class="form-control-label") }} {% if
                 form.username.errors %} {{ form.username(class="form-control
@@ -60,4 +63,5 @@
         </div>
     </form>
 </div>
-{%endblock content %}
+
+{% endblock content %}

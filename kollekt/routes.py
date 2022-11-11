@@ -5,7 +5,7 @@ from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommun
 # from .Components.Collection import CollectionItem
 
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import User, Communities, db
+from .models import User, Communities, db, Posts
 
 
 @app.route("/")
@@ -144,3 +144,13 @@ def adminpage():
             flash("Community does not exist", "Danger")
             return redirect(url_for('adminpage'))
     return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
+
+
+@app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])
+def post(community_url, post_id):
+    community = Communities.query.filter_by(url=community_url).first()
+    post_to_view = Posts.query.filter_by(id=post_id).first()
+    if post_to_view.community is not community:  # if correct id but wrong community, corrects url
+        return redirect(url_for('post', community_url=post.community.url, post_id=post_id))
+    return render_template('viewpost.html', post=post_to_view, community=community)
+
