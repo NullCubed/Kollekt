@@ -1,6 +1,6 @@
 {% extends "layout.html" %} {% block content %}
 <div class="card mb-3">
-    <h3 class="card-header">My Profile</h3>
+    <h3 class="card-header">{{ current_user.username }}'s Profile</h3>
     <div class="card-body">
         <div class="card border-secondary mb-3">
             <h4 class="card-header"></h4>
@@ -12,9 +12,10 @@
                             width="200px"
                     />
                 </p>
-                <strong>Username:</strong> {{ current_user.username }}<br/>
+                <strong>Username:</strong> {{ current_user.id }}<br/>
                 <strong>Email:</strong> {{ current_user.email }}<br/>
-                <strong>Description:</strong> {{ current_user.bio }}<br/>
+                <strong>Description:</strong><br/>
+                <p>{{ current_user.bio }}</p>
                 <button class="btn btn-sm btn-outline-dark" type="button">
                     My Communities
                 </button>
