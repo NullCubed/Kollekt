@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections = db.relationship(
-        'Posts', backref='collectionAuthor', lazy=True)
+        'Collections', backref='collectionAuthor', lazy=True)
 
     def __init__(self, username, password, email):
         self.username = username

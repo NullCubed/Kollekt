@@ -1,7 +1,5 @@
-{% extends "layout.html" %} {% block content %} {% for msg in
-get_flashed_messages() %}
-<div class="alert alert-success" role="alert">{{ msg }}</div>
-{% endfor %} {% if current_user.is_authenticated %}
+{% extends "layout.html" %} {% block content %}{% if
+current_user.is_authenticated %}
 <div class="container-fluid">
   <div class="row">
     <div class="col-12 col-md-9 mt-3">

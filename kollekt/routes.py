@@ -81,12 +81,12 @@ def login():
 
         if user and user.verify_password(password):
             login_user(user, remember=True)
-            flash(f'Login successful {user.__repr__()}', 'success')
+            flash(f'Login successful {user.username}', 'success')
             next_page = request.args.get('next')
 
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
-            flash("Wrong Password", "Danger")
+            flash("Wrong Password", "danger")
             return redirect(url_for('login'))
 
     return render_template('login.html', title='Login', form=form)
@@ -110,14 +110,14 @@ def register():
         if not user and not eml:
             user = User(username, password, email)
         elif user:
-            flash("Username already taken", "Danger")
+            flash("Username already taken", "danger")
             return redirect(url_for('register'))
         elif email:
-            flash("Email already used", "Danger")
+            flash("Email already used", "danger")
             return redirect(url_for('register'))
         db.session.add(user)
         db.session.commit()
-        flash(user.__repr__(), 'success')
+        flash(f'Registered {user.username}', 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 
@@ -145,7 +145,7 @@ def adminpage():
         checkCommunity = Communities.query.filter_by(
             name=form.name.data).first()
         if checkCommunity:
-            flash("Community already exists", "Danger")
+            flash("Community already exists", "danger")
             return redirect(url_for('adminpage'))
         else:
             community = Communities(name=form.name.data,
@@ -164,6 +164,6 @@ def adminpage():
             flash(f"Community Deleted {checkCommunity.name}", "success")
             return redirect(url_for('adminpage'))
         else:
-            flash("Community does not exist", "Danger")
+            flash("Community does not exist", "danger")
             return redirect(url_for('adminpage'))
     return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
