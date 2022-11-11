@@ -1,6 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
+from flask_login import current_user
+
+from kollekt.models import Communities
+from . import db
 
 
 class RegistrationForm(FlaskForm):
@@ -44,7 +48,16 @@ class deleteCommunityForm(FlaskForm):
 
 
 class createPostForm(FlaskForm):
-    title = StringField('', validators=[DataRequired()])
-    body = StringField('', validators=[DataRequired()])
+    valid_communities = []
+    option = ()
+    allCommunities = Communities.query.all()
+    for i in allCommunities:
+        if i.userHasJoined(current_user):
+            option = (i.name, i)
+            valid_communities.append(option)
+    title = StringField('Title', validators=[DataRequired()])
+    body = TextAreaField('Body')
     item_id = StringField('Attach an Item (Optional)')
-    submit = SubmitField('Create')
+    # community = SelectField('Community', valid_communities)
+    community = StringField('Community', validators=[DataRequired()])
+    submit = SubmitField('Post!')

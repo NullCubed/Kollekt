@@ -1,0 +1,28 @@
+{% extends "layout.html" %} {% block content %}
+{% if post_to_view == None %}
+<h2>Sorry, the specified post does not exist.</h2>
+<form action="../">
+    <input name="redirect" style="font-size:18px;" type="submit" value="Return to Home">
+</form>
+{% else %}
+<div class="card mb-3">
+    <h3 class="card-header">
+        <a href="../{{ post_to_view.getCommunity().url }}">{{ post_to_view.getCommunity().name }}</a>
+    </h3>
+    <div class="card-body">
+        <div class="card border-secondary mb-3">
+            <div class="d-grid gap-2 text-center">
+                <div class="container mt-5">
+                    <div class="row">
+                        <div class="col">
+                            <h2>{{ post_to_view.title }}</h2>
+                            {{ post_to_view.body }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}

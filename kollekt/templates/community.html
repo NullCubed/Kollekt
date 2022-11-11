@@ -1,11 +1,13 @@
 {% extends "layout.html" %} {% block content %}
 {% if community == None %}
 <h2>Sorry, the specified community does not exist.</h2>
+<form action="../">
+    <input name="redirect" style="font-size:18px;" type="submit" value="Return to Home">
+</form>
 {% else %}
 <div class="card mb-3">
-    <h3 class="card-header">{{ community.name }}&nbsp;
-    </h3>
-    <form action="/community/{{ community.getUrl() }}" method="post">
+    <h3 class="card-header">{{ community.name }}</h3>
+    <form action="/community/{{ community.url }}" method="post">
         {% if community.userHasJoined(current_user) %}
         <input name="join" style="font-size:18px;" type="submit" value="Leave Community">
         {% else %}
@@ -14,7 +16,7 @@
     </form>
     <div>
         <ul>
-            {% for i in community.getUsers() %}
+            {% for i in community.users %}
             <li>{{ i.username }}</li>
             {% endfor %}
         </ul>
@@ -25,11 +27,7 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
-                            <form action="/community/{{ community.url }}/create_post">
-                                <input name="join" style="font-size:18px;" type="submit" value="Create Post">
-                            </form>
-                            <br>
-                            <h2 class="text-center underline">Top Collections in {{ community.getName() }}</h2>
+                            <h2 class="text-center underline">Recent Collection Items in {{ community.name }}</h2>
                         </div>
                     </div>
                     <div class="row">
@@ -83,26 +81,34 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
-                            <h2 class="text-center underline">Top Posts in {{ community.getName() }}</h2>
+                            <h2 class="text-center underline">Top Posts in {{ community.name }}</h2>
+                            <form action="/create_post">
+                                <input name="join" style="font-size:18px;" type="submit" value="Create Post">
+                            </form>
                         </div>
                     </div>
+                    {% for i in posts_to_display %}
                     <div class="row">
                         <div class="col border">
-                            <div class="row">
-                                <div class="col"><h3 class="text-center">Post Title</h3></div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="row">
-                                        <div class="col">Post Body</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">Post Reactions</div>
+                            <a href="/community/{{ community.url }}/{{ i.id }}"
+                               style="display: block; text-decoration: none;">
+                                <div class="row">
+                                    <div class="col"><h3 class="text-center">{{ i.title }}</h3></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row">
+                                            <div class="col">{{ i.body }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">Post Reactions</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

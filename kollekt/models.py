@@ -15,6 +15,18 @@ users_in_community = db.Table('users_in_community',
                               db.Column('user_id', db.Integer,
                                         db.ForeignKey('user.id'))
                               )
+likes_on_posts = db.Table('likes_on_posts',
+                          db.Column('post_id', db.Integer,
+                                    db.ForeignKey('posts.id')),
+                          db.Column('user_id', db.Integer,
+                                    db.ForeignKey('user.id'))
+                          )
+dislikes_on_posts = db.Table('dislikes_on_posts',
+                             db.Column('post_id', db.Integer,
+                                       db.ForeignKey('posts.id')),
+                             db.Column('user_id', db.Integer,
+                                       db.ForeignKey('user.id'))
+                             )
 
 
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
@@ -152,13 +164,6 @@ class Communities(db.Model):
             return True
         return False
 
-    def getUsers(self):
-        """
-        Returns a list of users in the community
-        :return: list of users
-        """
-        return self.users
-
     def addUser(self, user):
         """
         Adds a user to the community
@@ -179,20 +184,6 @@ class Communities(db.Model):
             self.users.remove(user)
             db.session.commit()
 
-    def getName(self):
-        """
-        Getter for the name of the community
-        :return: name of community
-        """
-        return self.name
-
-    def getUrl(self):
-        """
-        Getter for the url-friendly name of the community
-        :return: url name of community
-        """
-        return self.url
-
     def setName(self, name):
         """
         Setter for the name of the community. Also adjusts the url-name
@@ -202,20 +193,6 @@ class Communities(db.Model):
         self.url = name.lower().translate({ord(i): None for i in "'.,;:"}).replace('"', "").translate(
             {ord(i): "_" for i in " -"})
         db.session.commit()
-
-    def getDesc(self):
-        """
-        Getter for the description of the community
-        :return: description of community
-        """
-        return self.desc
-
-    def setDesc(self, desc):
-        """
-        Setter for the description of the community
-        :return: none
-        """
-        self.desc = desc
 
     def memberCount(self):
         return len(self.users)
@@ -239,8 +216,10 @@ class Posts(db.Model):
     # responses = db.Column(db.BLOB)
     item_id = db.Column(db.Integer)
     community_id = db.Column(db.Integer)
-    # likes = db.Column(db.String)
-    # dislikes = db.Column(db.String)
+    likes = db.relationship(
+        'User', secondary=likes_on_posts, backref='usersWhoLiked')
+    dislikes = db.relationship(
+        'User', secondary=dislikes_on_posts, backref='usersWhoDisliked')
 
     def __init__(self, author, title, body, community, item=None):
         self.author_id = author.id
@@ -248,8 +227,8 @@ class Posts(db.Model):
         self.title = title
         self.body = body
         self.community_id = community.id
-        # self.likes = []
-        # self.dislikes = []
+        self.likes = []
+        self.dislikes = []
         if item is not None:
             self.item_id = item.id
 
@@ -260,4 +239,4 @@ class Posts(db.Model):
         return Communities.query.filter_by(id=self.community_id).first()
 
     def __repr__(self):
-        return f'<Community "{self.url}">'
+        return f'<Post #{self.id} in Community "{self.getCommunity().url}">'
