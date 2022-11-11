@@ -30,7 +30,10 @@ def home():
 
     print(usersCommunities)
     print(allCommunities)
-    return render_template('home.html', usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, numberOfCommunities=numberOfCommunities)
+    sampleCollections = Collections.query.all()
+    sampleCommunities = Communities.query.all()
+    memberCount = 8
+    return render_template('home.html', memberCount=memberCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections, usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, numberOfCommunities=numberOfCommunities)
 
 
 @app.route("/userProfile")
