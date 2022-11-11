@@ -1,17 +1,20 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommunityForm, deleteCommunityForm
+from kollekt.forms import *
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import User, Communities, Collections, Posts, db
+from .models import User, Communities, Collections, Posts, db, Item, Photos
 
 
 @app.route("/")
 def home():
-    posts = [Posts(author_id=1, title="This is a title",  body="This is a test post", responses="👍 👎 "), Posts(author_id=1, title="this is a title",  body="This is a test post",
-                                                                                                               responses="This is a test post's meta data"), Posts(author_id=1, title="this is a title",  body="This is a test post", responses="This is a test post's meta data")]
+    posts = [Posts(author_id=1, title="This is a title", body="This is a test post", responses="👍 👎 "),
+             Posts(author_id=1, title="this is a title", body="This is a test post",
+                   responses="This is a test post's meta data"),
+             Posts(author_id=1, title="this is a title", body="This is a test post",
+                   responses="This is a test post's meta data")]
     allCommunities = Communities.query.all()
     usersCommunities = []
     numberOfCommunities = 0
@@ -26,7 +29,8 @@ def home():
 
     print(usersCommunities)
     print(allCommunities)
-    return render_template('home.html', usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, numberOfCommunities=numberOfCommunities)
+    return render_template('home.html', usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
+                           numberOfCommunities=numberOfCommunities)
 
 
 @app.route("/userProfile")
@@ -56,7 +60,9 @@ def communityPage(community_name):
             community.addUser(current_user)
         elif request.form['join'] == 'Leave Community':
             community.removeUser(current_user)
-    return render_template('community.html', community=community, user=current_user)
+    temp = community.collections[0]
+    # print(temp)
+    return render_template('community.html', community=community, user=current_user, temp=temp)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -162,6 +168,18 @@ def adminpage():
     return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
 
 
+@app.route("/collections/createCollection/<community_id>", methods=['GET', 'POST'])
+def createCollection(community_id):
+    form = createCollectionForm()
+
+    if form.validate_on_submit():
+        collection = Collections(form.name.data, form.desc.data, current_user.id, community_id)
+        db.session.add(collection)
+        db.session.commit()
+        return redirect(url_for('home'))
+    return render_template("createCollection.html", title='Add Item', form=form)
+
+
 @app.route("/fillDB")
 def filldb():
     db.drop_all()
@@ -169,8 +187,11 @@ def filldb():
     db.session.add(User("Admin", "admin@kollekt.com", "testing"))
     db.session.add(Communities("Watches", "Timepieces"))
     db.session.add(Communities("Shoes", "Gloves for your feet"))
+    db.session.add(Collections("Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Item("Moses 300", "A pair of vegan leather Moses 300s", 1))
+    db.session.add(Item("Better Call Saul 750", "My lawyers shoes", 1))
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
     allCommunities = Communities.query.all()
-    print(allCommunities)
+    # print(allCommunities)
     return redirect(url_for('home'))

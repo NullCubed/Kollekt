@@ -6,6 +6,10 @@
         <input name="join" style="font-size:18px;" type="submit" value="Leave Community">
 
     </form>
+    <form action="{{url_for('createCollection', community_id=community.id)}}" method="post">
+        <input name="create_collection" style="font-size:18px;" type="submit" value="Create Collection">
+
+    </form>
     <div>
         <ul>
 
@@ -18,17 +22,20 @@
                     <div class="row">
                         <div class="col">
                             <h2 class="text-center underline">Top Collections in {{ community.name }}</h2>
+                            <h3> {{temp.__repr__()}}</h3>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col border">
                             <div class="row">
-                                <div class="col"><h3 class="text-center">Post Title</h3></div>
+                                <div class="col"><h3 class="text-center">{{temp.name}}</h3></div>
                             </div>
                             <div class="row">
                                 <div class="col">
                                     <div class="row">
-                                        <div class="col">Post Body</div>
+                                        <div class="col">
+                                            {{ temp.getItem() | safe }}
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col">Post Reactions</div>

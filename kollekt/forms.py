@@ -41,3 +41,9 @@ class createCommunityForm(FlaskForm):
 class deleteCommunityForm(FlaskForm):
     name = StringField('Community to Delete', validators=[DataRequired()])
     submit = SubmitField('Delete')
+
+
+class createCollectionForm(FlaskForm):
+    name = StringField('Name of collection', validators=[DataRequired()])
+    desc = StringField('Description of collection', validators=[DataRequired()])
+    submit = SubmitField('Create Collection')

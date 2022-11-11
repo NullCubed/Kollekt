@@ -1,7 +1,8 @@
+import os
+
 from . import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-import sqlalchemy as sa
 
 
 @login_manager.user_loader
@@ -54,23 +55,59 @@ class User(db.Model, UserMixin):
         return f'<User {self.username}, {self.email}, {self.password}>'
 
 
-class Items(db.Model):
+class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
+    picture = db.Column(db.BLOB)
+    picture_path = db.Column(db.String)
+
+    def convertToBinaryData(self, filepath):
+        # Convert digital data to binary format
+        with open(filepath, 'rb') as file:
+            binaryData = file.read()
+        return binaryData
+
+    def write_file(self, data, filename):
+        # Convert binary data to proper format and write it on Hard Disk
+        with open(filename, 'wb') as file:
+            file.write(data)
+
+    def __init__(self, name, desc, collection_id):
+        self.name = name
+        self.desc = desc
+        self.collection_id = collection_id
+        self.picture_path = 'kollekt/static/bantest.png'
+        self.picture = self.convertToBinaryData(self.picture_path)
 
 
 class Collections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    owner = db.Column(db.Integer)
-    items = db.relationship('Items', backref='collections', lazy=True)
+    # owner = db.Column(db.Integer)
+    items = db.relationship('Item', backref='collections', lazy=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
+
+    def __init__(self, name, desc, user_id, community_id):
+        self.name = name
+        self.desc = desc
+        self.user_id = user_id
+        self.community_id = community_id
+
+    def __repr__(self):
+        return f'<Collection {self.name}, {self.items}, {self.community_id}>'
+
+    def getItem(self):
+        item = self.items[0]
+        item.write_file(item.picture, item.picture_path)
+        return f'<img src=\"../static/bantest.png\" width=100 height=100/>' \
+               f'<br />' \
+               f'<h4 class=\"text-center\">{item.name}<br/>{item.desc}</h4>'
 
 
 class Communities(db.Model):
