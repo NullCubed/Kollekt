@@ -9,6 +9,13 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+users_in_community = db.Table('users_in_community',
+                              db.Column('community_id', db.Integer,
+                                        db.ForeignKey('communities.id')),
+                              db.Column('user_id', db.Integer,
+                                        db.ForeignKey('user.id'))
+                              )
+
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
 #   Currently having issues with import loop ie importing db from index and then importing User from models
 #   Restructuring should resolve this issue
@@ -71,6 +78,10 @@ class Communities(db.Model):
     desc = db.Column(db.String)
     collections = db.relationship(
         'Collections', backref='communities', lazy=True)
+
+    users_in_communities = db.relationship(
+        'User', secondary=users_in_community, backref='users')
+
 
 
 class Photos(db.Model):
