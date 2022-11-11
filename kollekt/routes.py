@@ -5,7 +5,7 @@ from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommun
 # from .Components.Collection import CollectionItem
 
 from flask_login import login_user, current_user, logout_user, login_required
-from .models import User, Communities, db
+from .models import User, Communities, Collections, Posts, db
 
 
 # test_communities = [Community("Watches", "And other timekeeping devices"),
@@ -14,7 +14,22 @@ from .models import User, Communities, db
 
 @app.route("/")
 def home():
-    return render_template('home.html')
+    posts = [Posts(author_id=1, title="This is a title",  body="This is a test post", responses="👍 👎 "), Posts(author_id=1, title="this is a title",  body="This is a test post",
+                                                                                                               responses="This is a test post's meta data"), Posts(author_id=1, title="this is a title",  body="This is a test post", responses="This is a test post's meta data")]
+    allCommunities = Communities.query.all()
+    usersCommunities = []
+    numberOfCommunities = 0
+    if current_user.is_authenticated:
+        for community in allCommunities:
+            userlist = community.getUsers()
+            numberOfCommunities = len(userlist)
+            if current_user.username in userlist:
+                usersCommunities.append(community)
+                allCommunities.remove(community)
+    sampleCollections = Collections.query.all()
+    sampleCommunities = Communities.query.all()
+    memberCount = 8
+    return render_template('home.html', memberCount=memberCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections, usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, numberOfCommunities=numberOfCommunities)
 
 
 @app.route("/userProfile")
@@ -62,12 +77,12 @@ def login():
 
         if user and user.verify_password(password):
             login_user(user, remember=True)
-            flash(f'Login successful {user.__repr__()}', 'success')
+            flash(f'Login successful {user.username}', 'success')
             next_page = request.args.get('next')
 
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
-            flash("Wrong Password", "Danger")
+            flash("Wrong Password", "danger")
             return redirect(url_for('login'))
 
     return render_template('login.html', title='Login', form=form)
@@ -91,14 +106,14 @@ def register():
         if not user and not eml:
             user = User(username, password, email)
         elif user:
-            flash("Username already taken", "Danger")
+            flash("Username already taken", "danger")
             return redirect(url_for('register'))
         elif email:
-            flash("Email already used", "Danger")
+            flash("Email already used", "danger")
             return redirect(url_for('register'))
         db.session.add(user)
         db.session.commit()
-        flash(user.__repr__(), 'success')
+        flash(f'Registered {user.username}', 'success')
         return redirect(url_for('home'))
     return render_template('register.html', title='Register', form=form)
 
@@ -126,7 +141,7 @@ def adminpage():
         checkCommunity = Communities.query.filter_by(
             name=form.name.data).first()
         if checkCommunity:
-            flash("Community already exists", "Danger")
+            flash("Community already exists", "danger")
             return redirect(url_for('adminpage'))
         else:
             community = Communities(name=form.name.data,
@@ -145,6 +160,6 @@ def adminpage():
             flash(f"Community Deleted {checkCommunity.name}", "success")
             return redirect(url_for('adminpage'))
         else:
-            flash("Community does not exist", "Danger")
+            flash("Community does not exist", "danger")
             return redirect(url_for('adminpage'))
     return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
