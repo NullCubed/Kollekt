@@ -1,7 +1,6 @@
 {% extends "layout.html" %} {% block content %}
-<h2>{{ current_user.username }}'s Dashboard</h2>
+<h2 style="margin-left: 15px">{{ current_user.username }}'s Dashboard</h2>
 <div class="card border-secondary mb-3">
-    <h4 class="card-header"></h4>
     <div class="d-grid gap-2 text-center">
         <p style="text-align: center; margin-top: 10px">
             <img
@@ -22,7 +21,7 @@
         </button>
         <p></p>
     </div>
-    <h2>My Posts:</h2>
+    <h2 style="margin-left: 15px">My Collections:</h2>
     <div
             class="card border-secondary mb-3"
             style="margin-left: 200px; margin-right: 200px"

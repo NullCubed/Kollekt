@@ -46,7 +46,7 @@ def logout():
 @login_required
 def userSettings():
     form = UserForm()
-    id = 1
+    id = current_user.id
     name_to_update = User.query.get_or_404(id)
     if request.method == "POST":
         name_to_update.username = request.form['username']
