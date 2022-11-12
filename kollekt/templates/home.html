@@ -1,138 +1,151 @@
-{% extends "layout.html" %} {% block content %}
-<div class="container">
-    {% for msg in get_flashed_messages() %}
-    <div class="alert alert-success" role="alert">{{ msg }}</div>
-    {% endfor %}
-    <div class="container mt-5">
-        <div class="row">
+{% extends "layout.html" %} {% block content %}{% if
+current_user.is_authenticated %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 col-md-9 mt-3">
+      <div class="row">
+        <div class="col">
+          <h4 class="text-center border-bottom pb-2">
+            Top Communities / Recent Posts
+          </h4>
+        </div>
+      </div>
+      <div class="row justify-content-around">
+        {% for i in posts %}
+        <div class="col-11 col-md-5 border mt-5 rounded">
+          <div class="row">
             <div class="col">
-                <h2 class="text-center underline">Top/Recent Collection Items {{current_user.username}}</h2>
+              <h3 class="text-center">{{i.title}}</h3>
             </div>
-        </div>
-        <div class="row">
-            <div class="col border">
-                <div class="row">
-                    <div class="col"><h3 class="text-center">Post Title</h3></div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="row">
-                            <div class="col">test</div>
-                        </div>
-                        <div class="row">
-                            <div class="col">Post Reactions</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col border">
-                <div class="row">
-                    <div class="col"><h3 class="text-center">Post Title</h3></div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="row">
-                            <div class="col">Post Body</div>
-                        </div>
-                        <div class="row">
-                            <div class="col">Post Reactions</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col border">
-                <div class="row">
-                    <div class="col"><h3 class="text-center">Post Title</h3></div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="row">
-                            <div class="col">Post Body</div>
-                        </div>
-                        <div class="row">
-                            <div class="col">Post Reactions</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col text-center">
-                <div class="dropdown">
-                    <button
-                            aria-expanded="true"
-                            aria-haspopup="true"
-                            class="btn btn-secondary dropdown-toggle"
-                            data-toggle="dropdown"
-                            id="dropdownMenuButton"
-                            type="button"
-                    >
-                        All Communities
-                    </button>
-                    <div aria-labelledby="dropdownMenuButton" class="dropdown-menu">
-                        <a class="dropdown-item" href="community/Watches#">Watches</a>
-                        <a class="dropdown-item" href="community/Trading Cards#">Trading Cards</a>
-                        <a class="dropdown-item" href="community/Rocks#">Rocks</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container mt-5">
-        <div class="row">
+          </div>
+          <div class="row">
             <div class="col">
-                <h2 class="text-center underline">Most Popular Communities</h2>
+              <p>{{i.body}}</p>
             </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p class="text-center">{{i.responses}}</p>
+            </div>
+          </div>
         </div>
-        <div class="row">
-            <div class="col border">
-                <div class="row">
-                    <div class="col"><h3 class="text-center">Watches</h3></div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="row">
-                            <div class="col">Community Description</div>
-                        </div>
-                        <div class="row">
-                            <div class="col">Extra Info</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col border">
-                <div class="row">
-                    <div class="col"><h3 class="text-center">Trading Cards</h3></div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="row">
-                            <div class="col">Community Description</div>
-                        </div>
-                        <div class="row">
-                            <div class="col">Extra Info</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col border">
-                <div class="row">
-                    <div class="col"><h3 class="text-center">Rocks</h3></div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="row">
-                            <div class="col">Community Description</div>
-                        </div>
-                        <div class="row">
-                            <div class="col">Extra Info</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% endfor %}
+      </div>
     </div>
+    <div class="col-12 col-md-3 mt-3">
+      <div class="row">
+        <div class="col">
+          <h5 class="text-center border-bottom">My Communities</h5>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <ul class="list-group">
+            {% for i in usersCommunities%}
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+            >
+              {{ i.name }}
+
+              <span class="badge badge-primary badge-pill"
+                >{{numberOfCommunities}}</span
+              >
+            </li>
+
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col">
+          <h5 class="text-center border-bottom">All Communities</h5>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <ul class="list-group">
+            {% for i in allCommunities%}
+            <a href="">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+              >
+                {{ i.name }}
+
+                <span class="badge badge-primary badge-pill"
+                  >{{numberOfCommunities}}</span
+                >
+              </li>
+            </a>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-{%endblock content %}
+{% else %}
+<div class="container-fluid">
+  <div class="row mt-4">
+    <div class="col">
+      <a href="{{ url_for('login')}}"
+        ><h3 class="text-center" style="font-weight: bold">
+          Log in to have a personalized experience
+        </h3></a
+      >
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 col-lg-6 border-right">
+      <div class="row mt-3">
+        <div class="col">
+          <h5 class="text-center">
+            Heres a list of communities you could join after making an account
+          </h5>
+        </div>
+      </div>
+      {%for i in sampleCommunities%}
+      <div class="row mt-3 justify-content-center">
+        <div class="col-11 bg-secondary rounded">
+          <div class="row">
+            <div class="col"><h1 class="text-center">{{i.name}}</h1></div>
+          </div>
+          <div class="row">
+            <div class="col"><p>{{i.desc}}</p></div>
+          </div>
+          <div class="row">
+            <div class="col"><p>{{memberCount}} Members</p></div>
+          </div>
+        </div>
+      </div>
+
+      {%endfor%}
+    </div>
+    <div class="col-12 col-lg-6 border-left">
+      <div class="row mt-3">
+        <div class="col">
+          <h5 class="text-center">
+            Heres a list of collections our users have made
+          </h5>
+        </div>
+      </div>
+      {%for i in sampleCollections%}
+      <div class="row mt-3 justify-content-center rounded">
+        <div class="col-11 bg-secondary">
+          <div class="row">
+            <div class="col">
+              <h1 class="text-center">{{i.name}}</h1>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col"><p>{{i.desc}}</p></div>
+          </div>
+          <div class="row">
+            <div class="col"><p>{{i.likes}}</p></div>
+          </div>
+        </div>
+      </div>
+      {%endfor%}
+    </div>
+  </div>
+</div>
+{% endif %} {%endblock content %}
