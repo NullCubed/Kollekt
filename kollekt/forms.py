@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
+from flask_wtf.file import FileField
 
 
 class RegistrationForm(FlaskForm):
@@ -46,4 +47,5 @@ class UserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     bio = StringField('Biography', validators=[DataRequired()])
+    profile_pic = FileField('Profile Pic')
     submit = SubmitField("Submit")
