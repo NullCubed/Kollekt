@@ -12,15 +12,12 @@
                             width="200px"
                     />
                 </p>
-                <strong>Username:</strong> {{ current_user.id }}<br/>
+                <strong>Username:</strong> {{ current_user.username }}<br/>
                 <strong>Email:</strong> {{ current_user.email }}<br/>
                 <strong>Description:</strong><br/>
-                <p>{{ current_user.bio }}</p>
+                <p style="margin-left: 300px; margin-right: 300px"> {{ current_user.bio }}</p>
                 <button class="btn btn-sm btn-outline-dark" type="button">
                     My Communities
-                </button>
-                <button class="btn btn-sm btn-outline-dark" type="button">
-                    My Activity
                 </button>
                 <button class="btn btn-sm btn-outline-dark" type="button">
                     <a href="/addItem">Add an Item</a>

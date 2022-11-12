@@ -4,7 +4,7 @@
         Update Profile
     </div>
     <div class="card-body">
-        <form action="/update/{{ name_to_update.id }}" method="POST">
+        <form action="" method="POST">
             {{ form.hidden_tag() }}
     
             {{ form.username.label(class="form-label") }}
@@ -17,6 +17,15 @@
             {{ form.email(class="form-control", value=name_to_update.email) }}
     
             <br/>
+
+            {{ form.bio.label(class="form-label") }}
+    
+            {{ form.bio(class="form-control", value=name_to_update.bio) }}
+    
+            <br/>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+              </div>
     
         </form>
     </div>
