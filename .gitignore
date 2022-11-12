@@ -27,3 +27,6 @@ htmlcov/
 .coverage.*
 *,cover
 *.db
+todo.txt
+/node_modules/
+package*.json
