@@ -6,8 +6,10 @@ from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, cr
 
 from flask_login import login_user, current_user, logout_user, login_required
 from .models import User, Communities, Collections, Posts, db
-
-
+import uuid as uuid
+import os
+UPLOAD_FOLDER = '../kollekt/static/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # test_communities = [Community("Watches", "And other timekeeping devices"),
 #                     Community("Trading Cards", "Baseball! Pokemon! You name it!"),
 #                     Community("Rocks", "Naturally formed or manually cut")]
@@ -53,6 +55,10 @@ def userSettings():
         name_to_update.email = request.form['email']
         name_to_update.bio = request.form['bio']
         name_to_update.profile_pic = request.files['profile_pic']
+        pic_filename = name_to_update.profile_pic.filename #
+        pic_name = str(uuid.uuid1()) + '_' + pic_filename
+        name_to_update.profile_pic.save(os.path.join(app.config['UPLOAD_FOLDER']), pic_name)
+        name_to_update.profile_pic = pic_name
         try:
             db.session.commit()
             flash("User Updated Successfully!")
