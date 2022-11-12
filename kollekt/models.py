@@ -108,7 +108,7 @@ class Collections(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
-    def __init__(self, community, , user):
+    def __init__(self, community, user):
         self.user = user
         self.community = community
         self.items = []
