@@ -52,6 +52,7 @@ def userSettings():
         name_to_update.username = request.form['username']
         name_to_update.email = request.form['email']
         name_to_update.bio = request.form['bio']
+        name_to_update.profile_pic = request.files['profile_pic']
         try:
             db.session.commit()
             flash("User Updated Successfully!")
