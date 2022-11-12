@@ -1,6 +1,6 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommunityForm, deleteCommunityForm
+from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
@@ -42,10 +42,33 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
-
-@app.route("/userSettings")
+@app.route("/userSettings", methods=['GET', 'POST'])
+@login_required
 def userSettings():
-    return render_template('settings.html')
+    form = UserForm()
+    id = 1
+    name_to_update = User.query.get_or_404(id)
+    if request.method == "POST":
+        name_to_update.username = request.form['username']
+        name_to_update.email = request.form['email']
+        name_to_update.bio = request.form['bio']
+        try:
+            db.session.commit()
+            flash("User Updated Successfully!")
+            return render_template("settings.html", 
+				form=form,
+				name_to_update = name_to_update, id=id)
+        except:
+            flash("Error!  Looks like there was a problem...try again!")
+            return render_template("settings.html", 
+				form=form,
+				name_to_update = name_to_update,
+				id=id)
+    else:
+        return render_template("settings.html", 
+			form=form,
+			name_to_update = name_to_update,
+			id = id)
 
 
 @app.route("/community/<community_name>", methods=['GET', 'POST'])
