@@ -60,19 +60,43 @@ class CollectionItem(db.Model):
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
 
-    def __init__(self, user, community, template, photo, text, collection, likes, dislikes, likers, dislikeers):
-        self._collection = collection
-        self._user = user
-        self._community = community
-        self._template = template
-        self._photo = photo
-        self._text = text
-        self.reactions = []
+    def __init__(self, user, community, photo, text, collection, likes, dislikes, likers, dislikers):
+        self.collection = collection
+        self.user = user
+        self.community = community
+        self.photo = photo
+        self.text = text
         self.likes = 0
-        self.disliskes = 0
+        self.dislikes = 0
         self.likers = []
         self.dislikers = []
-    
+
+    def add_like(self):
+        self.likes += 1
+        return(self.likes)
+    def add_dislike(self):
+        self.disliskes += 1
+        return (self.disliskes)
+    def add_like(self,user_who_liked):
+        if user_who_liked not in self.likers():
+            self.likers.append(user_who_liked)
+            self.likes += 1
+            return self.likes
+        else:
+            self.likers.remove(user_who_liked)
+            self.likes -= 1
+            return self.likes
+    def add_dislike(self,user_who_disliked):
+        if user_who_disliked not in self.dislikers():
+            self.dislikers.append(user_who_disliked)
+            self.dislikes += 1
+            return self.dislikes
+        else:
+            self.dislikers.remove(user_who_disliked)
+            self.dislikes -= 1
+            return self.dislikes
+
+
 
 
 class Collections(db.Model):
@@ -84,6 +108,11 @@ class Collections(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
+    def __init__(self, community, , user):
+        self.user = user
+        self.community = community
+        self.items = []
+
 
 
 class Communities(db.Model):
