@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
-
-
+from flask import url_for, redirect, render_template
+from flask_wtf.file import FileField
+from werkzeug.utils import secure_filename
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
@@ -27,8 +28,8 @@ class LoginForm(FlaskForm):
 
 class ItemAddForm(FlaskForm):
     community = StringField('Community', validators=[DataRequired()])
-    # photo = ...
     text = StringField('Description', validators=[DataRequired()])
+    file = FileField()
     submit = SubmitField('Add')
 
 

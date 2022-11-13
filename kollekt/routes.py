@@ -1,5 +1,7 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
+from werkzeug.utils import secure_filename
+
 from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
@@ -147,6 +149,8 @@ def register():
 def addNewCollectionItem():
     form = ItemAddForm()
     if form.validate_on_submit():
+        filename = secure_filename(form.file.data.filename)
+        form.file.data.save('uploads/' + filename)
         collection_item = CollectionItem('testUser', 'testCommunity', 'testTemplate',
                                          'testPhoto', text=form.text.data,
                                          collection=form.community.data)
