@@ -12,23 +12,27 @@ from .models import User, Communities, Collections, Posts, db
 
 @app.route("/")
 def home():
-    posts = [Posts(author_id=1, title="This is a title",  body="This is a test post", responses="👍 👎 "), Posts(author_id=1, title="this is a title",  body="This is a test post",
-                                                                                                               responses="This is a test post's meta data"), Posts(author_id=1, title="this is a title",  body="This is a test post", responses="This is a test post's meta data")]
+    # posts = [Posts(author_id=1, title="This is a title",  body="This is a test post",
+    #                community_id="👍 👎 "),
+    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
+    #                community_id="This is a test post's meta data"),
+    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
+    #                community_id="This is a test post's meta data")
+    # ]
+    posts = Posts.query.all()
     allCommunities = Communities.query.all()
     usersCommunities = []
-    numberOfCommunities = 0
     if current_user.is_authenticated:
         for community in allCommunities:
-            # userlist = community.getUsers() waiting for method implementation
-            userlist = []  # using this for now
-            numberOfCommunities = len(userlist)
+            userlist = community.getUsers()  # waiting for method implementation
+            # userlist = []  # using this for now
             if current_user.username in userlist:
                 usersCommunities.append(community)
                 allCommunities.remove(community)
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
-    memberCount = 8
-    return render_template('home.html', memberCount=memberCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections, usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, numberOfCommunities=numberOfCommunities)
+    return render_template('home.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
 
 
 @app.route("/userProfile")
@@ -228,8 +232,8 @@ def addNewPost():
                 return redirect(url_for('create_post'))
             else:
                 target_community = Communities.query.filter_by(name=form.community.data).first()
-                new_post = Posts(author=current_user, title=form.title.data, body=form.body.data,
-                                 community=target_community)
+                new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
+                                 community_id=target_community.id)
                 print("new_post created")
                 db.session.add(new_post)
                 db.session.commit()

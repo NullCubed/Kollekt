@@ -15,6 +15,7 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
+                            <h4>Posted by {{ post_to_view.getAuthor().username }} {{ post_to_view.getTimestamp()[1] }}</h4>
                             <h2>{{ post_to_view.title }}</h2>
                             {{ post_to_view.body }}
                         </div>
