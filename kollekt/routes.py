@@ -182,7 +182,7 @@ def addNewPost():
                 can_post = True
                 break
         if form.validate_on_submit():
-            if form.body.data is "" and form.item_id.data is "":
+            if form.body.data == "" and form.item_id.data == "":
                 flash("Must enter text into the body or attach an item!", "Danger")
                 return redirect(url_for('create_post'))
             else:
