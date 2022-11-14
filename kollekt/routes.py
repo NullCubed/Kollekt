@@ -37,7 +37,17 @@ def home():
 
 @app.route("/userProfile")
 def userProfile():
-    return render_template('test.html')
+    users_posts = []
+    all_posts = Posts.query.all()
+    print(all_posts)
+    all_posts.reverse()
+    print(all_posts)
+    for i in all_posts:
+        if i.author_id == current_user.id:
+            users_posts.append(i)
+    print(users_posts)
+    return render_template('test.html', user=current_user, users_posts=users_posts)
+
 
 
 @app.route("/logout")
@@ -56,7 +66,6 @@ def userSettings():
         name_to_update.username = request.form['username']
         name_to_update.email = request.form['email']
         name_to_update.bio = request.form['bio']
-        name_to_update.profile_pic = request.files['profile_pic']
         try:
             db.session.commit()
             flash("User Updated Successfully!")
