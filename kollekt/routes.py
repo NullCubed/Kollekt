@@ -1,13 +1,10 @@
+from .models import User, Communities, Collections, Posts, db
+from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm, \
-    createPostForm
+from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm, createPostForm
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
-
-from flask_login import login_user, current_user, logout_user, login_required
-
-from .models import User, Communities, Collections, Posts, db
 
 
 @app.route("/")
@@ -24,14 +21,24 @@ def home():
     usersCommunities = []
     if current_user.is_authenticated:
         for community in allCommunities:
+            print(community)
             userlist = community.getUsers()  # waiting for method implementation
+            finalUserList = []
+            for i in userlist:
+                finalUserList.append(i.username)
             # userlist = []  # using this for now
-            if current_user.username in userlist:
+            if current_user.username in finalUserList:
                 usersCommunities.append(community)
                 allCommunities.remove(community)
+
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
-    return render_template('home.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+    collectionsCount = len(sampleCollections)
+    communitiesCount = len(sampleCommunities)
+    postCount = len(posts)
+    usersCount = len(User.query.all())
+    print(usersCount, collectionsCount, communitiesCount)
+    return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount, communitiesCount=communitiesCount, usersCount=usersCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
 
 
@@ -258,7 +265,8 @@ def addNewPost():
                 flash("Must enter text into the body or attach an item!", "Danger")
                 return redirect(url_for('create_post'))
             else:
-                target_community = Communities.query.filter_by(name=form.community.data).first()
+                target_community = Communities.query.filter_by(
+                    name=form.community.data).first()
                 new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
                                  community_id=target_community.id)
                 print("new_post created")
