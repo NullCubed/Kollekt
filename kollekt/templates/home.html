@@ -12,7 +12,11 @@ current_user.is_authenticated %}
       </div>
       <div class="row justify-content-around">
         {% for i in posts %}
-        <div class="col-11 col-md-5 border mt-5 rounded">
+        <a
+          style="text-decoration: none; color: inherit"
+          href="/community/{{ i.getCommunity() }}/{{ i.id }}"
+          class="col-11 col-md-5 border mt-5 rounded"
+        >
           <div class="row">
             <div class="col">
               <h3 class="text-center">{{i.title}}</h3>
@@ -30,8 +34,12 @@ current_user.is_authenticated %}
                 👍 - 👎 {{i.getDislikes()}}
               </p>
             </div>
+            <div class="col">
+              <p>Posted in community: {{(i.getCommunity).name}}</p>
+            </div>
           </div>
-        </div>
+        </a>
+
         {% endfor %}
       </div>
     </div>

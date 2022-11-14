@@ -1,13 +1,10 @@
+from .models import User, Communities, Collections, Posts, db
+from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm, \
-    createPostForm
+from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm, createPostForm
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
-
-from flask_login import login_user, current_user, logout_user, login_required
-
-from .models import User, Communities, Collections, Posts, db
 
 
 @app.route("/")
