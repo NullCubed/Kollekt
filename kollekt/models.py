@@ -41,14 +41,14 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    communities = db.Column(db.BLOB)
-    collections = db.Column(db.BLOB)
+    #communities = db.Column(db.BLOB)
+    #collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
     profile_picture = db.Column(db.BLOB)
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections = db.relationship(
-        'Posts', backref='collectionAuthor', lazy=True)
+        'Collections', backref='collectionAuthor', lazy=True)
 
     def __init__(self, username, password, email):
         self.username = username
@@ -201,6 +201,7 @@ class Communities(db.Model):
         return f'<Community "{self.url}">'
 
 
+
 class Photos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     photo_blob = db.Column(db.BLOB)
@@ -208,6 +209,7 @@ class Photos(db.Model):
 
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     # author = db.Column(db.String)
     title = db.Column(db.String)

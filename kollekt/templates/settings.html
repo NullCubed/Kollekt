@@ -1,24 +1,35 @@
 {% extends "layout.html" %} {% block content %}
-<form>
-    <fieldset>
-        <h3 class="card-header">Update Profile Settings</h3>
-        <div class="form-group" style="margin-left: 20px" style="margin-top: 20px">
-            <label for="fname">First name:</label>
-            <input id="fname" name="fname" size="50" type="text"><br><br>
-            <div class="form-group">
-                <label for="fname">Last name:</label>
-                <input id="fname" name="fname" size="50" type="text"><br><br>
-                <div class="form-group">
-                    <label for="fname">Email:</label>
-                    <input id="fname" name="fname" size="50" type="text"><br><br>
-                    <div class="form-group">
-                        <label for="fname">Biography:</label>
-                        <input id="fname" name="fname" size="50" type="text"><br><br>
-                        <small>Any fields left blank will not be updated.</small>
-                    </div>
+<div class="card" style="margin-left: 200px; margin-right: 200px; margin-top: 50px">
+    <div class="card-header">
+        Update Profile
+    </div>
+    <div class="card-body">
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
+    
+            {{ form.username.label(class="form-label") }}
+    
+            {{ form.username(class="form-control", value=name_to_update.username) }}
+            <br/>
+    
+            {{ form.email.label(class="form-label") }}
+    
+            {{ form.email(class="form-control", value=name_to_update.email) }}
+    
+            <br/>
 
-    </fieldset style='margin-left: 90%'>
-    <button class="btn btn-primary" type="submit">Submit</button>
-    </fieldset>
-</form>
+            {{ form.bio.label(class="form-label") }}
+    
+            {{ form.bio(class="form-control", value=name_to_update.bio) }}
+    
+            <br/>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+              </div>
+    
+        </form>
+    </div>
+
+
+</div>
 {%endblock content %}
