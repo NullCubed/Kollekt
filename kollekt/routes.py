@@ -1,6 +1,7 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommunityForm, deleteCommunityForm
+from kollekt.forms import RegistrationForm, LoginForm, ItemAddForm, createCommunityForm, deleteCommunityForm, \
+    createPostForm
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
@@ -32,6 +33,20 @@ def userSettings():
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
     community = Communities.query.filter_by(url=url).first()
+    posts_to_display = []
+    print(posts_to_display)
+    all_posts = Posts.query.all()
+    print(all_posts)
+    all_posts.reverse()
+    print(all_posts)
+    k = 0
+    for j in all_posts:
+        k += 1
+        if j.community_id == community.id:
+            posts_to_display.append(j)
+        if k == 5:
+            break
+    print(posts_to_display)
     if request.method == 'POST':
         if current_user.is_authenticated:
             if request.form['join'] == 'Join Community':
@@ -40,7 +55,7 @@ def communityPage(url):
                 community.removeUser(current_user)
         else:
             return redirect(url_for('login'))
-    return render_template('community.html', community=community, user=current_user)
+    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -147,10 +162,39 @@ def adminpage():
 
 
 @app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])
-def post(community_url, post_id):
-    community = Communities.query.filter_by(url=community_url).first()
+def viewPost(community_url, post_id):
     post_to_view = Posts.query.filter_by(id=post_id).first()
-    if post_to_view.community is not community:  # if correct id but wrong community, corrects url
-        return redirect(url_for('post', community_url=post.community.url, post_id=post_id))
-    return render_template('viewpost.html', post=post_to_view, community=community)
+    if post_to_view is None:
+        return render_template('viewpost.html', post_to_view=post_to_view, community=None)
+    community = Communities.query.filter_by(url=community_url).first()
+    if post_to_view.getCommunity() is not community:  # if correct id but wrong community, corrects url
+        return redirect(url_for('viewPost', community_url=post_to_view.getCommunity().url, post_id=post_id))
+    return render_template('viewpost.html', post_to_view=post_to_view, community=community)
 
+
+@app.route("/create_post", methods=['GET', 'POST'])
+def addNewPost():
+    if current_user.is_authenticated:
+        form = createPostForm()
+        can_post = False
+        for i in Communities.query.all():  # check that user is part of at least 1 community
+            if i.userHasJoined(current_user):
+                can_post = True
+                break
+        if form.validate_on_submit():
+            if form.body.data is "" and form.item_id.data is "":
+                flash("Must enter text into the body or attach an item!", "Danger")
+                return redirect(url_for('create_post'))
+            else:
+                target_community = Communities.query.filter_by(name=form.community.data).first()
+                new_post = Posts(author=current_user, title=form.title.data, body=form.body.data,
+                                 community=target_community)
+                print("new_post created")
+                db.session.add(new_post)
+                db.session.commit()
+                print(new_post)
+                print("committed to database")
+                return redirect(url_for('viewPost', community_url=form.community.data, post_id=new_post.id))
+        return render_template("createpost.html", form=form, can_post=can_post)
+    else:
+        return redirect(url_for('login'))
