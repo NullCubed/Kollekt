@@ -28,21 +28,28 @@ current_user.is_authenticated %}
             </div>
           </div>
 
-          <div class="row">
-            <div class="col">
+          <div class="row justify-content-center">
+            <div class="col-auto col-lg-6">
               <p class="text-center">
-                Posted by {{i.getAuthor().username}} {{i.getTimestamp()[1]}}<br />{{i.getLikes()}}
-                👍 - 👎 {{i.getDislikes()}}
+                Posted by {{i.getAuthor().username}} {{i.getTimestamp()[1]}}
               </p>
             </div>
             <a
               href="/community/{{i.getCommunity().url}}"
               style="text-decoration: none; color: inherit"
+              class="col-auto col-lg-6 p-0"
             >
-              <div class="col">
-                <p>Posted in community: {{i.getCommunity().name}}</p>
-              </div>
+              <p class="text-center">
+                Posted in community: {{i.getCommunity().name}}
+              </p>
             </a>
+          </div>
+          <div class="row">
+            <div class="col">
+              <p class="text-center">
+                {{i.getLikes()}} 👍 - 👎 {{i.getDislikes()}}
+              </p>
+            </div>
           </div>
         </div>
 
