@@ -24,9 +24,13 @@ def home():
     usersCommunities = []
     if current_user.is_authenticated:
         for community in allCommunities:
+            print(community)
             userlist = community.getUsers()  # waiting for method implementation
+            finalUserList = []
+            for i in userlist:
+                finalUserList.append(i.username)
             # userlist = []  # using this for now
-            if current_user.username in userlist:
+            if current_user.username in finalUserList:
                 usersCommunities.append(community)
                 allCommunities.remove(community)
     sampleCollections = Collections.query.all()
@@ -231,7 +235,8 @@ def addNewPost():
                 flash("Must enter text into the body or attach an item!", "Danger")
                 return redirect(url_for('create_post'))
             else:
-                target_community = Communities.query.filter_by(name=form.community.data).first()
+                target_community = Communities.query.filter_by(
+                    name=form.community.data).first()
                 new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
                                  community_id=target_community.id)
                 print("new_post created")

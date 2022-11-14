@@ -25,7 +25,10 @@ current_user.is_authenticated %}
           </div>
           <div class="row">
             <div class="col">
-              <p class="text-center">Posted by {{i.getAuthor().username}} {{i.getTimestamp()[1]}}<br>{{i.getLikes()}} 👍 - 👎 {{i.getDislikes()}}</p>
+              <p class="text-center">
+                Posted by {{i.getAuthor().username}} {{i.getTimestamp()[1]}}<br />{{i.getLikes()}}
+                👍 - 👎 {{i.getDislikes()}}
+              </p>
             </div>
           </div>
         </div>
@@ -42,16 +45,17 @@ current_user.is_authenticated %}
         <div class="col">
           <ul class="list-group">
             {% for i in usersCommunities%}
-            <li
-              class="list-group-item d-flex justify-content-between align-items-center"
-            >
-              {{ i.name }}
-
-              <span class="badge badge-primary badge-pill"
-                >{{ i.memberCount() }}</span
+            <a href="/community/{{ i.url }}">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
               >
-            </li>
+                {{ i.name }}
 
+                <span class="badge badge-primary badge-pill"
+                  >{{ i.memberCount() }}</span
+                >
+              </li>
+            </a>
             {% endfor %}
           </ul>
         </div>
@@ -113,7 +117,7 @@ current_user.is_authenticated %}
             <div class="col"><p>{{i.desc}}</p></div>
           </div>
           <div class="row">
-            <div class="col"><p>{{ i.getUserCount() }} Members</p></div>
+            <div class="col"><p>{{ i.memberCount() }} Member(s)</p></div>
           </div>
         </div>
       </div>
