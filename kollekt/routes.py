@@ -21,7 +21,8 @@ def home():
     numberOfCommunities = 0
     if current_user.is_authenticated:
         for community in allCommunities:
-            userlist = community.getUsers()
+            # userlist = community.getUsers() waiting for method implementation
+            userlist = []  # using this for now
             numberOfCommunities = len(userlist)
             if current_user.username in userlist:
                 usersCommunities.append(community)
@@ -42,6 +43,7 @@ def logout():
     logout_user()
     return redirect(url_for('home'))
 
+
 @app.route("/userSettings", methods=['GET', 'POST'])
 @login_required
 def userSettings():
@@ -56,20 +58,20 @@ def userSettings():
         try:
             db.session.commit()
             flash("User Updated Successfully!")
-            return render_template("settings.html", 
-				form=form,
-				name_to_update = name_to_update, id=id)
+            return render_template("settings.html",
+                                   form=form,
+                                   name_to_update=name_to_update, id=id)
         except:
             flash("Error!  Looks like there was a problem...try again!")
-            return render_template("settings.html", 
-				form=form,
-				name_to_update = name_to_update,
-				id=id)
+            return render_template("settings.html",
+                                   form=form,
+                                   name_to_update=name_to_update,
+                                   id=id)
     else:
-        return render_template("settings.html", 
-			form=form,
-			name_to_update = name_to_update,
-			id = id)
+        return render_template("settings.html",
+                               form=form,
+                               name_to_update=name_to_update,
+                               id=id)
 
 
 @app.route("/community/<community_name>", methods=['GET', 'POST'])
