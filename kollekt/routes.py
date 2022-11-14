@@ -30,9 +30,15 @@ def home():
             if current_user.username in finalUserList:
                 usersCommunities.append(community)
                 allCommunities.remove(community)
+
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
-    return render_template('home.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+    collectionsCount = len(sampleCollections)
+    communitiesCount = len(sampleCommunities)
+    postCount = len(posts)
+    usersCount = len(User.query.all())
+    print(usersCount, collectionsCount, communitiesCount)
+    return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount, communitiesCount=communitiesCount, usersCount=usersCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
 
 
