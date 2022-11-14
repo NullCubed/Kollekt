@@ -1,6 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
+from flask_login import current_user
+
+from kollekt.models import Communities
+from . import db
 
 
 class RegistrationForm(FlaskForm):
@@ -47,3 +51,21 @@ class createCollectionForm(FlaskForm):
     name = StringField('Name of collection', validators=[DataRequired()])
     desc = StringField('Description of collection', validators=[DataRequired()])
     submit = SubmitField('Create Collection')
+
+    
+class createPostForm(FlaskForm):
+    valid_communities = []
+    option = ()
+    title = StringField('Title', validators=[DataRequired()])
+    body = TextAreaField('Body')
+    item_id = StringField('Attach an Item (Optional)')
+    # community = SelectField('Community', valid_communities)
+    community = StringField('Community', validators=[DataRequired()])
+    submit = SubmitField('Post!')
+
+
+class UserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    bio = StringField('Biography', validators=[DataRequired()])
+    submit = SubmitField("Submit")

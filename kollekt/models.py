@@ -3,6 +3,10 @@ import os
 from . import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+import datetime
+
+
+import sqlalchemy as sa
 
 
 @login_manager.user_loader
@@ -16,6 +20,19 @@ users_in_community = db.Table('users_in_community',
                               db.Column('user_id', db.Integer,
                                         db.ForeignKey('user.id'))
                               )
+likes_on_posts = db.Table('likes_on_posts',
+                          db.Column('post_id', db.Integer,
+                                    db.ForeignKey('posts.id')),
+                          db.Column('user_id', db.Integer,
+                                    db.ForeignKey('user.id'))
+                          )
+dislikes_on_posts = db.Table('dislikes_on_posts',
+                             db.Column('post_id', db.Integer,
+                                       db.ForeignKey('posts.id')),
+                             db.Column('user_id', db.Integer,
+                                       db.ForeignKey('user.id'))
+                             )
+
 
 
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
@@ -113,6 +130,7 @@ class Collections(db.Model):
 class Communities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    url = db.Column(db.String)
     desc = db.Column(db.String)
     collections = db.relationship(
         'Collections', backref='communities', lazy=True)
@@ -121,11 +139,117 @@ class Communities(db.Model):
         return [x for x in range(100)]
 
     users_in_communities = db.relationship(
+    users = db.relationship(
         'User', secondary=users_in_community, backref='users')
 
     def __init__(self, name, desc):
         self.name = name
         self.desc = desc
+        self.url = name.lower().translate({ord(i): None for i in "'.,;:"}).replace('"', "").translate(
+            {ord(i): "_" for i in " -"})
+        self.desc = desc
+        self.posts = []
+        self.collections = []
+        self.users = []
+
+    def getCollections(self):
+        """
+        Returns a list of collections in the community
+        :return: list of references to collections in the community
+        """
+        return self.collections
+
+    def addCollection(self, collection):
+        """
+        Adds a collection to the community
+        :return: none
+        """
+        if collection not in self.collections:
+            self.collections.append(collection)
+            db.session.commit()
+
+    def removeCollection(self, collection):
+        """
+        Removes a collection from the community
+        :return: none
+        """
+        if collection in self.collections:
+            self.collections.remove(collection)
+            db.session.commit()
+
+    def getPosts(self):
+        """
+        Returns all posts in the community
+        :return: list of references to posts in the community
+        """
+        return self.posts
+
+    def addPost(self, post):
+        """
+        Adds a post to the community
+        :return: none
+        """
+        if post not in self.posts:
+            self.posts.append(post)
+            db.session.commit()
+
+    def removePost(self, post):
+        """
+        Removes a post from the community
+        :return: none
+        """
+        if post in self.posts:
+            self.posts.remove(post)
+            db.session.commit()
+
+    def userHasJoined(self, user_id):
+        """
+        Returns a boolean if the user joined the given community
+        :param user_id: a user to locate in the list of the community's followers
+        :return: boolean (True if user joined community, else false)
+        """
+        if user_id in self.users:
+            return True
+        return False
+
+    def addUser(self, user_id):
+        """
+        Adds a user to the community
+        :param user_id: a user id to locate in the list of the community's followers
+        :return: none
+        """
+        if not self.userHasJoined(user_id):
+            self.users.append(user_id)
+            db.session.commit()
+
+    def removeUser(self, user_id):
+        """
+        Removes a user from the community
+        :param user_id: a user id to locate in the list of the community's followers
+        :return: none
+        """
+        if self.userHasJoined(user_id):
+            self.users.remove(user_id)
+            db.session.commit()
+
+    def getUsers(self):
+        return self.users
+
+    def memberCount(self):
+        return len(self.users)
+
+    def setName(self, name):
+        """
+        Setter for the name of the community. Also adjusts the url-name
+        :return: none
+        """
+        self.name = name
+        self.url = name.lower().translate({ord(i): None for i in "'.,;:"}).replace('"', "").translate(
+            {ord(i): "_" for i in " -"})
+        db.session.commit()
+
+    def __repr__(self):
+        return f'<Community "{self.url}">'
 
 
 class Photos(db.Model):
@@ -138,6 +262,74 @@ class Posts(db.Model):
     title = db.Column(db.String)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     body = db.Column(db.String)
+    timestamp = db.Column(db.String)
     meta = db.Column(db.String)
     responses = db.Column(db.BLOB)
-    item = db.Column(db.String)
+    item_id = db.Column(db.Integer)
+    community_id = db.Column(db.Integer)
+    likes = db.relationship(
+        'User', secondary=likes_on_posts, backref='usersWhoLiked')
+    dislikes = db.relationship(
+        'User', secondary=dislikes_on_posts, backref='usersWhoDisliked')
+
+    def __init__(self, author_id, title, body, community_id, item=None):
+        self.author_id = author_id
+        self.title = title
+        self.body = body
+        self.community_id = community_id
+        self.timestamp = str(datetime.datetime.now())
+        self.likes = []
+        self.dislikes = []
+        if item is not None:
+            self.item_id = item.id
+
+    def getAuthor(self):
+        return User.query.filter_by(id=self.author_id).first()
+
+    def getCommunity(self):
+        return Communities.query.filter_by(id=self.community_id).first()
+
+    def getLikes(self):
+        return len(self.likes)
+
+    def getDislikes(self):
+        return len(self.dislikes)
+
+    def userHasLiked(self, user_id):
+        if user_id in self.likes:
+            return True
+        return False
+
+    def userHasDisliked(self, user_id):
+        if user_id in self.dislikes:
+            return True
+        return False
+
+    def toggleLike(self, user_id):
+        if user_id in self.likes:
+            self.likes.remove(user_id)
+        else:
+            if user_id in self.dislikes:
+                self.dislikes.remove(user_id)
+            self.likes.append(user_id)
+
+    def toggleDislike(self, user_id):
+        if user_id in self.dislikes:
+            self.dislikes.remove(user_id)
+        else:
+            if user_id in self.likes:
+                self.likes.remove(user_id)
+            self.dislikes.append(user_id)
+
+    def getTimestamp(self):
+        # returns post time if posted today, otherwise returns post date
+        now = str(datetime.datetime.now()).split(" ")
+        post_time_for_eval = self.timestamp.split(" ")
+        if now[0] == post_time_for_eval[0]:
+            # second return val used specifically for formatting on post display
+            return post_time_for_eval[1].split(".")[0], "at " + post_time_for_eval[1].split(".")[0]
+        else:
+            return post_time_for_eval[0], "on " + post_time_for_eval[0]
+
+    def __repr__(self):
+        return f'<Post #{self.id} in Community "{self.getCommunity().url}">'
