@@ -44,7 +44,34 @@ def home():
 
 @app.route("/userProfile")
 def userProfile():
-    return render_template('test.html')
+    users_posts = []
+    all_posts = Posts.query.all()
+    print(all_posts)
+    all_posts.reverse()
+    print(all_posts)
+    for i in all_posts:
+        if i.author_id == current_user.id:
+            users_posts.append(i)
+    print(users_posts)
+    posts = Posts.query.all()
+    allCommunities = Communities.query.all()
+    usersCommunities = []
+    if current_user.is_authenticated:
+        for community in allCommunities:
+            print(community)
+            userlist = community.getUsers()  # waiting for method implementation
+            finalUserList = []
+            for i in userlist:
+                finalUserList.append(i.username)
+            # userlist = []  # using this for now
+            if current_user.username in finalUserList:
+                usersCommunities.append(community)
+                allCommunities.remove(community)
+    sampleCollections = Collections.query.all()
+    sampleCommunities = Communities.query.all()
+    return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, user=current_user, users_posts=users_posts)
+
 
 
 @app.route("/logout")
@@ -57,7 +84,7 @@ def logout():
 @login_required
 def userSettings():
     form = UserForm()
-    id = 1
+    id = current_user.id
     name_to_update = User.query.get_or_404(id)
     if request.method == "POST":
         name_to_update.username = request.form['username']
