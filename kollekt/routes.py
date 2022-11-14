@@ -1,36 +1,38 @@
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm
+from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm, \
+    createPostForm
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
 from flask_login import login_user, current_user, logout_user, login_required
+
 from .models import User, Communities, Collections, Posts, db
 
 
-# test_communities = [Community("Watches", "And other timekeeping devices"),
-#                     Community("Trading Cards", "Baseball! Pokemon! You name it!"),
-#                     Community("Rocks", "Naturally formed or manually cut")]
-
 @app.route("/")
 def home():
-    posts = [Posts(author_id=1, title="This is a title",  body="This is a test post", responses="👍 👎 "), Posts(author_id=1, title="this is a title",  body="This is a test post",
-                                                                                                               responses="This is a test post's meta data"), Posts(author_id=1, title="this is a title",  body="This is a test post", responses="This is a test post's meta data")]
+    # posts = [Posts(author_id=1, title="This is a title",  body="This is a test post",
+    #                community_id="👍 👎 "),
+    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
+    #                community_id="This is a test post's meta data"),
+    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
+    #                community_id="This is a test post's meta data")
+    # ]
+    posts = Posts.query.all()
     allCommunities = Communities.query.all()
     usersCommunities = []
-    numberOfCommunities = 0
     if current_user.is_authenticated:
         for community in allCommunities:
-            # userlist = community.getUsers() waiting for method implementation
-            userlist = []  # using this for now
-            numberOfCommunities = len(userlist)
+            userlist = community.getUsers()  # waiting for method implementation
+            # userlist = []  # using this for now
             if current_user.username in userlist:
                 usersCommunities.append(community)
                 allCommunities.remove(community)
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
-    memberCount = 8
-    return render_template('home.html', memberCount=memberCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections, usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, numberOfCommunities=numberOfCommunities)
+    return render_template('home.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
 
 
 @app.route("/userProfile")
@@ -73,18 +75,32 @@ def userSettings():
                                id=id)
 
 
-@app.route("/community/<community_name>", methods=['GET', 'POST'])
-def communityPage(community_name):
-    community = None
-    for i in test_communities:
-        if community_name == i.getName():
-            community = i
+@app.route("/community/<url>", methods=['GET', 'POST'])
+def communityPage(url):
+    community = Communities.query.filter_by(url=url).first()
+    posts_to_display = []
+    print(posts_to_display)
+    all_posts = Posts.query.all()
+    print(all_posts)
+    all_posts.reverse()
+    print(all_posts)
+    k = 0
+    for j in all_posts:
+        k += 1
+        if j.community_id == community.id:
+            posts_to_display.append(j)
+        if k == 5:
+            break
+    print(posts_to_display)
     if request.method == 'POST':
-        if request.form['join'] == 'Join Community':
-            community.addUser(current_user)
-        elif request.form['join'] == 'Leave Community':
-            community.removeUser(current_user)
-    return render_template('community.html', community=community, user=current_user)
+        if current_user.is_authenticated:
+            if request.form['join'] == 'Join Community':
+                community.addUser(current_user)
+            elif request.form['join'] == 'Leave Community':
+                community.removeUser(current_user)
+        else:
+            return redirect(url_for('login'))
+    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -173,7 +189,7 @@ def adminpage():
                                     desc=form.description.data)
             db.session.add(community)
             db.session.commit()
-        flash(f"Community Created {community.name}", "success")
+        flash(f"Community Created: {community.name}", "success")
         return redirect(url_for('adminpage'))
 
     if delform.validate_on_submit():
@@ -188,3 +204,42 @@ def adminpage():
             flash("Community does not exist", "danger")
             return redirect(url_for('adminpage'))
     return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
+
+
+@app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])
+def viewPost(community_url, post_id):
+    post_to_view = Posts.query.filter_by(id=post_id).first()
+    if post_to_view is None:
+        return render_template('viewpost.html', post_to_view=post_to_view, community=None)
+    community = Communities.query.filter_by(url=community_url).first()
+    if post_to_view.getCommunity() is not community:  # if correct id but wrong community, corrects url
+        return redirect(url_for('viewPost', community_url=post_to_view.getCommunity().url, post_id=post_id))
+    return render_template('viewpost.html', post_to_view=post_to_view, community=community)
+
+
+@app.route("/create_post", methods=['GET', 'POST'])
+def addNewPost():
+    if current_user.is_authenticated:
+        form = createPostForm()
+        can_post = False
+        for i in Communities.query.all():  # check that user is part of at least 1 community
+            if i.userHasJoined(current_user):
+                can_post = True
+                break
+        if form.validate_on_submit():
+            if form.body.data == "" and form.item_id.data == "":
+                flash("Must enter text into the body or attach an item!", "Danger")
+                return redirect(url_for('create_post'))
+            else:
+                target_community = Communities.query.filter_by(name=form.community.data).first()
+                new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
+                                 community_id=target_community.id)
+                print("new_post created")
+                db.session.add(new_post)
+                db.session.commit()
+                print(new_post)
+                print("committed to database")
+                return redirect(url_for('viewPost', community_url=form.community.data, post_id=new_post.id))
+        return render_template("createpost.html", form=form, can_post=can_post)
+    else:
+        return redirect(url_for('login'))
