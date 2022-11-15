@@ -112,12 +112,10 @@ def userSettings():
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
     community = Communities.query.filter_by(url=url).first()
+    print(community.getUsers())
     posts_to_display = []
-    print(posts_to_display)
     all_posts = Posts.query.all()
-    print(all_posts)
     all_posts.reverse()
-    print(all_posts)
     k = 0
     for j in all_posts:
         k += 1
@@ -125,7 +123,6 @@ def communityPage(url):
             posts_to_display.append(j)
         if k == 5:
             break
-    print(posts_to_display)
     if request.method == 'POST':
         if current_user.is_authenticated:
             if request.form['join'] == 'Join Community':
@@ -251,30 +248,24 @@ def viewPost(community_url, post_id):
     return render_template('viewpost.html', post_to_view=post_to_view, community=community)
 
 
-@app.route("/create_post", methods=['GET', 'POST'])
-def addNewPost():
+@app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])
+def addNewPost(community_url):
     if current_user.is_authenticated:
+        community = Communities.query.filter_by(url=community_url).first()
+        if community.userHasJoined(current_user) is False:
+            flash("Must be part of this community to make a post!", "Danger")
+            return redirect(url_for('communityPage', url=community_url))
         form = createPostForm()
-        can_post = False
-        for i in Communities.query.all():  # check that user is part of at least 1 community
-            if i.userHasJoined(current_user):
-                can_post = True
-                break
         if form.validate_on_submit():
-            if form.body.data == "" and form.item_id.data == "":
+            if form.body.data == "":  # and form.item_id.data == "":
                 flash("Must enter text into the body or attach an item!", "Danger")
-                return redirect(url_for('create_post'))
+                return redirect(url_for('addNewPost', community_url=community_url))
             else:
-                target_community = Communities.query.filter_by(
-                    name=form.community.data).first()
                 new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
-                                 community_id=target_community.id)
-                print("new_post created")
+                                 community_id=community.id)
                 db.session.add(new_post)
                 db.session.commit()
-                print(new_post)
-                print("committed to database")
-                return redirect(url_for('viewPost', community_url=form.community.data, post_id=new_post.id))
-        return render_template("createpost.html", form=form, can_post=can_post)
+                return redirect(url_for('viewPost', community_url=community_url, post_id=new_post.id))
+        return render_template("createpost.html", form=form)
     else:
         return redirect(url_for('login'))

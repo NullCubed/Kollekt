@@ -227,7 +227,7 @@ class Posts(db.Model):
     dislikes = db.relationship(
         'User', secondary=dislikes_on_posts, backref='usersWhoDisliked')
 
-    def __init__(self, author_id, title, body, community_id, item=None):
+    def __init__(self, author_id, title, body, community_id, item_id=None):
         self.author_id = author_id
         self.title = title
         self.body = body
@@ -235,14 +235,16 @@ class Posts(db.Model):
         self.timestamp = str(datetime.datetime.now())
         self.likes = []
         self.dislikes = []
-        if item is not None:
-            self.item_id = item.id
+        self.item_id = item_id
 
     def getAuthor(self):
         return User.query.filter_by(id=self.author_id).first()
 
     def getCommunity(self):
         return Communities.query.filter_by(id=self.community_id).first()
+
+    def getLinkedItem(self):
+        return Items.query.filter_by(id=self.item_id).first()
 
     def getLikes(self):
         return len(self.likes)

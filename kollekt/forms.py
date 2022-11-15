@@ -49,12 +49,16 @@ class deleteCommunityForm(FlaskForm):
 
 class createPostForm(FlaskForm):
     valid_communities = []
-    option = ()
+    allCommunities = Communities.query.all()
+    for i in allCommunities:
+        print(i)
+        print(i.getUsers())
+        print(current_user)
+        if current_user in i.getUsers():
+            valid_communities.append((i.name, i.id))
     title = StringField('Title', validators=[DataRequired()])
     body = TextAreaField('Body')
     item_id = StringField('Attach an Item (Optional)')
-    # community = SelectField('Community', valid_communities)
-    community = StringField('Community', validators=[DataRequired()])
     submit = SubmitField('Post!')
 
 
