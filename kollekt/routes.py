@@ -9,13 +9,6 @@ from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, cr
 
 @app.route("/")
 def home():
-    # posts = [Posts(author_id=1, title="This is a title",  body="This is a test post",
-    #                community_id="👍 👎 "),
-    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
-    #                community_id="This is a test post's meta data"),
-    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
-    #                community_id="This is a test post's meta data")
-    # ]
     posts = Posts.query.all()
     usersCommunities = []
     allCommunities = Communities.query.all()
@@ -36,11 +29,9 @@ def home():
         tempComnames.append(i.name)
     for x in usersCommunities:
         tempUserComNames.append(x.name)
-
     for i in tempComnames:
         if i in tempUserComNames:
             tempCommunities.remove(Communities.query.filter_by(name=i).first())
-
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
     collectionsCount = len(sampleCollections)
