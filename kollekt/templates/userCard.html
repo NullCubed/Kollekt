@@ -16,4 +16,5 @@ margin-top: 10px;">
         <strong>Email:</strong> {{ userInfo.email }}<br/>
         <strong>Description:</strong><br/>
         <p style="margin-left: 300px; margin-right: 300px"> {{ userInfo.bio }}</p>
+        <button class="btn btn-sm btn-outline-dark" type="button"> <a href="/userCommunities/{{ userInfo.id }}">{{ userInfo.username }}'s Communities</a> </button>
 {%endblock content %}

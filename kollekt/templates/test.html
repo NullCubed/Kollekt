@@ -16,21 +16,8 @@ margin-top: 10px;">
         <strong>Email:</strong> {{ current_user.email }}<br/>
         <strong>Description:</strong><br/>
         <p style="margin-left: 300px; margin-right: 300px"> {{ current_user.bio }}</p>
-        {% for i in usersCommunities %}
-            <a href="/community/{{ i.url }}">
-              <li
-                class="list-group-item d-flex justify-content-between align-items-center"
-              >
-                {{ i.name }}
-
-                <span class="badge badge-primary badge-pill"
-                  >{{ i.memberCount() }}</span
-                >
-              </li>
-            </a>
-        {% endfor %}
         <h2>
-        <button class="btn btn-sm btn-outline-dark" type="button"> My Communities </button>
+        <button class="btn btn-sm btn-outline-dark" type="button"> <a href="/userCommunities/{{ current_user.id }}">My Communities</a> </button>
         <button class="btn btn-sm btn-outline-dark" type="button"> <a href="/addItem">Add an Item</a> </button>
         </div>
         </h2>

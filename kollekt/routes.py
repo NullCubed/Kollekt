@@ -115,6 +115,29 @@ def userCard(id):
     userInfo = User.query.filter_by(id=id).first()
     return render_template('userCard.html', userInfo=userInfo)
 
+@app.route("/userCommunities/<id>")
+@login_required
+def commCard(id):
+    userInfo = User.query.filter_by(id=id).first()
+    posts = Posts.query.all()
+    allCommunities = Communities.query.all()
+    usersCommunities = []
+    if current_user.is_authenticated:
+        for community in allCommunities:
+            print(community)
+            userlist = community.getUsers()  # waiting for method implementation
+            finalUserList = []
+            for i in userlist:
+                finalUserList.append(i.username)
+            # userlist = []  # using this for now
+            if current_user.username in finalUserList:
+                usersCommunities.append(community)
+                allCommunities.remove(community)
+    sampleCollections = Collections.query.all()
+    sampleCommunities = Communities.query.all()
+    return render_template('commCard.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, user=current_user, userInfo=userInfo)
+
 
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
