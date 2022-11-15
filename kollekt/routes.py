@@ -73,6 +73,7 @@ def logout():
     return redirect(url_for('home'))
 
 
+
 @app.route("/userSettings", methods=['GET', 'POST'])
 @login_required
 def userSettings():
@@ -100,6 +101,12 @@ def userSettings():
                                form=form,
                                name_to_update=name_to_update,
                                id=id)
+
+@app.route("/userCard/<id>")
+@login_required
+def userCard(id):
+    userInfo = User.query.filter_by(id=id).first()
+    return render_template('userCard.html', userInfo=userInfo)
 
 
 @app.route("/community/<url>", methods=['GET', 'POST'])
