@@ -15,9 +15,49 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
-                            <h4>Posted by {{ post_to_view.getAuthor().username }} {{ post_to_view.getTimestamp()[1] }}</h4>
+                            <h4>Posted by
+                                <a href="/userCard/{{ post_to_view.getAuthor().id }}">
+                                    {{ post_to_view.getAuthor().username }}</a>
+                                {{ post_to_view.getTimestamp()[1] }}</h4>
                             <h2>{{ post_to_view.title }}</h2>
                             {{ post_to_view.body }}
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col">
+                            <h4> {{comment_count}} Comments</h4>
+                            <form action="" method="post" id="comment_button" style="display: block;">
+                                {{ form.hidden_tag() }}
+                                <div class="form-group">
+                                    {{ form.text.label(class="form-control-label") }}
+                                    {% if form.text.errors %}
+                                    {{ form.text(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.title.errors %}
+                                        <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    {{ form.text(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.submit(class="btn btn-outline-success") }}
+                                </div>
+                            </form>
+                            {% for j in comments %}
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    <strong>Posted by
+                                        <a href="/userCard/{{ post_to_view.getAuthor().id }}">
+                                            {{ j.getAuthor().username }}</a>
+                                        {{ j.getTimestamp()[1] }}</strong><br>
+                                    {{ j.text }}
+                                </div>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

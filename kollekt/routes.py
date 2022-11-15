@@ -1,21 +1,17 @@
-from .models import User, Communities, Collections, Posts, db
+from .models import User, Communities, Collections, Posts, db, Comments
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
-from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm, createPostForm
+from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, \
+    deleteCommunityForm, createPostForm, createCommentForm
+
+
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
 
 @app.route("/")
 def home():
-    # posts = [Posts(author_id=1, title="This is a title",  body="This is a test post",
-    #                community_id="👍 👎 "),
-    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
-    #                community_id="This is a test post's meta data"),
-    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
-    #                community_id="This is a test post's meta data")
-    # ]
     posts = Posts.query.all()
     allCommunities = Communities.query.all()
     usersCommunities = []
@@ -38,7 +34,9 @@ def home():
     postCount = len(posts)
     usersCount = len(User.query.all())
     print(usersCount, collectionsCount, communitiesCount)
-    return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount, communitiesCount=communitiesCount, usersCount=usersCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+    return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
+                           communitiesCount=communitiesCount, usersCount=usersCount,
+                           sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
 
 
@@ -70,15 +68,14 @@ def userProfile():
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
     return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, user=current_user, users_posts=users_posts)
-
+                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
+                           user=current_user, users_posts=users_posts)
 
 
 @app.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 
 @app.route("/userSettings", methods=['GET', 'POST'])
@@ -108,6 +105,7 @@ def userSettings():
                                form=form,
                                name_to_update=name_to_update,
                                id=id)
+
 
 @app.route("/userCard/<id>")
 @login_required
@@ -252,7 +250,14 @@ def viewPost(community_url, post_id):
     community = Communities.query.filter_by(url=community_url).first()
     if post_to_view.getCommunity() is not community:  # if correct id but wrong community, corrects url
         return redirect(url_for('viewPost', community_url=post_to_view.getCommunity().url, post_id=post_id))
-    return render_template('viewpost.html', post_to_view=post_to_view, community=community)
+    form = createCommentForm()
+    if form.validate_on_submit():
+        new_comment = Comments(author_id=current_user.id, text=form.text.data, post_id=post_id)
+        db.session.add(new_comment)
+        db.session.commit()
+    comments = Comments.query.filter_by(post_id=post_id).all()
+    return render_template('viewpost.html', post_to_view=post_to_view, community=community,
+                           comments=comments, comment_count=len(comments), form=form)
 
 
 @app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])

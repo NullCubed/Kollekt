@@ -7,12 +7,6 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
-                            {% if can_post == False %}
-                            <h2>You must be part of at least one community to post!</h2>
-                            <form action="../">
-                                <input name="redirect" style="font-size:18px;" type="submit" value="Return to Home">
-                            </form>
-                            {% else %}
                             <form action="" method="post">
                                 {{ form.hidden_tag() }}
                                 <div class="form-group">
@@ -45,7 +39,6 @@
                                     {{ form.submit(class="btn btn-outline-success") }}
                                 </div>
                             </form>
-                            {% endif %}
                         </div>
                     </div>
                 </div>

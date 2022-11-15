@@ -219,7 +219,7 @@ class Posts(db.Model):
     body = db.Column(db.String)
     timestamp = db.Column(db.String)
     meta = db.Column(db.String)
-    responses = db.Column(db.BLOB)
+    comments = db.Column(db.BLOB)
     item_id = db.Column(db.Integer)
     community_id = db.Column(db.Integer)
     likes = db.relationship(
@@ -269,6 +269,7 @@ class Posts(db.Model):
             if user_id in self.dislikes:
                 self.dislikes.remove(user_id)
             self.likes.append(user_id)
+        db.session.commit()
 
     def toggleDislike(self, user_id):
         if user_id in self.dislikes:
@@ -277,6 +278,7 @@ class Posts(db.Model):
             if user_id in self.likes:
                 self.likes.remove(user_id)
             self.dislikes.append(user_id)
+        db.session.commit()
 
     def getTimestamp(self):
         # returns post time if posted today, otherwise returns post date
@@ -290,3 +292,51 @@ class Posts(db.Model):
 
     def __repr__(self):
         return f'<Post #{self.id} in Community "{self.getCommunity().url}">'
+
+
+class Comments(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)
+    text = db.Column(db.String)
+    timestamp = db.Column(db.String)
+    meta = db.Column(db.String)
+    locked = db.Column(db.Boolean)
+
+    def __init__(self, author_id, text, post_id):
+        self.author_id = author_id
+        self.post_id = post_id
+        self.text = text
+        self.timestamp = str(datetime.datetime.now())
+        self.locked = False
+
+    def getAuthor(self):
+        return User.query.filter_by(id=self.author_id).first()
+
+    def getPost(self):
+        return Posts.query.filter_by(id=self.post_id).first()
+
+    def isLocked(self):
+        return self.locked
+
+    def setText(self, text):
+        self.text = text
+        db.session.commit()
+
+    def lockPost(self):
+        self.text = "This comment has been removed by an administrator."
+        self.locked = True
+        db.session.commit()
+
+    def getTimestamp(self):
+        # returns post time if posted today, otherwise returns post date
+        now = str(datetime.datetime.now()).split(" ")
+        post_time_for_eval = self.timestamp.split(" ")
+        if now[0] == post_time_for_eval[0]:
+            # second return val used specifically for formatting on post display
+            return post_time_for_eval[1].split(".")[0], "at " + post_time_for_eval[1].split(".")[0]
+        else:
+            return post_time_for_eval[0], "on " + post_time_for_eval[0]
+
+    def __repr__(self):
+        return f'<comment #{self.id} under post #{self.post_id} in community "{self.getCommunity().url}">'
