@@ -335,3 +335,18 @@ def delPost(community_url, post_id):
         return render_template("delpost.html", form=form, post=post)
     else:
         return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
+
+
+@app.route("/comment/<comment_id>/delete", methods=['GET', 'POST'])
+def delComment(comment_id):
+    comment = Comments.query.filter_by(id=comment_id).first()
+    if comment is None:
+        return redirect(url_for('home'))
+    post = comment.getPost()
+    community = post.getCommunity()
+    if current_user.is_authenticated and comment.getAuthor() == current_user and comment.isLocked() is False:
+        db.session.delete(comment)
+        db.session.commit()
+        flash("Comment deleted", "danger")
+    # if current_user is admin, lock the post instead of deleting it
+    return redirect(url_for('viewPost', community_url=community.url, post_id=post.id))

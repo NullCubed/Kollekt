@@ -16,8 +16,11 @@
                     <div class="row">
                         <div class="col">
                             <h4>Posted by
-                                <a href="/userCard/{{ post_to_view.getAuthor().id }}">
-                                    {{ post_to_view.getAuthor().username }}</a>
+                                {% if current_user.is_authenticated %}
+                                <a href="/userCard/{{post_to_view.getAuthor().id}}">{{post_to_view.getAuthor().username}}</a>
+                                {% else %}
+                                {{ post_to_view.getAuthor().username }}
+                                {% endif %}
                                 {{ post_to_view.getTimestamp()[1] }}</h4>
                                 {% if post_to_view.getAuthor() == current_user %}
                                 <form action="/community/{{ post_to_view.getCommunity().url }}/{{ post_to_view.id }}/edit" method="post">
@@ -58,10 +61,19 @@
                             <div class="row">
                                 <div class="col">
                                     <strong>Posted by
-                                        <a href="/userCard/{{ j.getAuthor().id }}">
-                                            {{ j.getAuthor().username }}</a>
+                                        {% if current_user.is_authenticated %}
+                                        <a href="/userCard/{{j.getAuthor().id}}">{{j.getAuthor().username}}</a>
+                                        {% else %}
+                                        {{ post_to_view.getAuthor().username }}
+                                        {% endif %}
                                         {{ j.getTimestamp()[1] }}
-                                    </strong><br>
+                                    </strong>
+                                    {% if j.getAuthor() == current_user and j.isLocked() == False %}
+                                    <form action="/comment/{{ j.id }}/delete">
+                                        <input name="delete" style="font-size:18px;" type="submit" value="Delete...">
+                                    </form>
+                                    {% endif %}
+                                    <br>
                                     {{ j.text }}
                                 </div>
                             </div>
