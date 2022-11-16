@@ -1,11 +1,12 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
-from flask_login import current_user
 
-from kollekt.models import Communities
+from flask import url_for, redirect, render_template
+from flask_wtf.file import FileField
+from werkzeug.utils import secure_filename
+from kollekt.models import Communities,CollectionItem,Collections
 from . import db
-
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
@@ -31,8 +32,9 @@ class LoginForm(FlaskForm):
 
 class ItemAddForm(FlaskForm):
     community = StringField('Community', validators=[DataRequired()])
-    # photo = ...
     text = StringField('Description', validators=[DataRequired()])
+    photo = FileField('Your Photo')
+    name = StringField("Item Name")
     submit = SubmitField('Add')
 
 
