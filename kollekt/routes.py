@@ -9,37 +9,37 @@ from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, cr
 
 @app.route("/")
 def home():
-    # posts = [Posts(author_id=1, title="This is a title",  body="This is a test post",
-    #                community_id="👍 👎 "),
-    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
-    #                community_id="This is a test post's meta data"),
-    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
-    #                community_id="This is a test post's meta data")
-    # ]
     posts = Posts.query.all()
-    allCommunities = Communities.query.all()
     usersCommunities = []
+    allCommunities = Communities.query.all()
+    tempCommunities = allCommunities
+    tempUsers = []
     if current_user.is_authenticated:
+        print(allCommunities)
         for community in allCommunities:
-            print(community)
-            userlist = community.getUsers()  # waiting for method implementation
-            finalUserList = []
-            for i in userlist:
-                finalUserList.append(i.username)
-            # userlist = []  # using this for now
-            if current_user.username in finalUserList:
+            tempUsers = []
+            for i in community.getUsers():
+                tempUsers.append(i.username)
+            print(tempUsers)
+            if current_user.username in tempUsers:
                 usersCommunities.append(community)
-                allCommunities.remove(community)
-
+    tempComnames = []
+    tempUserComNames = []
+    for i in tempCommunities:
+        tempComnames.append(i.name)
+    for x in usersCommunities:
+        tempUserComNames.append(x.name)
+    for i in tempComnames:
+        if i in tempUserComNames:
+            tempCommunities.remove(Communities.query.filter_by(name=i).first())
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
     collectionsCount = len(sampleCollections)
     communitiesCount = len(sampleCommunities)
     postCount = len(posts)
     usersCount = len(User.query.all())
-    print(usersCount, collectionsCount, communitiesCount)
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount, communitiesCount=communitiesCount, usersCount=usersCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts)
 
 
 @app.route("/userProfile")
@@ -73,12 +73,10 @@ def userProfile():
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, user=current_user, users_posts=users_posts)
 
 
-
 @app.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 
 @app.route("/userSettings", methods=['GET', 'POST'])
@@ -108,6 +106,7 @@ def userSettings():
                                form=form,
                                name_to_update=name_to_update,
                                id=id)
+
 
 @app.route("/userCard/<id>")
 @login_required
