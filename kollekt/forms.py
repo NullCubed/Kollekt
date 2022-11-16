@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 from flask import url_for, redirect, render_template
 from flask_wtf.file import FileField
 from werkzeug.utils import secure_filename
-from kollekt.models import Communities
+from kollekt.models import Communities,CollectionItem,Collections
 from . import db
 
 class RegistrationForm(FlaskForm):

@@ -120,7 +120,7 @@ class Collections(db.Model):
     name = db.Column(db.String)
     desc = db.Column(db.String)
     owner = db.Column(db.Integer)
-    items = db.relationship('Items', backref='collections', lazy=True)
+    items = db.relationship('CollectionItem', backref='collections', lazy=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
