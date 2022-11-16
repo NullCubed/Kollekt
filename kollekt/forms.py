@@ -6,8 +6,9 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 from flask import url_for, redirect, render_template
 from flask_wtf.file import FileField
 from werkzeug.utils import secure_filename
-from kollekt.models import Communities,CollectionItem,Collections
+from kollekt.models import Communities, CollectionItem, Collections
 from . import db
+
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
@@ -33,17 +34,13 @@ class LoginForm(FlaskForm):
 
 class ItemAddForm(FlaskForm):
     community = StringField('Community', validators=[DataRequired()])
-<<<<<<< HEAD
-    photo = FileField('image', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
-=======
->>>>>>> main
     text = StringField('Description', validators=[DataRequired()])
     photo = FileField('Your Photo')
     name = StringField("Item Name")
     submit = SubmitField('Add')
 
 
-class createCommunityForm(FlaskForm):
+class CreateCommunityForm(FlaskForm):
     name = StringField('Community Name', validators=[DataRequired()])
     description = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Create')
@@ -54,7 +51,7 @@ class deleteCommunityForm(FlaskForm):
     submit = SubmitField('Delete')
 
 
-class createCollectionForm(FlaskForm):
+class CreateCollectionForm(FlaskForm):
     name = StringField('Name of collection', validators=[DataRequired()])
     desc = StringField('Description of collection', validators=[DataRequired()])
     submit = SubmitField('Create Collection')
