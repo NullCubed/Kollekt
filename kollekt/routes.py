@@ -1,7 +1,10 @@
-from .models import User, Communities, Collections, Posts, db, Comments
+import os
+
+from .models import User, Communities, Collections, Posts, db, CollectionItem, Comments
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
+from werkzeug.utils import secure_filename
 from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, \
     deleteCommunityForm, createPostForm, createCommentForm, editPostForm, deletePostForm
 
@@ -44,7 +47,7 @@ def home():
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts)
 
 
 @app.route("/userProfile")
@@ -206,13 +209,19 @@ def register():
 def addNewCollectionItem():
     form = ItemAddForm()
     if form.validate_on_submit():
-        collection_item = CollectionItem('testUser', 'testCommunity', 'testTemplate',
-                                         'testPhoto', text=form.text.data,
-                                         collection=form.community.data)
+        filename = secure_filename(form.photo.data.filename)
+        print('filename =', filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file_path = file_path.replace("\\", "/")
+        print(file_path)
+        form.photo.data.save(file_path)
+        collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
+                                         desc=form.text.data, collection="form.collection.data",
+                                         likes=0, dislikes=0,name=form.name.data)
         text2 = form.text.data
         community2 = form.community.data
-        print(text2, community2)
-        return render_template("item.html", title="Your Item", item=collection_item)
+        print(collection_item.photo)
+        return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
     return render_template("addItem.html", title='Add Item', form=form)
 
 

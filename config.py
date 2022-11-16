@@ -15,6 +15,8 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', default=os.urandom(12).hex())
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    UPLOAD_FOLDER = 'kollekt/static'
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
