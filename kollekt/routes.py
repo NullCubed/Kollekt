@@ -1,12 +1,12 @@
 import os
 
-from .models import User, Communities, Collections, Posts, db, CollectionItem
+from .models import User, Communities, Collections, Posts, db, CollectionItem, Comments
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
-from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm, \
-    createPostForm
+from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, \
+    deleteCommunityForm, createPostForm, createCommentForm, editPostForm, deletePostForm
 
 
 # from .Components.Community import Community
@@ -127,12 +127,10 @@ def userCard(id):
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
     community = Communities.query.filter_by(url=url).first()
+    print(community.getUsers())
     posts_to_display = []
-    print(posts_to_display)
     all_posts = Posts.query.all()
-    print(all_posts)
     all_posts.reverse()
-    print(all_posts)
     k = 0
     for j in all_posts:
         k += 1
@@ -140,7 +138,6 @@ def communityPage(url):
             posts_to_display.append(j)
         if k == 5:
             break
-    print(posts_to_display)
     if request.method == 'POST':
         if current_user.is_authenticated:
             if request.form['join'] == 'Join Community':
@@ -269,33 +266,96 @@ def viewPost(community_url, post_id):
     community = Communities.query.filter_by(url=community_url).first()
     if post_to_view.getCommunity() is not community:  # if correct id but wrong community, corrects url
         return redirect(url_for('viewPost', community_url=post_to_view.getCommunity().url, post_id=post_id))
-    return render_template('viewpost.html', post_to_view=post_to_view, community=community)
+    form = createCommentForm()
+    if form.validate_on_submit():
+        new_comment = Comments(author_id=current_user.id, text=form.text.data, post_id=post_id)
+        db.session.add(new_comment)
+        db.session.commit()
+    comments = Comments.query.filter_by(post_id=post_id).all()
+    form.text.data = ""  # clears comment box upon posting; otherwise comment text remains in box
+    return render_template('viewpost.html', post_to_view=post_to_view, community=community,
+                           comments=comments, comment_count=len(comments), form=form)
 
 
-@app.route("/create_post", methods=['GET', 'POST'])
-def addNewPost():
+@app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])
+def addNewPost(community_url):
     if current_user.is_authenticated:
+        community = Communities.query.filter_by(url=community_url).first()
+        if community.userHasJoined(current_user) is False:
+            flash("Must be part of this community to make a post!", "danger")
+            return redirect(url_for('communityPage', url=community_url))
         form = createPostForm()
-        can_post = False
-        for i in Communities.query.all():  # check that user is part of at least 1 community
-            if i.userHasJoined(current_user):
-                can_post = True
-                break
         if form.validate_on_submit():
-            if form.body.data == "" and form.item_id.data == "":
-                flash("Must enter text into the body or attach an item!", "Danger")
-                return redirect(url_for('create_post'))
+            if form.body.data == "":  # and form.item_id.data == "":
+                flash("Must enter text into the body or attach an item!", "danger")
+                return redirect(url_for('addNewPost', community_url=community_url))
             else:
-                target_community = Communities.query.filter_by(
-                    name=form.community.data).first()
                 new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
-                                 community_id=target_community.id)
-                print("new_post created")
+                                 community_id=community.id)
                 db.session.add(new_post)
                 db.session.commit()
-                print(new_post)
-                print("committed to database")
-                return redirect(url_for('viewPost', community_url=form.community.data, post_id=new_post.id))
-        return render_template("createpost.html", form=form, can_post=can_post)
+                flash(f"Post {new_post.id} created in Community {community.url}", "success")
+                return redirect(url_for('viewPost', community_url=community_url, post_id=new_post.id))
+        return render_template("createpost.html", form=form)
     else:
         return redirect(url_for('login'))
+
+
+@app.route("/community/<community_url>/<post_id>/edit", methods=['GET', 'POST'])
+def editPost(community_url, post_id):
+    post = Posts.query.filter_by(id=post_id).first()
+    if post is None:
+        return redirect(url_for('home'))
+    if current_user.is_authenticated and post.getAuthor() == current_user:
+        form = editPostForm()
+        if form.validate_on_submit():
+            if form.body.data == "":  # and form.item_id.data == "":
+                flash("Must enter text into the body or attach an item!", "danger")
+                return redirect(url_for('editPost', community_url=community_url, post_id=post_id))
+            else:
+                # post.setLinkedItem(form.item_id.data)
+                post.setBody(form.body.data)
+                db.session.commit()
+                flash(f"Post {post.id} in Community {community_url} edited", "success")
+                return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
+        form.body.data = post.body
+        return render_template("editpost.html", form=form, community_url=community_url, post_id=post_id)
+    else:
+        return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
+
+
+@app.route("/community/<community_url>/<post_id>/delete", methods=['GET', 'POST'])
+def delPost(community_url, post_id):
+    post = Posts.query.filter_by(id=post_id).first()
+    if post is None:
+        return redirect(url_for('home'))
+    if current_user.is_authenticated and post.getAuthor() == current_user:
+        form = deletePostForm()
+        if form.validate_on_submit():
+            if form.submitCancel.data:
+                return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
+            elif form.submitConfirm.data:
+                post_title = post.title
+                post.clearComments()
+                db.session.delete(post)
+                db.session.commit()
+                flash("Post " + post_title + " has been deleted", "danger")
+                return redirect(url_for('communityPage', url=community_url))
+        return render_template("delpost.html", form=form, post=post)
+    else:
+        return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
+
+
+@app.route("/comment/<comment_id>/delete", methods=['GET', 'POST'])
+def delComment(comment_id):
+    comment = Comments.query.filter_by(id=comment_id).first()
+    if comment is None:
+        return redirect(url_for('home'))
+    post = comment.getPost()
+    community = post.getCommunity()
+    if current_user.is_authenticated and comment.getAuthor() == current_user and comment.isLocked() is False:
+        db.session.delete(comment)
+        db.session.commit()
+        flash("Comment deleted", "danger")
+    # if current_user is admin, lock the post instead of deleting it
+    return redirect(url_for('viewPost', community_url=community.url, post_id=post.id))
