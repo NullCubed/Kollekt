@@ -5,7 +5,9 @@ from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
-from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm,createPostForm
+from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm, \
+    createPostForm
+
 
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
@@ -42,7 +44,9 @@ def home():
     communitiesCount = len(sampleCommunities)
     postCount = len(posts)
     usersCount = len(User.query.all())
-    return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount, communitiesCount=communitiesCount, usersCount=usersCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+    return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
+                           communitiesCount=communitiesCount, usersCount=usersCount,
+                           sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts)
 
 
@@ -74,7 +78,8 @@ def userProfile():
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
     return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, user=current_user, users_posts=users_posts)
+                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
+                           user=current_user, users_posts=users_posts)
 
 
 @app.route("/logout")
@@ -208,13 +213,14 @@ def addNewCollectionItem():
     form = ItemAddForm()
     if form.validate_on_submit():
         filename = secure_filename(form.photo.data.filename)
-        print('filename =',filename)
+        print('filename =', filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file_path = file_path.replace("\\","/")
+        file_path = file_path.replace("\\", "/")
         print(file_path)
         form.photo.data.save(file_path)
-        collection_item = CollectionItem('testUser', 'testCommunity',photo=filename, text=form.text.data,
-                                         collection=form.community.data,likes=0,dislikes=0)
+        collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
+                                         desc=form.text.data, collection="form.collection.data",
+                                         likes=0, dislikes=0,name=form.name.data)
         text2 = form.text.data
         community2 = form.community.data
         print(collection_item.photo)

@@ -73,19 +73,26 @@ class CollectionItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
+    photo = db.Column(db.String)
+    likes = db.Column(db.Integer)
+    dislikes = db.Column(db.Integer)
+    user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    collection = db.relationship('Collections', lazy=True)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
 
-    def __init__(self, user, community, photo, text, collection, likes, dislikes):
+
+    def __init__(self, user, community, photo, desc, collection, likes, dislikes,name):
         self.collection = collection
         self.user = user
         self.community = community
         self.photo = photo
-        self.text = text
+        self.text = desc
         self.likes = 0
         self.dislikes = 0
         self.likers = []
         self.dislikers = []
+        self.name = name
 
     def add_like(self):
         self.likes += 1

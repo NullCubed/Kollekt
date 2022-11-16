@@ -34,6 +34,7 @@ class ItemAddForm(FlaskForm):
     community = StringField('Community', validators=[DataRequired()])
     text = StringField('Description', validators=[DataRequired()])
     photo = FileField('Your Photo')
+    name = StringField("Item Name")
     submit = SubmitField('Add')
 
 
