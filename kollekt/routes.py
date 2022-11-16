@@ -1,8 +1,13 @@
-from .models import User, Communities, Collections, Posts, db
+import os
+
+from werkzeug.utils import secure_filename
+from .models import User, Communities, Collections, Posts, db, Photos, Item
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from kollekt.forms import *
+
+
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
@@ -38,7 +43,9 @@ def home():
     postCount = len(posts)
     usersCount = len(User.query.all())
     print(usersCount, collectionsCount, communitiesCount)
-    return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount, communitiesCount=communitiesCount, usersCount=usersCount, sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+    return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
+                           communitiesCount=communitiesCount, usersCount=usersCount,
+                           sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
 
 
@@ -70,8 +77,8 @@ def userProfile():
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
     return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts, user=current_user, users_posts=users_posts)
-
+                           usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
+                           user=current_user, users_posts=users_posts)
 
 
 @app.route("/logout")
@@ -141,6 +148,7 @@ def communityPage(url):
         if k == 5:
             break
     print(posts_to_display)
+    temp = community.collections[0]
     if request.method == 'POST':
         if current_user.is_authenticated:
             if request.form['join'] == 'Join Community':
@@ -149,7 +157,8 @@ def communityPage(url):
                 community.removeUser(current_user)
         else:
             return redirect(url_for('login'))
-    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display)
+    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display,
+                           temp=temp)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -212,13 +221,10 @@ def register():
 def addNewCollectionItem():
     form = ItemAddForm()
     if form.validate_on_submit():
-        collection_item = CollectionItem('testUser', 'testCommunity', 'testTemplate',
-                                         'testPhoto', text=form.text.data,
-                                         collection=form.community.data)
         text2 = form.text.data
         community2 = form.community.data
         # print(text2, community2)
-        return render_template("item.html", title="Your Item", item=collection_item)
+        return render_template("item.html", title="Your Item")
     return render_template("addItem.html", title='Add Item', form=form)
 
 
@@ -267,6 +273,12 @@ def createCollection(community_id):
     return render_template("createCollection.html", title='Add Item', form=form)
 
 
+@app.route("/collections/view/<collection_id>", methods=['GET', 'POST'])
+def viewCollection(collection_id):
+    collection = Collections.query.filter_by(id=collection_id).first()
+    return render_template("collections.html", collection=collection)
+
+
 @app.route("/fillDB")
 def filldb():
     db.drop_all()
@@ -275,13 +287,17 @@ def filldb():
     db.session.add(Communities("Watches", "Timepieces"))
     db.session.add(Communities("Shoes", "Gloves for your feet"))
     db.session.add(Collections("Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Collections("Admins Watches", "A collection of all of admins shoes", 1, 1))
     db.session.add(Item("Moses 300", "A pair of vegan leather Moses 300s", 1))
     db.session.add(Item("Better Call Saul 750", "My lawyers shoes", 1))
+    db.session.add(Item("A Fancy Rolex", "My dad's Rolex", 2))
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
     allCommunities = Communities.query.all()
     # print(allCommunities)
     return redirect(url_for('home'))
+
+
 @app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])
 def viewPost(community_url, post_id):
     post_to_view = Posts.query.filter_by(id=post_id).first()

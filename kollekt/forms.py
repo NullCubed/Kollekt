@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 from flask_login import current_user
@@ -31,7 +32,7 @@ class LoginForm(FlaskForm):
 
 class ItemAddForm(FlaskForm):
     community = StringField('Community', validators=[DataRequired()])
-    # photo = ...
+    photo = FileField('image', validators=[FileRequired(), FileAllowed(['jpg', 'png'], 'Images only!')])
     text = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Add')
 
@@ -52,7 +53,7 @@ class createCollectionForm(FlaskForm):
     desc = StringField('Description of collection', validators=[DataRequired()])
     submit = SubmitField('Create Collection')
 
-    
+
 class createPostForm(FlaskForm):
     valid_communities = []
     option = ()

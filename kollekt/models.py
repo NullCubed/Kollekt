@@ -5,7 +5,6 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
 
-
 import sqlalchemy as sa
 
 
@@ -32,7 +31,6 @@ dislikes_on_posts = db.Table('dislikes_on_posts',
                              db.Column('user_id', db.Integer,
                                        db.ForeignKey('user.id'))
                              )
-
 
 
 # TODO: Move all class files into this file and setup models to initialize DB tables etc.
@@ -79,7 +77,7 @@ class Item(db.Model):
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
     picture = db.Column(db.BLOB)
-    picture_path = db.Column(db.String)
+    filename = db.Column(db.String)
 
     def convertToBinaryData(self, filepath):
         # Convert digital data to binary format
@@ -92,12 +90,27 @@ class Item(db.Model):
         with open(filename, 'wb') as file:
             file.write(data)
 
-    def __init__(self, name, desc, collection_id):
-        self.name = name
-        self.desc = desc
-        self.collection_id = collection_id
-        self.picture_path = 'kollekt/static/bantest.png'
-        self.picture = self.convertToBinaryData(self.picture_path)
+    def __init__(self, **kwargs):
+        for arg in kwargs.keys():
+            try:
+                if arg == 'photo':
+                    self.picture = self.convertToBinaryData(arg)
+                else:
+                    self.arg = kwargs[arg]
+                    print(self.arg)
+            except NameError:
+                print("Variable " + arg + " doesn't exist!")
+        if self.picture is None:
+            self.picture = self.convertToBinaryData('bantest.png')
+        # self.picture_path = 'kollekt/static/bantest.png'
+        # self.picture = self.convertToBinaryData(self.picture_path)
+
+    # def __init__(self, name, desc, collection_id, photo):
+    #     self.name = name
+    #     self.desc = desc
+    #     self.collection_id = collection_id
+    #     self.picture_path = 'kollekt/static/bantest.png'
+    #     self.picture = self.convertToBinaryData(self.picture_path)
 
 
 class Collections(db.Model):
@@ -134,20 +147,13 @@ class Communities(db.Model):
     desc = db.Column(db.String)
     collections = db.relationship(
         'Collections', backref='communities', lazy=True)
-
-    def getUsers(self):
-        return [x for x in range(100)]
-
-    users_in_communities = db.relationship(
-    users = db.relationship(
-        'User', secondary=users_in_community, backref='users')
+    users = db.relationship('User', secondary=users_in_community, backref='users')
 
     def __init__(self, name, desc):
         self.name = name
         self.desc = desc
         self.url = name.lower().translate({ord(i): None for i in "'.,;:"}).replace('"', "").translate(
             {ord(i): "_" for i in " -"})
-        self.desc = desc
         self.posts = []
         self.collections = []
         self.users = []
