@@ -70,11 +70,7 @@ class User(db.Model, UserMixin):
         return f'<User {self.username}, {self.email}, {self.password}>'
 
 
-<<<<<<< HEAD
-class Item(db.Model):
-=======
 class CollectionItem(db.Model):
->>>>>>> main
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
@@ -121,8 +117,7 @@ class CollectionItem(db.Model):
     #     self.picture_path = 'kollekt/static/bantest.png'
     #     self.picture = self.convertToBinaryData(self.picture_path)
 
-
-    def __init__(self, user, community, photo, desc, collection, likes, dislikes,name):
+    def __init__(self, user, community, photo, desc, collection, likes, dislikes, name):
         self.collection = collection
         self.user = user
         self.community = community
@@ -136,11 +131,13 @@ class CollectionItem(db.Model):
 
     def add_like(self):
         self.likes += 1
-        return(self.likes)
+        return (self.likes)
+
     def add_dislike(self):
         self.disliskes += 1
         return (self.disliskes)
-    def add_like(self,user_who_liked):
+
+    def add_like(self, user_who_liked):
         if user_who_liked not in self.likers():
             self.likers.append(user_who_liked)
             self.likes += 1
@@ -149,7 +146,48 @@ class CollectionItem(db.Model):
             self.likers.remove(user_who_liked)
             self.likes -= 1
             return self.likes
-    def add_dislike(self,user_who_disliked):
+
+    def add_dislike(self, user_who_disliked):
+        if user_who_disliked not in self.dislikers():
+            self.dislikers.append(user_who_disliked)
+            self.dislikes += 1
+            return self.dislikes
+        else:
+            self.dislikers.remove(user_who_disliked)
+            self.dislikes -= 1
+            return self.dislikes
+
+    def __init__(self, user, community, photo, desc, collection, likes, dislikes, name):
+        self.collection = collection
+        self.user = user
+        self.community = community
+        self.photo = photo
+        self.text = desc
+        self.likes = 0
+        self.dislikes = 0
+        self.likers = []
+        self.dislikers = []
+        self.name = name
+
+    def add_like(self):
+        self.likes += 1
+        return (self.likes)
+
+    def add_dislike(self):
+        self.disliskes += 1
+        return (self.disliskes)
+
+    def add_like(self, user_who_liked):
+        if user_who_liked not in self.likers():
+            self.likers.append(user_who_liked)
+            self.likes += 1
+            return self.likes
+        else:
+            self.likers.remove(user_who_liked)
+            self.likes -= 1
+            return self.likes
+
+    def add_dislike(self, user_who_disliked):
         if user_who_disliked not in self.dislikers():
             self.dislikers.append(user_who_disliked)
             self.dislikes += 1
@@ -160,27 +198,15 @@ class CollectionItem(db.Model):
             return self.dislikes
 
 
-
-
 class Collections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-<<<<<<< HEAD
-    # owner = db.Column(db.Integer)
-    items = db.relationship('Item', backref='collections', lazy=True)
-=======
     owner = db.Column(db.Integer)
     items = db.relationship('CollectionItem', backref='collections', lazy=True)
->>>>>>> main
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
-    def __init__(self, community, user):
-        self.user = user
-        self.community = community
-        self.items = []
-
 
     def __init__(self, name, desc, user_id, community_id):
         self.name = name
