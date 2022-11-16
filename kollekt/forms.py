@@ -33,7 +33,7 @@ class LoginForm(FlaskForm):
 class ItemAddForm(FlaskForm):
     community = StringField('Community', validators=[DataRequired()])
     text = StringField('Description', validators=[DataRequired()])
-    file = FileField()
+    photo = FileField('Your Photo')
     submit = SubmitField('Add')
 
 

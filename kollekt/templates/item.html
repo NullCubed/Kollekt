@@ -34,13 +34,13 @@
     <br>
 
     <h3>Community:</h3>
-    <p>{{ item.get_collection() }} </p>
+    <p>{{ item.collection }} </p>
 
     <h3>photo:</h3>
-    <img alt="test" id="logo" src="../static/bantest.png"><br>
+   <img src="/static/{{item.photo}}" />
 
     <h3>Description:</h3>
-    <p>{{ item.get_text() }} </p>
+    <p>{{ item.text }} </p>
 
     <h3>Likes:</h3>
     <p>{{ item.likes }} </p>

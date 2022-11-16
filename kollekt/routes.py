@@ -1,9 +1,12 @@
+import os
+
 from .models import User, Communities, Collections, Posts, db, CollectionItem
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
 from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm,createPostForm
+
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
@@ -204,15 +207,18 @@ def register():
 def addNewCollectionItem():
     form = ItemAddForm()
     if form.validate_on_submit():
-        filename = secure_filename(form.file.data.filename)
-        form.file.data.save('uploads/' + filename)
-        collection_item = CollectionItem('testUser', 'testCommunity', 'testTemplate',
-                                         'testPhoto', text=form.text.data,
-                                         collection=form.community.data)
+        filename = secure_filename(form.photo.data.filename)
+        print('filename =',filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file_path = file_path.replace("\\","/")
+        print(file_path)
+        form.photo.data.save(file_path)
+        collection_item = CollectionItem('testUser', 'testCommunity',photo=filename, text=form.text.data,
+                                         collection=form.community.data,likes=0,dislikes=0)
         text2 = form.text.data
         community2 = form.community.data
-        print(text2, community2)
-        return render_template("item.html", title="Your Item", item=collection_item)
+        print(collection_item.photo)
+        return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
     return render_template("addItem.html", title='Add Item', form=form)
 
 

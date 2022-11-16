@@ -76,7 +76,7 @@ class CollectionItem(db.Model):
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
 
-    def __init__(self, user, community, photo, text, collection, likes, dislikes, likers, dislikers):
+    def __init__(self, user, community, photo, text, collection, likes, dislikes):
         self.collection = collection
         self.user = user
         self.community = community
