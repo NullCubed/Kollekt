@@ -13,32 +13,39 @@ from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, cr
 @app.route("/")
 def home():
     posts = Posts.query.all()
-    allCommunities = Communities.query.all()
     usersCommunities = []
+    allCommunities = Communities.query.all()
+    tempCommunities = allCommunities
+    tempUsers = []
     if current_user.is_authenticated:
+        print(allCommunities)
         for community in allCommunities:
-            print(community)
-            userlist = community.getUsers()  # waiting for method implementation
-            finalUserList = []
-            for i in userlist:
-                finalUserList.append(i.username)
-            # userlist = []  # using this for now
-            if current_user.username in finalUserList:
+            tempUsers = []
+            for i in community.getUsers():
+                tempUsers.append(i.username)
+            print(tempUsers)
+            if current_user.username in tempUsers:
                 usersCommunities.append(community)
-                allCommunities.remove(community)
-
+    tempComnames = []
+    tempUserComNames = []
+    for i in tempCommunities:
+        tempComnames.append(i.name)
+    for x in usersCommunities:
+        tempUserComNames.append(x.name)
+    for i in tempComnames:
+        if i in tempUserComNames:
+            tempCommunities.remove(Communities.query.filter_by(name=i).first())
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
     collectionsCount = len(sampleCollections)
     communitiesCount = len(sampleCommunities)
     postCount = len(posts)
     usersCount = len(User.query.all())
-    print(usersCount, collectionsCount, communitiesCount)
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
-
+    
 
 @app.route("/userProfile")
 def userProfile():
@@ -70,7 +77,6 @@ def userProfile():
     return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
                            user=current_user, users_posts=users_posts)
-
 
 @app.route("/logout")
 def logout():
