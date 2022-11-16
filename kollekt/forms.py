@@ -50,14 +50,21 @@ class deleteCommunityForm(FlaskForm):
 
 
 class createPostForm(FlaskForm):
-    valid_communities = []
-    option = ()
     title = StringField('Title', validators=[DataRequired()])
     body = TextAreaField('Body')
     item_id = StringField('Attach an Item (Optional)')
-    # community = SelectField('Community', valid_communities)
-    community = StringField('Community', validators=[DataRequired()])
     submit = SubmitField('Post!')
+
+
+class editPostForm(FlaskForm):
+    body = TextAreaField('Body')
+    item_id = StringField('Attach an Item (Optional)')
+    submit = SubmitField('Save')
+
+
+class deletePostForm(FlaskForm):
+    submitConfirm = SubmitField('Confirm')
+    submitCancel = SubmitField('Cancel')
 
 
 class UserForm(FlaskForm):
@@ -65,3 +72,8 @@ class UserForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     bio = StringField('Biography', validators=[DataRequired()])
     submit = SubmitField("Submit")
+
+
+class createCommentForm(FlaskForm):
+    text = TextAreaField('Leave a comment below...', validators=[DataRequired()])
+    submit = SubmitField('Post!')
