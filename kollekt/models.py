@@ -246,6 +246,29 @@ class Posts(db.Model):
     def getLinkedItem(self):
         return Items.query.filter_by(id=self.item_id).first()
 
+    def setLinkedItem(self, item_id):
+        if item_id is not None:
+            # item = Items.query.filter_by(id=item_id).first()
+            # need a check here for if the new item matches the user
+            # this requires users and items or collections to be linked in database
+            if True:  # "if self.getAuthor() == item's owner"
+                self.item_id = item_id
+        else:
+            self.item_id = None
+
+    def setBody(self, body):
+        self.body = body
+
+    def getComments(self):
+        return Comments.query.filter_by(post_id=self.id).all()
+
+    def clearComments(self):
+        # deletes all comments under a post; should only be called prior to deleting the post
+        comments = self.getComments()
+        for i in comments:
+            db.session.delete(i)
+        db.session.commit()
+
     def getLikes(self):
         return len(self.likes)
 
