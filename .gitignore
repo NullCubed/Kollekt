@@ -30,3 +30,4 @@ htmlcov/
 todo.txt
 /node_modules/
 package*.json
+dev.db

@@ -18,8 +18,14 @@
         width: 50%;
     }
 
-    #mainBox h1, img, p {
+    #mainBox h2,h3,h1, img, p {
         text-align: center;
+         margin-left: auto;
+        margin-right: auto;
+    }
+    .center {
+        margin-left: auto;
+        margin-right: auto;
     }
 </style>
 
@@ -29,14 +35,28 @@
 
 
 <section id="mainBox">
-    <h1>Item in Collection</h1>
-    <h2> This is your item you have just added!:</h2>
-    <br>
-    <h3>Community:</h3>
-    <p>{{ item.get_collection() }} </p>
-    <h3>Description:</h3>
-    <p>{{ item.get_text() }} </p>
+    <h1>{{ item.name}}</h1>
 
+    <br>
+
+    <h3>User:</h3>
+    <p>{{ item.user.username }} </p>
+
+
+    <h3>Community:</h3>
+    <p>{{ item.community }} </p>
+
+    <h3>photo:</h3>
+    <img src="/static/{{item.photo}}" class="center"/>
+
+    <h3>Description:</h3>
+    <p>{{ item.text }} </p>
+
+    <h3>Likes:</h3>
+    <p>{{ item.likes }} </p>
+
+    <h3>Dislikes:</h3>
+    <p>{{ item.dislikes }} </p>
 
 </section>
 {% endblock content %}

@@ -1,11 +1,21 @@
 import os
 
+<<<<<<< HEAD
 from werkzeug.utils import secure_filename
 from .models import User, Communities, Collections, Posts, db, Photos, Item
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from kollekt.forms import *
+=======
+from .models import User, Communities, Collections, Posts, db, CollectionItem
+from flask_login import login_user, current_user, logout_user, login_required
+from flask import current_app as app
+from flask import render_template, url_for, flash, redirect, request
+from werkzeug.utils import secure_filename
+from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, deleteCommunityForm, \
+    createPostForm
+>>>>>>> main
 
 
 # from .Components.Community import Community
@@ -14,39 +24,47 @@ from kollekt.forms import *
 
 @app.route("/")
 def home():
-    # posts = [Posts(author_id=1, title="This is a title",  body="This is a test post",
-    #                community_id="👍 👎 "),
-    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
-    #                community_id="This is a test post's meta data"),
-    #          Posts(author_id=1, title="this is a title",  body="This is a test post",
-    #                community_id="This is a test post's meta data")
-    # ]
     posts = Posts.query.all()
-    allCommunities = Communities.query.all()
     usersCommunities = []
+    allCommunities = Communities.query.all()
+    tempCommunities = allCommunities
+    tempUsers = []
     if current_user.is_authenticated:
+        print(allCommunities)
         for community in allCommunities:
-            print(community)
-            userlist = community.getUsers()  # waiting for method implementation
-            finalUserList = []
-            for i in userlist:
-                finalUserList.append(i.username)
-            # userlist = []  # using this for now
-            if current_user.username in finalUserList:
+            tempUsers = []
+            for i in community.getUsers():
+                tempUsers.append(i.username)
+            print(tempUsers)
+            if current_user.username in tempUsers:
                 usersCommunities.append(community)
-                allCommunities.remove(community)
-
+    tempComnames = []
+    tempUserComNames = []
+    for i in tempCommunities:
+        tempComnames.append(i.name)
+    for x in usersCommunities:
+        tempUserComNames.append(x.name)
+    for i in tempComnames:
+        if i in tempUserComNames:
+            tempCommunities.remove(Communities.query.filter_by(name=i).first())
     sampleCollections = Collections.query.all()
     sampleCommunities = Communities.query.all()
     collectionsCount = len(sampleCollections)
     communitiesCount = len(sampleCommunities)
     postCount = len(posts)
     usersCount = len(User.query.all())
+<<<<<<< HEAD
     print(usersCount, collectionsCount, communitiesCount)
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts)
+=======
+    return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
+                           communitiesCount=communitiesCount, usersCount=usersCount,
+                           sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts)
+>>>>>>> main
 
 
 @app.route("/userProfile")
@@ -116,6 +134,7 @@ def userSettings():
                                id=id)
 
 
+<<<<<<< HEAD
 # @app.route("/community/<community_name>", methods=['GET', 'POST'])
 # def communityPage(community_name):
 #     community = None
@@ -130,6 +149,14 @@ def userSettings():
 #     temp = community.collections[0]
 #     # print(temp)
 #     return render_template('community.html', community=community, user=current_user, temp=temp)
+=======
+@app.route("/userCard/<id>")
+@login_required
+def userCard(id):
+    userInfo = User.query.filter_by(id=id).first()
+    return render_template('userCard.html', userInfo=userInfo)
+
+>>>>>>> main
 
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
@@ -221,10 +248,26 @@ def register():
 def addNewCollectionItem():
     form = ItemAddForm()
     if form.validate_on_submit():
+<<<<<<< HEAD
         text2 = form.text.data
         community2 = form.community.data
         # print(text2, community2)
         return render_template("item.html", title="Your Item")
+=======
+        filename = secure_filename(form.photo.data.filename)
+        print('filename =', filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file_path = file_path.replace("\\", "/")
+        print(file_path)
+        form.photo.data.save(file_path)
+        collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
+                                         desc=form.text.data, collection="form.collection.data",
+                                         likes=0, dislikes=0,name=form.name.data)
+        text2 = form.text.data
+        community2 = form.community.data
+        print(collection_item.photo)
+        return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
+>>>>>>> main
     return render_template("addItem.html", title='Add Item', form=form)
 
 
