@@ -185,7 +185,7 @@ def register():
         user = User.query.filter_by(username=username).first()
         eml = User.query.filter_by(email=email).first()
         if not user and not eml:
-            user = User(username, password, email)
+            user = User(username, email, password)
         elif user:
             flash("Username already taken", "danger")
             return redirect(url_for('register'))
