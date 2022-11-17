@@ -33,9 +33,7 @@
     <h1>Add item to Collection</h1>
     <img alt="test" id="logo" src="../static/bantest.png"><br>
     <p>Basic Page to add items!</p>
-
     <form action="" method="POST" enctype="multipart/form-data">
-
         {{form.hidden_tag()}}
         <div class="form-group m-5">
             {{form.photo.label()}}
@@ -52,6 +50,22 @@
             {% endif %}
 
         </div>
+        <div class="form-group m-5">
+            {{form.name.label()}}
+            {% if form.name.errors %}
+
+            {{form.name(class="form-control is-invalid")}}
+            {% for error in form.name.errors %}
+            <div class="invalid-feedback">
+                <span>{{error}}</span>
+            </div>
+            {% endfor %}
+            {% else %}
+            {{form.name(class="form-control")}}
+            {% endif %}
+
+        </div>
+
         <div class="form-group m-5">
             {{form.name.label()}}
             {% if form.name.errors %}
@@ -117,7 +131,7 @@
         </div>
 
 
-        <div class="form-group m-5">
+                <div class="form-group m-5">
             {{form.photo.label()}}
             {% if form.photo.errors %}
 

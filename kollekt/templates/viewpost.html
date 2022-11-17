@@ -15,9 +15,70 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
-                            <h4>Posted by {{ post_to_view.getAuthor().username }} {{ post_to_view.getTimestamp()[1] }}</h4>
+                            <p style="font-size: 1.375em">Posted by<strong>
+                                {% if current_user.is_authenticated %}
+                                <a href="/userCard/{{post_to_view.getAuthor().id}}">{{post_to_view.getAuthor().username}}</a>
+                                {% else %}
+                                {{ post_to_view.getAuthor().username }}
+                                {% endif %}
+                                </strong>
+                                {{ post_to_view.getTimestamp()[1] }}</p>
+                                {% if post_to_view.getAuthor() == current_user %}
+                                <form action="/community/{{ post_to_view.getCommunity().url }}/{{ post_to_view.id }}/edit" method="post">
+                                    <input name="edit" type="submit" value="Edit">
+                                </form>
+                                {% endif %}
                             <h2>{{ post_to_view.title }}</h2>
                             {{ post_to_view.body }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col">
+                            <h4> {{comment_count}} Comments</h4>
+                            {% if current_user.is_authenticated and community.userHasJoined(current_user) %}
+                            <form action="" method="post" id="comment_button" style="display: block;">
+                                {{ form.hidden_tag() }}
+                                <div class="form-group">
+                                    {{ form.text.label(class="form-control-label") }}
+                                    {% if form.text.errors %}
+                                    {{ form.text(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.title.errors %}
+                                        <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% else %}
+                                    {{ form.text(class="form-control form-control-lg") }}
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    {{ form.submit(class="btn btn-outline-success") }}
+                                </div>
+                            </form>
+                            {% endif %}
+                            {% for j in comments %}
+                            <hr>
+                            <div class="row">
+                                <div class="col">
+                                    <p style="font-size: 1.0625em">Posted by <strong>
+                                        {% if current_user.is_authenticated %}
+                                        <a href="/userCard/{{j.getAuthor().id}}">{{j.getAuthor().username}}</a>
+                                        {% else %}
+                                        {{ post_to_view.getAuthor().username }}
+                                        {% endif %}
+                                        </strong>
+                                        {{ j.getTimestamp()[1] }}
+                                    </p>
+                                    {% if j.getAuthor() == current_user and j.isLocked() == False %}
+                                    <form action="/comment/{{ j.id }}/delete">
+                                        <input name="delete" style="font-size: 1.0625em;" type="submit" value="Delete...">
+                                    </form>
+                                    {% endif %}
+                                    <p style="font-size: 0.9375em">{{ j.text }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
