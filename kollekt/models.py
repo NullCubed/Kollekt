@@ -397,11 +397,11 @@ class Posts(db.Model):
         return Communities.query.filter_by(id=self.community_id).first()
 
     def getLinkedItem(self):
-        return Items.query.filter_by(id=self.item_id).first()
+        return CollectionItem.query.filter_by(id=self.item_id).first()
 
     def setLinkedItem(self, item_id):
         if item_id is not None:
-            # item = Items.query.filter_by(id=item_id).first()
+            # item = CollectionItem.query.filter_by(id=item_id).first()
             # need a check here for if the new item matches the user
             # this requires users and items or collections to be linked in database
             if True:  # "if self.getAuthor() == item's owner"
