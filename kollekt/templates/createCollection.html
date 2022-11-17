@@ -27,7 +27,8 @@
                     <span>{{ error }}</span>
                     {% endfor %}
                 </div>
-                {% endif %}
+                {% else %} {{ form.desc(class="form-control form-control-lg") }} {%
+                endif %}
             </div>
         </fieldset>
         <div class="form-group">
