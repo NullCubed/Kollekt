@@ -33,13 +33,13 @@
                     <div class="row">
                         <div class="col border">
                             <div class="row">
-                                <div class="col"><h3 class="text-center">{{temp.name}}</h3></div>
+                                <div class="col"><h3 class="text-center">Testing</h3></div>
                             </div>
                             <div class="row">
                                 <div class="col">
                                     <div class="row">
                                         <div class="col">
-                                            {{ temp.getItem() | safe }}
+                                            Testing
                                         </div>
                                     </div>
                                     <div class="row">
@@ -90,7 +90,7 @@
                         </div>
                     </div>
                     <div class="row justify-content-around">
-                    {% for i in posts_to_display %}
+                        {% for i in posts_to_display %}
                         <div class="col-11 col-md-5 border mt-5 rounded">
                             <a href="/community/{{ community.url }}/{{ i.id }}"
                                style="display: block; text-decoration: none; color: black;">
@@ -108,13 +108,14 @@
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        <p class="text-center">Posted by {{i.getAuthor().username}} {{i.getTimestamp()[1]}}<br>{{i.getLikes()}} 👍 - 👎 {{i.getDislikes()}}</p>
+                                        <p class="text-center">Posted by {{i.getAuthor().username}}
+                                            {{i.getTimestamp()[1]}}<br>{{i.getLikes()}} 👍 - 👎 {{i.getDislikes()}}</p>
                                     </div>
                                 </div>
                             </a>
                         </div>
-                    {% endfor %}
-                  </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>

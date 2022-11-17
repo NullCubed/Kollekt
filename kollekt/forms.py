@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 from kollekt.models import Communities, CollectionItem, Collections
 from . import db
 
+
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
@@ -39,7 +40,7 @@ class ItemAddForm(FlaskForm):
     submit = SubmitField('Add')
 
 
-class CreateCommunityForm(FlaskForm):
+class createCommunityForm(FlaskForm):
     name = StringField('Community Name', validators=[DataRequired()])
     description = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Create')
@@ -50,7 +51,7 @@ class deleteCommunityForm(FlaskForm):
     submit = SubmitField('Delete')
 
 
-class CreateCollectionForm(FlaskForm):
+class createCollectionForm(FlaskForm):
     name = StringField('Name of collection', validators=[DataRequired()])
     desc = StringField('Description of collection', validators=[DataRequired()])
     submit = SubmitField('Create Collection')

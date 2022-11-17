@@ -6,7 +6,7 @@ from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
 from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, \
-    deleteCommunityForm, createPostForm, createCommentForm, editPostForm, deletePostForm
+    deleteCommunityForm, createPostForm, createCommentForm, editPostForm, deletePostForm, createCollectionForm
 
 
 # from .Components.Community import Community
@@ -21,12 +21,11 @@ def home():
     tempCommunities = allCommunities
     tempUsers = []
     if current_user.is_authenticated:
-        print(allCommunities)
+
         for community in allCommunities:
             tempUsers = []
             for i in community.getUsers():
                 tempUsers.append(i.username)
-            print(tempUsers)
             if current_user.username in tempUsers:
                 usersCommunities.append(community)
     tempComnames = []
@@ -54,19 +53,15 @@ def home():
 def userProfile():
     users_posts = []
     all_posts = Posts.query.all()
-    print(all_posts)
     all_posts.reverse()
-    print(all_posts)
     for i in all_posts:
         if i.author_id == current_user.id:
             users_posts.append(i)
-    print(users_posts)
     posts = Posts.query.all()
     allCommunities = Communities.query.all()
     usersCommunities = []
     if current_user.is_authenticated:
         for community in allCommunities:
-            print(community)
             userlist = community.getUsers()  # waiting for method implementation
             finalUserList = []
             for i in userlist:
@@ -127,7 +122,6 @@ def userCard(id):
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
     community = Communities.query.filter_by(url=url).first()
-    print(community.getUsers())
     posts_to_display = []
     all_posts = Posts.query.all()
     all_posts.reverse()
@@ -146,8 +140,7 @@ def communityPage(url):
                 community.removeUser(current_user)
         else:
             return redirect(url_for('login'))
-    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display,
-                           temp=temp)
+    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -211,24 +204,21 @@ def addNewCollectionItem():
     form = ItemAddForm()
     if form.validate_on_submit():
         filename = secure_filename(form.photo.data.filename)
-        print('filename =', filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file_path = file_path.replace("\\", "/")
-        print(file_path)
         form.photo.data.save(file_path)
         collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
                                          desc=form.text.data, collection="form.collection.data",
-                                         likes=0, dislikes=0,name=form.name.data)
+                                         likes=0, dislikes=0, name=form.name.data)
         text2 = form.text.data
         community2 = form.community.data
-        print(collection_item.photo)
         return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
     return render_template("addItem.html", title='Add Item', form=form)
 
 
 @app.route("/adminpage", methods=['GET', 'POST'])
 def adminpage():
-    form = CreateCommunityForm()
+    form = createCommunityForm()
     delform = deleteCommunityForm()
     allCommunities = Communities.query.all()
     if form.validate_on_submit():
@@ -259,9 +249,9 @@ def adminpage():
     return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
 
 
-@app.route("/collections/createCollection/<community_id>", methods=['GET', 'POST'])
+@app.route("/collections/create/<community_id>", methods=['GET', 'POST'])
 def createCollection(community_id):
-    form = CreateCollectionForm()
+    form = createCollectionForm()
 
     if form.validate_on_submit():
         collection = Collections(form.name.data, form.desc.data, current_user.id, community_id)
