@@ -20,5 +20,6 @@ def create_app():
         db.drop_all()
         print("Dropped All Tables")
         db.create_all()
+
         print("Created All Tables From Models")
         return app

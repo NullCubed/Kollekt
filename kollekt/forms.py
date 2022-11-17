@@ -1,12 +1,14 @@
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 from flask import url_for, redirect, render_template
 from flask_wtf.file import FileField
 from werkzeug.utils import secure_filename
-from kollekt.models import Communities,CollectionItem,Collections
+from kollekt.models import Communities, CollectionItem, Collections
 from . import db
+
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
@@ -47,6 +49,12 @@ class createCommunityForm(FlaskForm):
 class deleteCommunityForm(FlaskForm):
     name = StringField('Community to Delete', validators=[DataRequired()])
     submit = SubmitField('Delete')
+
+
+class createCollectionForm(FlaskForm):
+    name = StringField('Name of collection', validators=[DataRequired()])
+    desc = StringField('Description of collection', validators=[DataRequired()])
+    submit = SubmitField('Create Collection')
 
 
 class createPostForm(FlaskForm):
