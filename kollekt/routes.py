@@ -6,7 +6,7 @@ from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
 from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, \
-    deleteCommunityForm, createPostForm, createCommentForm, editPostForm, deletePostForm
+    deleteCommunityForm, createPostForm, createCommentForm, editPostForm, deletePostForm, createCollectionForm
 
 
 # from .Components.Community import Community
@@ -21,12 +21,11 @@ def home():
     tempCommunities = allCommunities
     tempUsers = []
     if current_user.is_authenticated:
-        print(allCommunities)
+
         for community in allCommunities:
             tempUsers = []
             for i in community.getUsers():
                 tempUsers.append(i.username)
-            print(tempUsers)
             if current_user.username in tempUsers:
                 usersCommunities.append(community)
     tempComnames = []
@@ -54,19 +53,15 @@ def home():
 def userProfile():
     users_posts = []
     all_posts = Posts.query.all()
-    print(all_posts)
     all_posts.reverse()
-    print(all_posts)
     for i in all_posts:
         if i.author_id == current_user.id:
             users_posts.append(i)
-    print(users_posts)
     posts = Posts.query.all()
     allCommunities = Communities.query.all()
     usersCommunities = []
     if current_user.is_authenticated:
         for community in allCommunities:
-            print(community)
             userlist = community.getUsers()  # waiting for method implementation
             finalUserList = []
             for i in userlist:
@@ -127,7 +122,6 @@ def userCard(id):
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
     community = Communities.query.filter_by(url=url).first()
-    print(community.getUsers())
     posts_to_display = []
     all_posts = Posts.query.all()
     all_posts.reverse()
@@ -191,7 +185,7 @@ def register():
         user = User.query.filter_by(username=username).first()
         eml = User.query.filter_by(email=email).first()
         if not user and not eml:
-            user = User(username, password, email)
+            user = User(username, email, password)
         elif user:
             flash("Username already taken", "danger")
             return redirect(url_for('register'))
@@ -216,6 +210,7 @@ def addNewCollectionItem():
         collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
                                          desc=form.text.data, collection="form.collection.data",
                                          likes=0, dislikes=0, name=form.name.data)
+
         return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
     return render_template("addItem.html", title='Add Item', form=form)
 
@@ -251,6 +246,40 @@ def adminpage():
             flash("Community does not exist", "danger")
             return redirect(url_for('adminpage'))
     return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
+
+
+@app.route("/collections/create/<community_id>", methods=['GET', 'POST'])
+def createCollection(community_id):
+    form = createCollectionForm()
+
+    if form.validate_on_submit():
+        collection = Collections(form.name.data, form.desc.data, current_user.id, community_id)
+        db.session.add(collection)
+        db.session.commit()
+        return redirect(url_for('home'))
+    return render_template("createCollection.html", title='Add Item', form=form)
+
+
+@app.route("/collections/view/<collection_id>", methods=['GET', 'POST'])
+def viewCollection(collection_id):
+    collection = Collections.query.filter_by(id=collection_id).first()
+    return render_template("collections.html", collection=collection)
+
+
+@app.route("/fillDB")
+def filldb():
+    db.drop_all()
+    db.create_all()
+    db.session.add(User("Admin", "admin@kollekt.com", "testing"))
+    db.session.add(Communities("Watches", "Timepieces"))
+    db.session.add(Communities("Shoes", "Gloves for your feet"))
+    db.session.add(Collections("Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Collections("Admins Watches", "A collection of all of admins shoes", 1, 1))
+    db.session.commit()
+    login_user(User.query.filter_by(id=1).first())
+    allCommunities = Communities.query.all()
+    # print(allCommunities)
+    return redirect(url_for('home'))
 
 
 @app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])

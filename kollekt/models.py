@@ -1,8 +1,9 @@
+import os
+
 from . import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
-
 
 import sqlalchemy as sa
 
@@ -53,7 +54,7 @@ class User(db.Model, UserMixin):
     collections = db.relationship(
         'Collections', backref='collectionAuthor', lazy=True)
 
-    def __init__(self, username, password, email):
+    def __init__(self, username, email, password):
         self.username = username
         self.password = generate_password_hash(password)
         self.email = email
@@ -80,9 +81,21 @@ class CollectionItem(db.Model):
     collection = db.relationship('Collections', lazy=True)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
+    picture = db.Column(db.BLOB)
+    filename = db.Column(db.String)
 
+    def convertToBinaryData(self, filepath):
+        # Convert digital data to binary format
+        with open(filepath, 'rb') as file:
+            binaryData = file.read()
+        return binaryData
 
-    def __init__(self, user, community, photo, desc, collection, likes, dislikes,name):
+    def write_file(self, data, filename):
+        # Convert binary data to proper format and write it on Hard Disk
+        with open(filename, 'wb') as file:
+            file.write(data)
+
+    def __init__(self, user, community, photo, desc, collection, likes, dislikes, name):
         self.collection = collection
         self.user = user
         self.community = community
@@ -96,11 +109,13 @@ class CollectionItem(db.Model):
 
     def add_like(self):
         self.likes += 1
-        return(self.likes)
+        return (self.likes)
+
     def add_dislike(self):
         self.disliskes += 1
         return (self.disliskes)
-    def add_like(self,user_who_liked):
+
+    def add_like(self, user_who_liked):
         if user_who_liked not in self.likers():
             self.likers.append(user_who_liked)
             self.likes += 1
@@ -109,7 +124,88 @@ class CollectionItem(db.Model):
             self.likers.remove(user_who_liked)
             self.likes -= 1
             return self.likes
-    def add_dislike(self,user_who_disliked):
+
+    def add_dislike(self, user_who_disliked):
+        if user_who_disliked not in self.dislikers():
+            self.dislikers.append(user_who_disliked)
+            self.dislikes += 1
+            return self.dislikes
+        else:
+            self.dislikers.remove(user_who_disliked)
+            self.dislikes -= 1
+            return self.dislikes
+
+    def __init__(self, user, community, photo, desc, collection, likes, dislikes, name):
+        self.collection = collection
+        self.user = user
+        self.community = community
+        self.photo = photo
+        self.text = desc
+        self.likes = 0
+        self.dislikes = 0
+        self.likers = []
+        self.dislikers = []
+        self.name = name
+
+    def add_like(self):
+        self.likes += 1
+        return (self.likes)
+
+    def add_dislike(self):
+        self.disliskes += 1
+        return (self.disliskes)
+
+    def add_like(self, user_who_liked):
+        if user_who_liked not in self.likers():
+            self.likers.append(user_who_liked)
+            self.likes += 1
+            return self.likes
+        else:
+            self.likers.remove(user_who_liked)
+            self.likes -= 1
+            return self.likes
+
+    def add_dislike(self, user_who_disliked):
+        if user_who_disliked not in self.dislikers():
+            self.dislikers.append(user_who_disliked)
+            self.dislikes += 1
+            return self.dislikes
+        else:
+            self.dislikers.remove(user_who_disliked)
+            self.dislikes -= 1
+            return self.dislikes
+
+    def __init__(self, user, community, photo, desc, collection, likes, dislikes, name):
+        self.collection = collection
+        self.user = user
+        self.community = community
+        self.photo = photo
+        self.text = desc
+        self.likes = 0
+        self.dislikes = 0
+        self.likers = []
+        self.dislikers = []
+        self.name = name
+
+    def add_like(self):
+        self.likes += 1
+        return (self.likes)
+
+    def add_dislike(self):
+        self.disliskes += 1
+        return (self.disliskes)
+
+    def add_like(self, user_who_liked):
+        if user_who_liked not in self.likers():
+            self.likers.append(user_who_liked)
+            self.likes += 1
+            return self.likes
+        else:
+            self.likers.remove(user_who_liked)
+            self.likes -= 1
+            return self.likes
+
+    def add_dislike(self, user_who_disliked):
         if user_who_disliked not in self.dislikers():
             self.dislikers.append(user_who_disliked)
             self.dislikes += 1
@@ -120,22 +216,30 @@ class CollectionItem(db.Model):
             return self.dislikes
 
 
-
-
 class Collections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    owner = db.Column(db.Integer)
     items = db.relationship('CollectionItem', backref='collections', lazy=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
-    def __init__(self, community, user):
-        self.user = user
-        self.community = community
-        self.items = []
 
+    def __init__(self, name, desc, user_id, community_id):
+        self.name = name
+        self.desc = desc
+        self.user_id = user_id
+        self.community_id = community_id
+
+    def __repr__(self):
+        return f'<Collection {self.name}, {self.items}, {self.community_id}>'
+
+    def getItem(self):
+        item = self.items[0]
+        item.write_file(item.picture, item.picture_path)
+        return f'<img src=\"../static/bantest.png\" width=100 height=100/>' \
+               f'<br />' \
+               f'<h4 class=\"text-center\">{item.name}<br/>{item.desc}</h4>'
 
 
 class Communities(db.Model):
@@ -145,14 +249,13 @@ class Communities(db.Model):
     desc = db.Column(db.String)
     collections = db.relationship(
         'Collections', backref='communities', lazy=True)
-    users = db.relationship(
-        'User', secondary=users_in_community, backref='users')
+    users = db.relationship('User', secondary=users_in_community, backref='users')
 
     def __init__(self, name, desc):
         self.name = name
+        self.desc = desc
         self.url = name.lower().translate({ord(i): None for i in "'.,;:"}).replace('"', "").translate(
             {ord(i): "_" for i in " -"})
-        self.desc = desc
         self.posts = []
         self.collections = []
         self.users = []
