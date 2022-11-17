@@ -15,7 +15,7 @@ from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, cr
 
 @app.route("/")
 def home():
-    posts = Posts.query.all()
+    posts = []
     usersCommunities = []
     allCommunities = Communities.query.all()
     tempCommunities = allCommunities
@@ -43,6 +43,12 @@ def home():
     communitiesCount = len(sampleCommunities)
     postCount = len(posts)
     usersCount = len(User.query.all())
+
+    for i in usersCommunities:
+        for x in i.getPosts():
+            print(x)
+            posts.append(x)
+
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
@@ -253,7 +259,8 @@ def createCollection(community_id):
     form = createCollectionForm()
 
     if form.validate_on_submit():
-        collection = Collections(form.name.data, form.desc.data, current_user.id, community_id)
+        collection = Collections(
+            form.name.data, form.desc.data, current_user.id, community_id)
         db.session.add(collection)
         db.session.commit()
         return redirect(url_for('home'))
@@ -273,8 +280,10 @@ def filldb():
     db.session.add(User("Admin", "admin@kollekt.com", "testing"))
     db.session.add(Communities("Watches", "Timepieces"))
     db.session.add(Communities("Shoes", "Gloves for your feet"))
-    db.session.add(Collections("Admins Shoes", "A collection of all of admins shoes", 1, 2))
-    db.session.add(Collections("Admins Watches", "A collection of all of admins shoes", 1, 1))
+    db.session.add(Collections(
+        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Collections("Admins Watches",
+                   "A collection of all of admins shoes", 1, 1))
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
     allCommunities = Communities.query.all()
@@ -292,11 +301,13 @@ def viewPost(community_url, post_id):
         return redirect(url_for('viewPost', community_url=post_to_view.getCommunity().url, post_id=post_id))
     form = createCommentForm()
     if form.validate_on_submit():
-        new_comment = Comments(author_id=current_user.id, text=form.text.data, post_id=post_id)
+        new_comment = Comments(author_id=current_user.id,
+                               text=form.text.data, post_id=post_id)
         db.session.add(new_comment)
         db.session.commit()
     comments = Comments.query.filter_by(post_id=post_id).all()
-    form.text.data = ""  # clears comment box upon posting; otherwise comment text remains in box
+    # clears comment box upon posting; otherwise comment text remains in box
+    form.text.data = ""
     return render_template('viewpost.html', post_to_view=post_to_view, community=community,
                            comments=comments, comment_count=len(comments), form=form)
 
@@ -318,7 +329,8 @@ def addNewPost(community_url):
                                  community_id=community.id)
                 db.session.add(new_post)
                 db.session.commit()
-                flash(f"Post {new_post.id} created in Community {community.url}", "success")
+                flash(
+                    f"Post {new_post.id} created in Community {community.url}", "success")
                 return redirect(url_for('viewPost', community_url=community_url, post_id=new_post.id))
         return render_template("createpost.html", form=form)
     else:
@@ -340,7 +352,8 @@ def editPost(community_url, post_id):
                 # post.setLinkedItem(form.item_id.data)
                 post.setBody(form.body.data)
                 db.session.commit()
-                flash(f"Post {post.id} in Community {community_url} edited", "success")
+                flash(
+                    f"Post {post.id} in Community {community_url} edited", "success")
                 return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
         form.body.data = post.body
         return render_template("editpost.html", form=form, community_url=community_url, post_id=post_id)
