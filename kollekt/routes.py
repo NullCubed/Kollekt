@@ -216,8 +216,6 @@ def addNewCollectionItem():
         collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
                                          desc=form.text.data, collection="form.collection.data",
                                          likes=0, dislikes=0, name=form.name.data)
-        # text2 = form.text.data
-        # community2 = form.community.data
         return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
     return render_template("addItem.html", title='Add Item', form=form)
 
