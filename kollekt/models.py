@@ -256,7 +256,6 @@ class Communities(db.Model):
         self.desc = desc
         self.url = name.lower().translate({ord(i): None for i in "'.,;:"}).replace('"', "").translate(
             {ord(i): "_" for i in " -"})
-        self.posts = []
         self.collections = []
         self.users = []
 
@@ -290,7 +289,9 @@ class Communities(db.Model):
         Returns all posts in the community
         :return: list of references to posts in the community
         """
-        return self.posts
+        posts = Posts.query.filter_by(community_id=self.id).all()
+        print(posts)
+        return posts
 
     def addPost(self, post):
         """
