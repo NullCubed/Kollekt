@@ -23,7 +23,7 @@
                                 {% endif %}
                                 </strong>
                                 {{ post_to_view.getTimestamp()[1] }}</p>
-                                {% if post_to_view.getAuthor() == current_user %}
+                                {% if current_user.admin == True or post_to_view.getAuthor() == current_user%}
                                 <form action="/community/{{ post_to_view.getCommunity().url }}/{{ post_to_view.id }}/edit" method="post">
                                     <input name="edit" type="submit" value="Edit">
                                 </form>
@@ -36,7 +36,7 @@
                     <div class="row">
                         <div class="col">
                             <h4> {{comment_count}} Comments</h4>
-                            {% if current_user.is_authenticated and community.userHasJoined(current_user) %}
+                            {% if current_user.is_authenticated and (current_user.admin == True or community.userHasJoined(current_user)) %}
                             <form action="" method="post" id="comment_button" style="display: block;">
                                 {{ form.hidden_tag() }}
                                 <div class="form-group">
@@ -70,7 +70,7 @@
                                         </strong>
                                         {{ j.getTimestamp()[1] }}
                                     </p>
-                                    {% if j.getAuthor() == current_user and j.isLocked() == False %}
+                                    {% if (current_user.admin == True or j.getAuthor() == current_user) and j.isLocked() == False %}
                                     <form action="/comment/{{ j.id }}/delete">
                                         <input name="delete" style="font-size: 1.0625em;" type="submit" value="Delete...">
                                     </form>

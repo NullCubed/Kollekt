@@ -85,3 +85,8 @@ class UserForm(FlaskForm):
 class createCommentForm(FlaskForm):
     text = TextAreaField('Leave a comment below...', validators=[DataRequired()])
     submit = SubmitField('Post!')
+
+
+class joinLeaveCommunityForm(FlaskForm):
+    submitJoin = SubmitField('Join')
+    submitLeave = SubmitField('Leave')

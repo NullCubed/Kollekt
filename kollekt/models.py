@@ -290,7 +290,7 @@ class Communities(db.Model):
         Returns all posts in the community
         :return: list of references to posts in the community
         """
-        return self.posts
+        return Posts.query.filter_by(community_id=self.id).all()
 
     def addPost(self, post):
         """
@@ -309,6 +309,13 @@ class Communities(db.Model):
         if post in self.posts:
             self.posts.remove(post)
             db.session.commit()
+
+    def clearPosts(self):
+        # deletes all posts in a community; should only be called prior to deleting the community
+        for i in self.getPosts():
+            i.clearComments()
+            db.session.delete(i)
+        db.session.commit()
 
     def userHasJoined(self, user_id):
         """
@@ -499,7 +506,7 @@ class Comments(db.Model):
         self.text = text
         db.session.commit()
 
-    def lockPost(self):
+    def lock(self):
         self.text = "This comment has been removed by an administrator."
         self.locked = True
         db.session.commit()

@@ -7,11 +7,16 @@
 {% else %}
 <div class="card mb-3">
     <h3 class="card-header">{{ community.name }}</h3>
-    <form action="/community/{{ community.url }}" method="post">
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
         {% if community.userHasJoined(current_user) %}
-        <input name="join" style="font-size:18px;" type="submit" value="Leave Community">
+        <div class="form-group">
+            {{ form.submitLeave(class="btn btn-outline-danger") }}
+        </div>
         {% else %}
-        <input name="join" style="font-size:18px;" type="submit" value="Join Community">
+        <div class="form-group">
+            {{ form.submitJoin(class="btn btn-outline-success") }}
+        </div>
         {% endif %}
     </form>
     <div>

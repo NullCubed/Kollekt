@@ -6,7 +6,8 @@ from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
 from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, \
-    deleteCommunityForm, createPostForm, createCommentForm, editPostForm, deletePostForm, createCollectionForm
+    deleteCommunityForm, createPostForm, createCommentForm, editPostForm, deletePostForm, createCollectionForm, \
+    joinLeaveCommunityForm
 
 
 # from .Components.Community import Community
@@ -122,25 +123,19 @@ def userCard(id):
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
     community = Communities.query.filter_by(url=url).first()
-    posts_to_display = []
-    all_posts = Posts.query.all()
-    all_posts.reverse()
-    k = 0
-    for j in all_posts:
-        k += 1
-        if j.community_id == community.id:
-            posts_to_display.append(j)
-        if k == 5:
-            break
-    if request.method == 'POST':
+    posts_to_display = community.getPosts()
+    posts_to_display.reverse()
+    form = joinLeaveCommunityForm()
+    if form.validate_on_submit():
         if current_user.is_authenticated:
-            if request.form['join'] == 'Join Community':
+            if form.submitJoin.data:
                 community.addUser(current_user)
-            elif request.form['join'] == 'Leave Community':
+            elif form.submitLeave.data:
                 community.removeUser(current_user)
         else:
             return redirect(url_for('login'))
-    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display)
+    return render_template('community.html', community=community, user=current_user,
+                           posts_to_display=posts_to_display, form=form)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -238,6 +233,7 @@ def adminpage():
         checkCommunity = Communities.query.filter_by(
             name=delform.name.data).first()
         if checkCommunity:
+            checkCommunity.clearPosts()
             db.session.delete(checkCommunity)
             db.session.commit()
             flash(f"Community Deleted {checkCommunity.name}", "success")
@@ -304,8 +300,11 @@ def viewPost(community_url, post_id):
 @app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])
 def addNewPost(community_url):
     if current_user.is_authenticated:
+        print(current_user)
+        print(current_user.admin)
         community = Communities.query.filter_by(url=community_url).first()
-        if community.userHasJoined(current_user) is False:
+        print(community.userHasJoined(current_user))
+        if community.userHasJoined(current_user) is False and current_user.admin is None:
             flash("Must be part of this community to make a post!", "danger")
             return redirect(url_for('communityPage', url=community_url))
         form = createPostForm()
@@ -330,7 +329,7 @@ def editPost(community_url, post_id):
     post = Posts.query.filter_by(id=post_id).first()
     if post is None:
         return redirect(url_for('home'))
-    if current_user.is_authenticated and post.getAuthor() == current_user:
+    if current_user.is_authenticated and (current_user.admin is True or post.getAuthor() == current_user):
         form = editPostForm()
         if form.validate_on_submit():
             if form.body.data == "":  # and form.item_id.data == "":
@@ -353,7 +352,7 @@ def delPost(community_url, post_id):
     post = Posts.query.filter_by(id=post_id).first()
     if post is None:
         return redirect(url_for('home'))
-    if current_user.is_authenticated and post.getAuthor() == current_user:
+    if current_user.is_authenticated and (current_user.admin is True or post.getAuthor() == current_user):
         form = deletePostForm()
         if form.validate_on_submit():
             if form.submitCancel.data:
@@ -377,9 +376,13 @@ def delComment(comment_id):
         return redirect(url_for('home'))
     post = comment.getPost()
     community = post.getCommunity()
-    if current_user.is_authenticated and comment.getAuthor() == current_user and comment.isLocked() is False:
-        db.session.delete(comment)
-        db.session.commit()
-        flash("Comment deleted", "danger")
+    if current_user.is_authenticated and comment.isLocked() is False:
+        if comment.getAuthor() == current_user:
+            db.session.delete(comment)
+            db.session.commit()
+            flash("Comment deleted", "danger")
+        elif current_user.admin is True:
+            comment.lock()
+            flash("Comment removed", "danger")
     # if current_user is admin, lock the post instead of deleting it
     return redirect(url_for('viewPost', community_url=community.url, post_id=post.id))
