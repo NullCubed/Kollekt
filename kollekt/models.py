@@ -95,28 +95,6 @@ class CollectionItem(db.Model):
         with open(filename, 'wb') as file:
             file.write(data)
 
-    def __init__(self, **kwargs):
-        for arg in kwargs.keys():
-            try:
-                if arg == 'photo':
-                    self.picture = self.convertToBinaryData(arg)
-                else:
-                    self.arg = kwargs[arg]
-                    print(self.arg)
-            except NameError:
-                print("Variable " + arg + " doesn't exist!")
-        if self.picture is None:
-            self.picture = self.convertToBinaryData('bantest.png')
-        # self.picture_path = 'kollekt/static/bantest.png'
-        # self.picture = self.convertToBinaryData(self.picture_path)
-
-    # def __init__(self, name, desc, collection_id, photo):
-    #     self.name = name
-    #     self.desc = desc
-    #     self.collection_id = collection_id
-    #     self.picture_path = 'kollekt/static/bantest.png'
-    #     self.picture = self.convertToBinaryData(self.picture_path)
-
     def __init__(self, user, community, photo, desc, collection, likes, dislikes, name):
         self.collection = collection
         self.user = user
