@@ -35,7 +35,8 @@ class LoginForm(FlaskForm):
 class ItemAddForm(FlaskForm):
     community = StringField('Community', validators=[DataRequired()])
     text = StringField('Description', validators=[DataRequired()])
-    photo = FileField('Your Photo')
+    photo = FileField('Your Photo', validators=[FileRequired(),
+                                                FileAllowed(['jpg', 'png'], 'Images Only')])
     name = StringField("Item Name")
     submit = SubmitField('Add')
 
