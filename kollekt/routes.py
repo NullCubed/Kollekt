@@ -201,18 +201,22 @@ def register():
 
 @app.route("/addItem", methods=['GET', 'POST'])
 def addNewCollectionItem():
-    form = ItemAddForm()
-    if form.validate_on_submit():
-        filename = secure_filename(form.photo.data.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file_path = file_path.replace("\\", "/")
-        form.photo.data.save(file_path)
-        collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
+    if current_user.is_authenticated:
+        form = ItemAddForm()
+        if form.validate_on_submit():
+            filename = secure_filename(form.photo.data.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file_path = file_path.replace("\\", "/")
+            form.photo.data.save(file_path)
+            collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
                                          desc=form.text.data, collection="form.collection.data",
                                          likes=0, dislikes=0, name=form.name.data)
-
-        return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
-    return render_template("addItem.html", title='Add Item', form=form)
+            db.session.add(collection_item)
+            db.session.commit()
+            return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
+        return render_template("addItem.html", title='Add Item', form=form)
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route("/adminpage", methods=['GET', 'POST'])

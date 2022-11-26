@@ -37,7 +37,7 @@ class ItemAddForm(FlaskForm):
     text = StringField('Description', validators=[DataRequired()])
     photo = FileField('Your Photo', validators=[FileRequired(),
                                                 FileAllowed(['jpg', 'png'], 'Images Only')])
-    name = StringField("Item Name")
+    name = StringField("Item Name", validators=[DataRequired()])
     submit = SubmitField('Add')
 
 
