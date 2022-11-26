@@ -249,7 +249,8 @@ class Communities(db.Model):
     desc = db.Column(db.String)
     collections = db.relationship(
         'Collections', backref='communities', lazy=True)
-    users = db.relationship('User', secondary=users_in_community, backref='users')
+    users = db.relationship(
+        'User', secondary=users_in_community, backref='users')
 
     def __init__(self, name, desc):
         self.name = name
@@ -290,7 +291,9 @@ class Communities(db.Model):
         Returns all posts in the community
         :return: list of references to posts in the community
         """
-        return self.posts
+        posts = Posts.query.filter_by(community_id=self.id).all()
+        print(posts)
+        return posts
 
     def addPost(self, post):
         """
