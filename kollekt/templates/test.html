@@ -51,7 +51,22 @@ margin-top: 10px;">
                 </div>
               </div>
               {% endfor %}
-        </div>    
+        </div>
+
+     <div class="card border-secondary mb-3" style="margin-left: 10px; margin-right: 10px;
+    margin-top: 12px; text-align: center;">
+        <div class="card-header bg-primary" style="text-align: center">
+            My Collections
+        </div>
+        {% for i in users_collections %}
+        <div class="card-body" style="text-align: center;">
+            <div class="card border-primary mb-3" style="max-width: 200rem;">
+                <div class="card-body">
+                  <h4 class="card-title">{{i.name}}</h4>
+                </div>
+              </div>
+              {% endfor %}
+        </div>
 
     {%endblock content %}
 

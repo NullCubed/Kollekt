@@ -61,6 +61,7 @@ def userProfile():
     allCommunities = Communities.query.all()
     usersCommunities = []
     if current_user.is_authenticated:
+        collection_user = current_user.collections
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
             finalUserList = []
@@ -74,7 +75,7 @@ def userProfile():
     sampleCommunities = Communities.query.all()
     return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
-                           user=current_user, users_posts=users_posts)
+                           user=current_user, users_posts=users_posts, users_collections=collection_user)
 
 
 @app.route("/logout")
@@ -136,8 +137,23 @@ def communityPage(url):
         if current_user.is_authenticated:
             if request.form['join'] == 'Join Community':
                 community.addUser(current_user)
+
+
+
+                #This creates a collection, using values from the community, and then adds it to the user
+                new_collection = Collections(name=community.name,desc=community.desc,user_id=current_user.id,community_id=community.id)
+                print(new_collection.getId())
+                current_user.addCollection(new_collection)
+                community.addCollection(new_collection)
+
             elif request.form['join'] == 'Leave Community':
                 community.removeUser(current_user)
+
+                for i in community.collections:
+                    if i.getId() == current_user.id:
+                        print('removed')
+                        current_user.removeCollection(i)
+
         else:
             return redirect(url_for('login'))
     return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display)

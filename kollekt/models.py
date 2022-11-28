@@ -58,6 +58,7 @@ class User(db.Model, UserMixin):
         self.username = username
         self.password = generate_password_hash(password)
         self.email = email
+        self.collections = []
 
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)
@@ -65,7 +66,15 @@ class User(db.Model, UserMixin):
     def getUserInfo(self):
         user = db.get_or_404(User, self.id)
         return user
-
+    def addCollection(self,collection):
+        self.collections.append(collection)
+        db.session.commit()
+    def removeCollection(self,collection):
+        if collection in self.collections:
+            print(self.collections)
+            self.collections.remove(collection)
+            print(self.collections)
+            db.session.commit()
     def __repr__(self):
         return f'<User {self.username}, {self.email}, {self.password}>'
 
@@ -230,6 +239,7 @@ class Collections(db.Model):
         self.desc = desc
         self.user_id = user_id
         self.community_id = community_id
+        self.items = []
 
     def __repr__(self):
         return f'<Collection {self.name}, {self.items}, {self.community_id}>'
@@ -240,7 +250,8 @@ class Collections(db.Model):
         return f'<img src=\"../static/bantest.png\" width=100 height=100/>' \
                f'<br />' \
                f'<h4 class=\"text-center\">{item.name}<br/>{item.desc}</h4>'
-
+    def getId(self):
+        return self.user_id
 
 class Communities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
