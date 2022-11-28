@@ -141,17 +141,18 @@ def communityPage(url):
 
 
                 #This creates a collection, using values from the community, and then adds it to the user
-                new_collection = Collections(name=community.name,desc=community.desc,user_id=current_user.id,community_id=community.id)
-                current_user.addCollection(new_collection)
-                community.addCollection(new_collection)
+                # new_collection = Collections(name=community.name,desc=community.desc,user_id=current_user.id,community_id=community.id)
+                # current_user.addCollection(new_collection)
+                # community.addCollection(new_collection)
 
             elif request.form['join'] == 'Leave Community':
                 community.removeUser(current_user)
-                for i in community.collections_list:
-                    if i.user_id == current_user.id:
-                        if i.name == community.name:
-                            community.collections_list.remove(i)
-                            #current_user.removeCollection(i)
+
+                # for i in community.collections_list:
+                #     if i.user_id == current_user.id:
+                #         if i.name == community.name:
+                #             community.collections_list.remove(i)
+                #             #current_user.removeCollection(i)
 
                 # for i in community.collections_list:
                 #     if i.getId() == current_user.id:

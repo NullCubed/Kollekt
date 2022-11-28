@@ -52,13 +52,13 @@ class User(db.Model, UserMixin):
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections_list = db.relationship(
-        'Collections', backref='collectionAuthor', lazy=True)
+        'Collections', backref='collectionAuthor', lazy=True, cascade="all, delete-orphan")
 
     def __init__(self, username, email, password):
         self.username = username
         self.password = generate_password_hash(password)
         self.email = email
-        self.collections = []
+       # self.collections = []
 
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)
@@ -76,7 +76,7 @@ class User(db.Model, UserMixin):
             #print(self.collections_list)
             db.session.commit()
     def __repr__(self):
-        return f'<User {self.username}, {self.email}, {self.password}>'
+        return f'<User {self.username}, {self.email}, {self.password}, {self.collections}>'
 
 
 class CollectionItem(db.Model):
@@ -259,8 +259,8 @@ class Communities(db.Model):
     url = db.Column(db.String)
     desc = db.Column(db.String)
     collections_list = db.relationship(
-        'Collections', backref='communities', lazy=True)
-    users = db.relationship('User', secondary=users_in_community, backref='users')
+        'Collections', backref='communities', lazy=True, cascade="all, delete-orphan")
+    users = db.relationship('User', secondary=users_in_community, backref='users', cascade="all, delete-orphan")
 
     def __init__(self, name, desc):
         self.name = name
