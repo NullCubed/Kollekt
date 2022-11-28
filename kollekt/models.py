@@ -51,7 +51,7 @@ class User(db.Model, UserMixin):
     profile_picture = db.Column(db.BLOB)
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
-    collections = db.relationship(
+    collections_list = db.relationship(
         'Collections', backref='collectionAuthor', lazy=True)
 
     def __init__(self, username, email, password):
@@ -67,13 +67,13 @@ class User(db.Model, UserMixin):
         user = db.get_or_404(User, self.id)
         return user
     def addCollection(self,collection):
-        self.collections.append(collection)
+        self.collections_list.append(collection)
         db.session.commit()
     def removeCollection(self,collection):
-        if collection in self.collections:
-            print(self.collections)
-            self.collections.remove(collection)
-            print(self.collections)
+        if collection in self.collections_list:
+            #print(self.collections_list)
+            self.collections_list.remove(collection)
+            #print(self.collections_list)
             db.session.commit()
     def __repr__(self):
         return f'<User {self.username}, {self.email}, {self.password}>'
@@ -229,7 +229,7 @@ class Collections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    items = db.relationship('CollectionItem', backref='collections', lazy=True)
+    items = db.relationship('CollectionItem', backref='Collections', lazy=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
@@ -258,7 +258,7 @@ class Communities(db.Model):
     name = db.Column(db.String)
     url = db.Column(db.String)
     desc = db.Column(db.String)
-    collections = db.relationship(
+    collections_list = db.relationship(
         'Collections', backref='communities', lazy=True)
     users = db.relationship('User', secondary=users_in_community, backref='users')
 
@@ -276,15 +276,15 @@ class Communities(db.Model):
         Returns a list of collections in the community
         :return: list of references to collections in the community
         """
-        return self.collections
+        return self.collections_list
 
     def addCollection(self, collection):
         """
         Adds a collection to the community
         :return: none
         """
-        if collection not in self.collections:
-            self.collections.append(collection)
+        if collection not in self.collections_list:
+            self.collections_list.append(collection)
             db.session.commit()
 
     def removeCollection(self, collection):
@@ -293,7 +293,7 @@ class Communities(db.Model):
         :return: none
         """
         if collection in self.collections:
-            self.collections.remove(collection)
+            self.collections_list.remove(collection)
             db.session.commit()
 
     def getPosts(self):

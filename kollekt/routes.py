@@ -61,7 +61,7 @@ def userProfile():
     allCommunities = Communities.query.all()
     usersCommunities = []
     if current_user.is_authenticated:
-        collection_user = current_user.collections
+        collection_user = current_user.collections_list
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
             finalUserList = []
@@ -142,17 +142,24 @@ def communityPage(url):
 
                 #This creates a collection, using values from the community, and then adds it to the user
                 new_collection = Collections(name=community.name,desc=community.desc,user_id=current_user.id,community_id=community.id)
-                print(new_collection.getId())
                 current_user.addCollection(new_collection)
                 community.addCollection(new_collection)
 
             elif request.form['join'] == 'Leave Community':
                 community.removeUser(current_user)
+                for i in community.collections_list:
+                    if i.user_id == current_user.id:
+                        if i.name == community.name:
+                            community.collections_list.remove(i)
+                            #current_user.removeCollection(i)
 
-                for i in community.collections:
-                    if i.getId() == current_user.id:
-                        print('removed')
-                        current_user.removeCollection(i)
+                # for i in community.collections_list:
+                #     if i.getId() == current_user.id:
+                #         print(current_user.collections_list)
+                #         print('i is:',i)
+                #         print('removed')
+                #         current_user.removeCollection(i)
+                #         print(current_user.collections_list)
 
         else:
             return redirect(url_for('login'))
