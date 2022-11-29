@@ -231,7 +231,7 @@ class Collections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    items = db.relationship('CollectionItem', backref='Collections', lazy=True)
+    items = db.relationship('CollectionItem', backref='Collections', lazy=True, cascade="all, delete-orphan")
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
