@@ -1,24 +1,21 @@
 import pytest
-from kollekt import create_app
 
-@pytest.fixture()
-def app():
-    app = create_app()
-    app.config.update({
-        "TESTING": True,
-    })
-
-    # other setup can go here
-
-    yield app
-
-    # clean up / reset resources here
+@pytest.fixture(scope='module')
+def app(request):
+    from kollekt import create_app
+    return create_app()
 
 
-@pytest.fixture()
-def client(app):
-    with app.test_client() as client:
-        yield client
+@pytest.fixture(autouse=True)
+def app_context(app):
+    """Creates a flask app context"""
+    with app.app_context():
+        yield app
+
+
+@pytest.fixture
+def client(app_context):
+    return app_context.test_client(use_cookies=True)
 
 
 @pytest.fixture()
@@ -35,5 +32,5 @@ def test_login(client):
 
 def test_logged_out_homepage(client):
 
-    response = client.get("/home")
-    assert b"Kollek" in response.data
+    response = client.get("/")
+    assert b"Kollekt" in response.data
