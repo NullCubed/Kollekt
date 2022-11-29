@@ -226,6 +226,7 @@ def addNewCollectionItem(collection_id):
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file_path = file_path.replace("\\", "/")
             form.photo.data.save(file_path)
+            flash("IMAGE UPLOADED!")
             collection_item = CollectionItem(user=current_user.id, community=add_community, photo=filename,
                                              desc=form.text.data, collection=add_collection, name=form.name.data)
 
@@ -233,6 +234,7 @@ def addNewCollectionItem(collection_id):
 
             db.session.add(collection_item)
             db.session.commit()
+
             return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
         return render_template("addItem.html", title='Add Item', form=form)
     else:
