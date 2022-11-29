@@ -61,7 +61,7 @@ def userProfile():
     allCommunities = Communities.query.all()
     usersCommunities = []
     if current_user.is_authenticated:
-        collection_user = current_user.collections_list
+        collection_user = current_user.collections
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
             finalUserList = []
@@ -137,33 +137,12 @@ def communityPage(url):
         if current_user.is_authenticated:
             if request.form['join'] == 'Join Community':
                 community.addUser(current_user)
-
-
-
-                #This creates a collection, using values from the community, and then adds it to the user
-                # new_collection = Collections(name=community.name,desc=community.desc,user_id=current_user.id,community_id=community.id)
-                # current_user.addCollection(new_collection)
-                # community.addCollection(new_collection)
-
             elif request.form['join'] == 'Leave Community':
                 community.removeUser(current_user)
                 for i in Collections.query.filter_by(user_id=current_user.id):
                     if i.community_id == community.id:
                         db.session.delete(i)
                         db.session.commit()
-                # for i in community.collections_list:
-                #     if i.user_id == current_user.id:
-                #         if i.name == community.name:
-                #             community.collections_list.remove(i)
-                #             #current_user.removeCollection(i)
-
-                # for i in community.collections_list:
-                #     if i.getId() == current_user.id:
-                #         print(current_user.collections_list)
-                #         print('i is:',i)
-                #         print('removed')
-                #         current_user.removeCollection(i)
-                #         print(current_user.collections_list)
 
         else:
             return redirect(url_for('login'))
@@ -212,7 +191,7 @@ def register():
         user = User.query.filter_by(username=username).first()
         eml = User.query.filter_by(email=email).first()
         if not user and not eml:
-            user = User(username, email, password)
+            user = User(username, email, password, False)
         elif user:
             flash("Username already taken", "danger")
             return redirect(url_for('register'))
@@ -226,21 +205,31 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route("/addItem", methods=['GET', 'POST'])
-def addNewCollectionItem():
+@app.route("/addItem/<collection_id>", methods=['GET', 'POST'])
+def addNewCollectionItem(collection_id):
     if current_user.is_authenticated:
         form = ItemAddForm()
+        print('added12', Collections.query.filter_by(id=collection_id).first())
+        add_community = Collections.query.filter_by(id=collection_id).first().community_id
+        print('add_community:', add_community)
+        add_collection = Collections.query.filter_by(id=collection_id).first().id
+        print("add_collection:", add_collection)
+
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file_path = file_path.replace("\\", "/")
             form.photo.data.save(file_path)
-            collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
-                                         desc=form.text.data, collection="form.collection.data",
-                                         likes=0, dislikes=0, name=form.name.data)
+            print('user:',current_user.id)
+            collection_item = CollectionItem(user=current_user.id,community=add_community,photo=filename,
+                                             desc=form.text.data, collection=add_collection,name=form.name.data)
+
+            print("item",collection_item)
+
             db.session.add(collection_item)
             db.session.commit()
             return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
+        print(form.errors)
         return render_template("addItem.html", title='Add Item', form=form)
     else:
         return redirect(url_for('login'))
@@ -248,6 +237,7 @@ def addNewCollectionItem():
 
 @app.route("/adminpage", methods=['GET', 'POST'])
 def adminpage():
+    print(current_user.admin)
     form = createCommunityForm()
     delform = deleteCommunityForm()
     allCommunities = Communities.query.all()
@@ -269,6 +259,12 @@ def adminpage():
         checkCommunity = Communities.query.filter_by(
             name=delform.name.data).first()
         if checkCommunity:
+            postsToDelte = checkCommunity.getPosts()
+            for i in postsToDelte:
+                db.session.delete(i)
+            collectionsToDelete = checkCommunity.getCollections()
+            for i in collectionsToDelete:
+                db.session.delete(i)
             db.session.delete(checkCommunity)
             db.session.commit()
             flash(f"Community Deleted {checkCommunity.name}", "success")
@@ -284,7 +280,8 @@ def createCollection(community_id):
     form = createCollectionForm()
 
     if form.validate_on_submit():
-        collection = Collections(form.name.data, form.desc.data, current_user.id, community_id)
+        collection = Collections(
+            form.name.data, form.desc.data, current_user.id, community_id)
         db.session.add(collection)
         db.session.commit()
         return redirect(url_for('home'))
@@ -301,11 +298,13 @@ def viewCollection(collection_id):
 def filldb():
     db.drop_all()
     db.create_all()
-    db.session.add(User("Admin", "admin@kollekt.com", "testing"))
+    db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
     db.session.add(Communities("Watches", "Timepieces"))
     db.session.add(Communities("Shoes", "Gloves for your feet"))
-    db.session.add(Collections("Admins Shoes", "A collection of all of admins shoes", 1, 2))
-    db.session.add(Collections("Admins Watches", "A collection of all of admins shoes", 1, 1))
+    db.session.add(Collections(
+        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Collections("Admins Watches",
+                               "A collection of all of admins shoes", 1, 1))
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
     allCommunities = Communities.query.all()
@@ -323,11 +322,13 @@ def viewPost(community_url, post_id):
         return redirect(url_for('viewPost', community_url=post_to_view.getCommunity().url, post_id=post_id))
     form = createCommentForm()
     if form.validate_on_submit():
-        new_comment = Comments(author_id=current_user.id, text=form.text.data, post_id=post_id)
+        new_comment = Comments(author_id=current_user.id,
+                               text=form.text.data, post_id=post_id)
         db.session.add(new_comment)
         db.session.commit()
     comments = Comments.query.filter_by(post_id=post_id).all()
-    form.text.data = ""  # clears comment box upon posting; otherwise comment text remains in box
+    # clears comment box upon posting; otherwise comment text remains in box
+    form.text.data = ""
     return render_template('viewpost.html', post_to_view=post_to_view, community=community,
                            comments=comments, comment_count=len(comments), form=form)
 
@@ -349,7 +350,8 @@ def addNewPost(community_url):
                                  community_id=community.id)
                 db.session.add(new_post)
                 db.session.commit()
-                flash(f"Post {new_post.id} created in Community {community.url}", "success")
+                flash(
+                    f"Post {new_post.id} created in Community {community.url}", "success")
                 return redirect(url_for('viewPost', community_url=community_url, post_id=new_post.id))
         return render_template("createpost.html", form=form)
     else:
@@ -371,7 +373,8 @@ def editPost(community_url, post_id):
                 # post.setLinkedItem(form.item_id.data)
                 post.setBody(form.body.data)
                 db.session.commit()
-                flash(f"Post {post.id} in Community {community_url} edited", "success")
+                flash(
+                    f"Post {post.id} in Community {community_url} edited", "success")
                 return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
         form.body.data = post.body
         return render_template("editpost.html", form=form, community_url=community_url, post_id=post_id)
