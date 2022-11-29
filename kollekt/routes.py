@@ -21,7 +21,7 @@ def home():
     tempCommunities = allCommunities
     tempUsers = []
     allItems = CollectionItem.query.all()
-    print('all items:',allItems)
+
     if current_user.is_authenticated:
 
         for community in allCommunities:
@@ -68,7 +68,7 @@ def userProfile():
         for i in collection_user:
             for i in i.items:
                 items_user.append(i)
-        print(items_user)
+
 
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
@@ -218,27 +218,22 @@ def register():
 def addNewCollectionItem(collection_id):
     if current_user.is_authenticated:
         form = ItemAddForm()
-        print('added12', Collections.query.filter_by(id=collection_id).first())
         add_community = Collections.query.filter_by(id=collection_id).first().community_id
-        print('add_community:', add_community)
         add_collection = Collections.query.filter_by(id=collection_id).first().id
-        print("add_collection:", add_collection)
 
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file_path = file_path.replace("\\", "/")
             form.photo.data.save(file_path)
-            print('user:', current_user.id)
             collection_item = CollectionItem(user=current_user.id, community=add_community, photo=filename,
                                              desc=form.text.data, collection=add_collection, name=form.name.data)
 
-            print("item", collection_item)
+
 
             db.session.add(collection_item)
             db.session.commit()
             return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
-        print(form.errors)
         return render_template("addItem.html", title='Add Item', form=form)
     else:
         return redirect(url_for('login'))
@@ -317,7 +312,7 @@ def filldb():
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
     allCommunities = Communities.query.all()
-    # print(allCommunities)
+
     return redirect(url_for('home'))
 
 
