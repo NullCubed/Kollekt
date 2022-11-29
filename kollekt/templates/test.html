@@ -31,7 +31,7 @@ margin-top: 10px;">
         {% endfor %}
         <h2>
         <button class="btn btn-sm btn-outline-dark" type="button"> My Communities </button>
-        <button class="btn btn-sm btn-outline-dark" type="button"> <a href="/addItem">Add an Item</a> </button>
+
         </div>
         </h2>
     </div>
@@ -62,7 +62,9 @@ margin-top: 10px;">
         <div class="card-body" style="text-align: center;">
             <div class="card border-primary mb-3" style="max-width: 200rem;">
                 <div class="card-body">
-                  <h4 class="card-title">{{i.name}}</h4>
+                            <a href="/collections/view/{{ i.id }}">{{ i.name }}</a>
+                                </div>
+                            </a>
                 </div>
               </div>
               {% endfor %}

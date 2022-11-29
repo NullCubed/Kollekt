@@ -87,7 +87,7 @@ class CollectionItem(db.Model):
     likes = db.Column(db.Integer)
     dislikes = db.Column(db.Integer)
     user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    collection = db.relationship('Collections', lazy=True)
+    #collection = db.relationship('Collections', lazy=True)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
     picture = db.Column(db.BLOB)
@@ -260,7 +260,7 @@ class Communities(db.Model):
     desc = db.Column(db.String)
     collections_list = db.relationship(
         'Collections', backref='communities', lazy=True, cascade="all, delete-orphan")
-    users = db.relationship('User', secondary=users_in_community, backref='users', cascade="all, delete-orphan")
+    users = db.relationship('User', secondary=users_in_community, backref='users')
 
     def __init__(self, name, desc):
         self.name = name
@@ -349,6 +349,7 @@ class Communities(db.Model):
         """
         if self.userHasJoined(user_id):
             self.users.remove(user_id)
+
             db.session.commit()
 
     def getUsers(self):

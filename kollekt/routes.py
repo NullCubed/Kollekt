@@ -147,7 +147,10 @@ def communityPage(url):
 
             elif request.form['join'] == 'Leave Community':
                 community.removeUser(current_user)
-
+                for i in Collections.query.filter_by(user_id=current_user.id):
+                    if i.community_id == community.id:
+                        db.session.delete(i)
+                        db.session.commit()
                 # for i in community.collections_list:
                 #     if i.user_id == current_user.id:
                 #         if i.name == community.name:
