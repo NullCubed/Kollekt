@@ -54,10 +54,11 @@ class User(db.Model, UserMixin):
     collections = db.relationship(
         'Collections', backref='collectionAuthor', lazy=True)
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, email, password, admin):
         self.username = username
         self.password = generate_password_hash(password)
         self.email = email
+        self.admin = admin
 
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)

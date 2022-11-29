@@ -185,7 +185,7 @@ def register():
         user = User.query.filter_by(username=username).first()
         eml = User.query.filter_by(email=email).first()
         if not user and not eml:
-            user = User(username, email, password)
+            user = User(username, email, password, False)
         elif user:
             flash("Username already taken", "danger")
             return redirect(url_for('register'))
@@ -217,6 +217,7 @@ def addNewCollectionItem():
 
 @app.route("/adminpage", methods=['GET', 'POST'])
 def adminpage():
+    print(current_user.admin)
     form = createCommunityForm()
     delform = deleteCommunityForm()
     allCommunities = Communities.query.all()
@@ -277,7 +278,7 @@ def viewCollection(collection_id):
 def filldb():
     db.drop_all()
     db.create_all()
-    db.session.add(User("Admin", "admin@kollekt.com", "testing"))
+    db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
     db.session.add(Communities("Watches", "Timepieces"))
     db.session.add(Communities("Shoes", "Gloves for your feet"))
     db.session.add(Collections(
