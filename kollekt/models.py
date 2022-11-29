@@ -87,6 +87,7 @@ class CollectionItem(db.Model):
     photo = db.Column(db.String)
     # likes = db.Column(db.Integer)
     # dislikes = db.Column(db.Integer)
+    community_id = db.Column(db.Integer, db.ForeignKey('communities.id'), nullable=False)
     user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
@@ -107,7 +108,7 @@ class CollectionItem(db.Model):
     def __init__(self, user, community, photo, desc, collection, name):
         self.collection_id = collection
         self.user = user
-        self.community = community
+        self.community_id = community
         self.photo = photo
         self.desc = desc
         self.likes = 0
@@ -144,7 +145,7 @@ class CollectionItem(db.Model):
             self.dislikes -= 1
             return self.dislikes
     def __repr__(self):
-        return f'<CollectionItem {self.name}, {self.user}, {self.community}, {self.collection_id}>'
+        return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
     # def __init__(self, user, community, photo, desc, collection, likes, dislikes, name):
     #     self.collection = collection
     #     self.user = user

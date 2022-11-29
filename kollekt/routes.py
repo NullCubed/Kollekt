@@ -20,6 +20,8 @@ def home():
     allCommunities = Communities.query.all()
     tempCommunities = allCommunities
     tempUsers = []
+    allItems = CollectionItem.query.all()
+    print('all items:',allItems)
     if current_user.is_authenticated:
 
         for community in allCommunities:
@@ -46,7 +48,7 @@ def home():
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts)
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allItems=allItems)
 
 
 @app.route("/userProfile")
@@ -62,6 +64,12 @@ def userProfile():
     usersCommunities = []
     if current_user.is_authenticated:
         collection_user = current_user.collections
+        items_user = []
+        for i in collection_user:
+            for i in i.items:
+                items_user.append(i)
+        print(items_user)
+
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
             finalUserList = []
@@ -75,7 +83,8 @@ def userProfile():
     sampleCommunities = Communities.query.all()
     return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
-                           user=current_user, users_posts=users_posts, users_collections=collection_user)
+                           user=current_user, users_posts=users_posts, users_collections=collection_user,
+                           users_items=items_user)
 
 
 @app.route("/logout")
@@ -220,11 +229,11 @@ def addNewCollectionItem(collection_id):
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file_path = file_path.replace("\\", "/")
             form.photo.data.save(file_path)
-            print('user:',current_user.id)
-            collection_item = CollectionItem(user=current_user.id,community=add_community,photo=filename,
-                                             desc=form.text.data, collection=add_collection,name=form.name.data)
+            print('user:', current_user.id)
+            collection_item = CollectionItem(user=current_user.id, community=add_community, photo=filename,
+                                             desc=form.text.data, collection=add_collection, name=form.name.data)
 
-            print("item",collection_item)
+            print("item", collection_item)
 
             db.session.add(collection_item)
             db.session.commit()
