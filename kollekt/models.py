@@ -54,10 +54,11 @@ class User(db.Model, UserMixin):
     collections = db.relationship(
         'Collections', backref='collectionAuthor', lazy=True)
 
-    def __init__(self, username, email, password):
+    def __init__(self, username, email, password, admin):
         self.username = username
         self.password = generate_password_hash(password)
         self.email = email
+        self.admin = admin
 
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)
@@ -249,7 +250,8 @@ class Communities(db.Model):
     desc = db.Column(db.String)
     collections = db.relationship(
         'Collections', backref='communities', lazy=True)
-    users = db.relationship('User', secondary=users_in_community, backref='users')
+    users = db.relationship(
+        'User', secondary=users_in_community, backref='users')
 
     def __init__(self, name, desc):
         self.name = name
@@ -290,7 +292,9 @@ class Communities(db.Model):
         Returns all posts in the community
         :return: list of references to posts in the community
         """
-        return self.posts
+        posts = Posts.query.filter_by(community_id=self.id).all()
+        print(posts)
+        return posts
 
     def addPost(self, post):
         """
