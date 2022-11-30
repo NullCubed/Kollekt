@@ -60,22 +60,24 @@ class User(db.Model, UserMixin):
         self.email = email
         self.admin = admin
 
-
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)
 
     def getUserInfo(self):
         user = db.get_or_404(User, self.id)
         return user
-    def addCollection(self,collection):
+
+    def addCollection(self, collection):
         self.collections_list.append(collection)
         db.session.commit()
-    def removeCollection(self,collection):
+
+    def removeCollection(self, collection):
         if collection in self.collections_list:
-            #print(self.collections_list)
+            # print(self.collections_list)
             self.collections_list.remove(collection)
-            #print(self.collections_list)
+            # print(self.collections_list)
             db.session.commit()
+
     def __repr__(self):
         return f'<User {self.username}, {self.email}, {self.password}, {self.collections}>'
 
@@ -91,6 +93,7 @@ class CollectionItem(db.Model):
     user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
+
     # picture = db.Column(db.BLOB)
     # filename = db.Column(db.String)
 
@@ -144,6 +147,7 @@ class CollectionItem(db.Model):
             self.dislikers.remove(user_who_disliked)
             self.dislikes -= 1
             return self.dislikes
+
     def __repr__(self):
         return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
 
@@ -173,8 +177,10 @@ class Collections(db.Model):
         return f'<img src=\"../static/bantest.png\" width=100 height=100/>' \
                f'<br />' \
                f'<h4 class=\"text-center\">{item.name}<br/>{item.desc}</h4>'
+
     def getId(self):
         return self.user_id
+
 
 class Communities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -185,7 +191,6 @@ class Communities(db.Model):
         'Collections', backref='communities', lazy=True)
     users = db.relationship(
         'User', secondary=users_in_community, backref='users')
-
 
     def __init__(self, name, desc):
         self.name = name
