@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 {% extends "layout.html" %} {% block content %}
+<style>
+    img{
+    width: 200px;
+    }
+</style>
 <html lang="en">
 <div class="container-fluid mt-3">
     <div class="row">
-        <div class="col">
+        <div class="col text-center">
+            <h1 class="text-center"/>{{ collection.name }} </h1>
+            <br>
             <h3 class="text-center">All items inside this collection</h3>
+            <button class="button" type="button"> <a href="{{url_for('addNewCollectionItem', collection_id=collection.id)}}">Add an Item</a> </button>
+            <br>
+
         </div>
     </div>
     {% for item in collection.items %}
@@ -17,12 +27,12 @@
             </div>
             <div class="row d-flex justify-content-center">
                 <div class="col-auto">
-                    <img class="img-fluid" src="../static/newban.PNG" alt=""/>
+                    <img class="img-fluid" src=/static/{{item.photo}} class="img-fluid" alt=""/>
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    <p>{{item.desc}}</p>
+                        <h3 class="text-center"><strong>Description:</strong> {{ item.desc }}</h3>
                 </div>
             </div>
             <div class="row">
