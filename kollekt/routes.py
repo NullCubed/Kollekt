@@ -1,5 +1,5 @@
 import os
-
+import random
 from .models import User, Communities, Collections, Posts, db, CollectionItem, Comments
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
@@ -15,16 +15,18 @@ from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, cr
 
 @app.route("/")
 def home():
-    posts = Posts.query.all()
+    posts = Posts.query.all()[:10]
     usersCommunities = []
     allCommunities = Communities.query.all()
     tempCommunities = allCommunities
     tempUsers = []
-    allCollections = Collections.query.all()
+    allCollections = Collections.query.all()[:10]
+    print(type(allCollections[0]))
     displayCollections = []
+
     for i in allCollections:
         if len(i.items) > 1:
-            displayCollections.append(i)
+            posts.append(i)
 
     if current_user.is_authenticated:
 
@@ -34,6 +36,9 @@ def home():
                 tempUsers.append(i.username)
             if current_user.username in tempUsers:
                 usersCommunities.append(community)
+    random.shuffle(posts)
+    randomSelect = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    random.shuffle(randomSelect)
     tempComnames = []
     tempUserComNames = []
     for i in tempCommunities:
@@ -52,7 +57,7 @@ def home():
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allCollections=displayCollections)
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allCollections=displayCollections, randomSelect=randomSelect)
 
 
 @app.route("/userProfile")
