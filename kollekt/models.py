@@ -395,54 +395,110 @@ class Posts(db.Model):
         self.item_id = item_id
 
     def getAuthor(self):
+        """
+        Finds and returns the author of the post.
+        :return: User object of the author whose ID is stored in self.author_id.
+        """
         return User.query.filter_by(id=self.author_id).first()
 
     def getCommunity(self):
+        """
+        Finds and returns the community to which the post belongs.
+        :return: Object of the community whose ID is stored in self.community_id.
+        """
         return Communities.query.filter_by(id=self.community_id).first()
 
     def getLinkedItem(self):
-        return CollectionItem.query.filter_by(id=self.item_id).first()
+        """
+        Finds and returns the collection item linked to the post. [Possibly deprecated]
+        :return: Item object of the item whose ID is stored in self.item_id. If no item is linked, returns None.
+        """
+        if self.item_id is not None:
+            return CollectionItem.query.filter_by(id=self.item_id).first()
+        else:
+            return None
 
     def setLinkedItem(self, item_id):
+        """
+        Sets a collection item as the linked item to a post IFF the post and the item share the same author.
+        :param: item_id: The ID of the item to be linked.
+        :return: none
+        """
         if item_id is not None:
-            # item = CollectionItem.query.filter_by(id=item_id).first()
+            item = CollectionItem.query.filter_by(id=item_id).first()
             # need a check here for if the new item matches the user
             # this requires users and items or collections to be linked in database
-            if True:  # "if self.getAuthor() == item's owner"
+            if self.getAuthor() == item.user:
                 self.item_id = item_id
         else:
             self.item_id = None
 
     def setBody(self, body):
+        """
+        Sets the body of the post.
+        :param: body: The new text of the post.
+        :return: none
+        """
         self.body = body
 
     def getComments(self):
+        """
+        Parses the database for comments whose parent is the post (self).
+        :return: A list of comment objects.
+        """
         return Comments.query.filter_by(post_id=self.id).all()
 
     def clearComments(self):
-        # deletes all comments under a post; should only be called prior to deleting the post
+        """
+        Deletes all comments whose parent is the post (self). Used prior to deleting the post.
+        :return: none
+        """
         comments = self.getComments()
         for i in comments:
             db.session.delete(i)
         db.session.commit()
 
     def getLikes(self):
+        """
+        Returns the number of likes on a post, determined by the length of the list of users who liked the post. [possibly deprecated]
+        :return: Length of self.likes (integer value).
+        """
         return len(self.likes)
 
     def getDislikes(self):
+        """
+        Returns the number of dislikes on a post, determined by the length of the list of users who disliked the post. [possibly deprecated]
+        :return: Length of self.dislikes (integer value).
+        """
         return len(self.dislikes)
 
     def userHasLiked(self, user_id):
+        """
+        Checks if the specified user has liked the post.
+        :param: user_id: ID of the user to check.
+        :return: boolean
+        """
         if user_id in self.likes:
             return True
         return False
 
     def userHasDisliked(self, user_id):
+        """
+        Checks if the specified user has disliked the post.
+        :param: user_id: ID of the user to check.
+        :return: boolean
+        """
         if user_id in self.dislikes:
             return True
         return False
 
     def toggleLike(self, user_id):
+        """
+        Adds or removes a like from a user to/from the post, depending on if they have liked the post or not.
+        If the user disliked, their dislike is also removed along with a like being added.
+        :param: user_id: ID of the user adding/removing the like.
+        :return: none
+        """
         if user_id in self.likes:
             self.likes.remove(user_id)
         else:
@@ -452,6 +508,12 @@ class Posts(db.Model):
         db.session.commit()
 
     def toggleDislike(self, user_id):
+        """
+        Adds or removes a dislike from a user to/from the post, depending on if they have disliked the post or not.
+        If the user liked, their like is also removed along with a dislike being added.
+        :param: user_id: ID of the user adding/removing the dislike.
+        :return: none
+        """
         if user_id in self.dislikes:
             self.dislikes.remove(user_id)
         else:
@@ -461,14 +523,17 @@ class Posts(db.Model):
         db.session.commit()
 
     def getTimestamp(self):
-        # returns post time if posted today, otherwise returns post date
+        """
+        Retrieves the timestamp of the post. Additionally, check if the timestamp was called on the same date as the
+        calling of the method, and returns a formatted variant of the timestamp for display on a given page.
+        :return: Tuple containing the raw timestamp and the formatted variant ([0] for raw, [1] for formatted).
+        """
         now = str(datetime.datetime.now()).split(" ")
         post_time_for_eval = self.timestamp.split(" ")
         if now[0] == post_time_for_eval[0]:
-            # second return val used specifically for formatting on post display
-            return post_time_for_eval[1].split(".")[0], "at " + post_time_for_eval[1].split(".")[0]
+            return self.timestamp, "at " + post_time_for_eval[1].split(".")[0]
         else:
-            return post_time_for_eval[0], "on " + post_time_for_eval[0]
+            return self.timestamp, "on " + post_time_for_eval[0]
 
     def __repr__(self):
         return f'<Post #{self.id} in Community "{self.getCommunity().url}">'
@@ -491,32 +556,57 @@ class Comments(db.Model):
         self.locked = False
 
     def getAuthor(self):
+        """
+        Finds and returns the author of the comment.
+        :return: User object of the author whose ID is stored in self.author_id.
+        """
         return User.query.filter_by(id=self.author_id).first()
 
     def getPost(self):
+        """
+        Finds and returns the post which the comment belongs to.
+        :return: Post object of the post whose ID is stored in self.post_id.
+        """
         return Posts.query.filter_by(id=self.post_id).first()
 
     def isLocked(self):
+        """
+        Checks if the post has been locked by an administrator.
+        :return: boolean: self.locked
+        """
         return self.locked
 
     def setText(self, text):
+        """
+        Sets the text of the comment.
+        :param: text: the text of the comment.
+        :return: none
+        """
         self.text = text
         db.session.commit()
 
     def lockPost(self):
+        """
+        Locks a comment (which prevents the user from editing/deleting it) and sets the text. Equivalent to a deletion
+        for a reader, while notifying them that the comment was uniquely "removed" through administrator action.
+        :return: none
+        """
         self.text = "This comment has been removed by an administrator."
         self.locked = True
         db.session.commit()
 
     def getTimestamp(self):
-        # returns post time if posted today, otherwise returns post date
+        """
+        Retrieves the timestamp of the post. Additionally, check if the timestamp was called on the same date as the
+        calling of the method, and returns a formatted variant of the timestamp for display on a given page.
+        :return: Tuple containing the raw timestamp and the formatted variant ([0] for raw, [1] for formatted).
+        """
         now = str(datetime.datetime.now()).split(" ")
         post_time_for_eval = self.timestamp.split(" ")
         if now[0] == post_time_for_eval[0]:
-            # second return val used specifically for formatting on post display
-            return post_time_for_eval[1].split(".")[0], "at " + post_time_for_eval[1].split(".")[0]
+            return self.timestamp, "at " + post_time_for_eval[1].split(".")[0]
         else:
-            return post_time_for_eval[0], "on " + post_time_for_eval[0]
+            return self.timestamp, "on " + post_time_for_eval[0]
 
     def __repr__(self):
         return f'<comment #{self.id} under post #{self.post_id} in community "{self.getCommunity().url}">'
