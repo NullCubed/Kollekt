@@ -31,7 +31,6 @@
 
 <section id="mainBox">
     <h1>Add item to Collection</h1>
-    <p>Basic Page to add items!</p>
     <form action="" method="POST" enctype="multipart/form-data">
         {{form.hidden_tag()}}
         <div class="form-group m-5">
@@ -61,22 +60,6 @@
             {% endfor %}
             {% else %}
             {{form.text(class="form-control")}}
-            {% endif %}
-
-        </div>
-        <div class="form-group m-5">
-            {{form.community.label()}}
-
-            {% if form.community.errors %}
-
-            {{form.community(class="form-control is-invalid")}}
-            {% for error in form.community.errors %}
-            <div class="invalid-feedback">
-                <span>{{error}}</span>
-            </div>
-            {% endfor %}
-            {% else %}
-            {{form.community(class="form-control")}}
             {% endif %}
 
         </div>

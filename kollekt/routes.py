@@ -20,6 +20,8 @@ def home():
     allCommunities = Communities.query.all()
     tempCommunities = allCommunities
     tempUsers = []
+    allItems = CollectionItem.query.all()
+
     if current_user.is_authenticated:
 
         for community in allCommunities:
@@ -46,7 +48,7 @@ def home():
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts)
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allItems=allItems)
 
 
 @app.route("/userProfile")
@@ -61,6 +63,13 @@ def userProfile():
     allCommunities = Communities.query.all()
     usersCommunities = []
     if current_user.is_authenticated:
+        collection_user = current_user.collections
+        items_user = []
+        for i in collection_user:
+            for i in i.items:
+                items_user.append(i)
+
+
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
             finalUserList = []
@@ -74,7 +83,8 @@ def userProfile():
     sampleCommunities = Communities.query.all()
     return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
-                           user=current_user, users_posts=users_posts)
+                           user=current_user, users_posts=users_posts, users_collections=collection_user,
+                           users_items=items_user)
 
 
 @app.route("/logout")
@@ -138,6 +148,11 @@ def communityPage(url):
                 community.addUser(current_user)
             elif request.form['join'] == 'Leave Community':
                 community.removeUser(current_user)
+                for i in Collections.query.filter_by(user_id=current_user.id):
+                    if i.community_id == community.id:
+                        db.session.delete(i)
+                        db.session.commit()
+
         else:
             return redirect(url_for('login'))
     return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display)
@@ -199,20 +214,31 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
-@app.route("/addItem", methods=['GET', 'POST'])
-def addNewCollectionItem():
-    form = ItemAddForm()
-    if form.validate_on_submit():
-        filename = secure_filename(form.photo.data.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file_path = file_path.replace("\\", "/")
-        form.photo.data.save(file_path)
-        collection_item = CollectionItem(user=current_user, community=form.community.data, photo=filename,
-                                         desc=form.text.data, collection="form.collection.data",
-                                         likes=0, dislikes=0, name=form.name.data)
+@app.route("/addItem/<collection_id>", methods=['GET', 'POST'])
+def addNewCollectionItem(collection_id):
+    if current_user.is_authenticated:
+        form = ItemAddForm()
+        add_community = Collections.query.filter_by(id=collection_id).first().community_id
+        add_collection = Collections.query.filter_by(id=collection_id).first().id
 
-        return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
-    return render_template("addItem.html", title='Add Item', form=form)
+        if form.validate_on_submit():
+            filename = secure_filename(form.photo.data.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file_path = file_path.replace("\\", "/")
+            form.photo.data.save(file_path)
+            flash("IMAGE UPLOADED!")
+            collection_item = CollectionItem(user=current_user.id, community=add_community, photo=filename,
+                                             desc=form.text.data, collection=add_collection, name=form.name.data)
+
+
+
+            db.session.add(collection_item)
+            db.session.commit()
+
+            return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
+        return render_template("addItem.html", title='Add Item', form=form)
+    else:
+        return redirect(url_for('login'))
 
 
 @app.route("/adminpage", methods=['GET', 'POST'])
@@ -284,11 +310,11 @@ def filldb():
     db.session.add(Collections(
         "Admins Shoes", "A collection of all of admins shoes", 1, 2))
     db.session.add(Collections("Admins Watches",
-                   "A collection of all of admins shoes", 1, 1))
+                               "A collection of all of admins shoes", 1, 1))
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
     allCommunities = Communities.query.all()
-    # print(allCommunities)
+
     return redirect(url_for('home'))
 
 
