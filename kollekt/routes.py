@@ -21,7 +21,7 @@ def home():
     tempCommunities = allCommunities
     tempUsers = []
     allCollections = Collections.query.all()[:10]
-    print(type(allCollections[0]))
+
     displayCollections = []
 
     for i in allCollections:
