@@ -20,7 +20,11 @@ def home():
     allCommunities = Communities.query.all()
     tempCommunities = allCommunities
     tempUsers = []
-    allItems = CollectionItem.query.all()
+    allCollections = Collections.query.all()
+    displayCollections = []
+    for i in allCollections:
+        if len(i.items) > 1:
+            displayCollections.append(i)
 
     if current_user.is_authenticated:
 
@@ -48,7 +52,7 @@ def home():
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allItems=allItems)
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allCollections=displayCollections)
 
 
 @app.route("/userProfile")
@@ -68,7 +72,6 @@ def userProfile():
         for i in collection_user:
             for i in i.items:
                 items_user.append(i)
-
 
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
@@ -218,8 +221,10 @@ def register():
 def addNewCollectionItem(collection_id):
     if current_user.is_authenticated:
         form = ItemAddForm()
-        add_community = Collections.query.filter_by(id=collection_id).first().community_id
-        add_collection = Collections.query.filter_by(id=collection_id).first().id
+        add_community = Collections.query.filter_by(
+            id=collection_id).first().community_id
+        add_collection = Collections.query.filter_by(
+            id=collection_id).first().id
 
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
@@ -229,8 +234,6 @@ def addNewCollectionItem(collection_id):
             flash("IMAGE UPLOADED!")
             collection_item = CollectionItem(user=current_user.id, community=add_community, photo=filename,
                                              desc=form.text.data, collection=add_collection, name=form.name.data)
-
-
 
             db.session.add(collection_item)
             db.session.commit()

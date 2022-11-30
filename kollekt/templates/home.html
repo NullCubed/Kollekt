@@ -7,17 +7,25 @@ current_user.is_authenticated %}
         <div class="col">
           <h4 class="text-center border-bottom pb-2">
             Top Communities / Recent Posts
-
           </h4>
         </div>
       </div>
       <div class="row justify-content-around">
-        {% for i in allItems %}
-        <div class="col-11 col-md-5 border mt-5 rounded">
-          <a href="/collections/view/{{ i.id }}"><img src=/static/{{i.photo}} style="width:25rem;"></a>
+        {% for i in allCollections %}
 
-        </div>
-                {% endfor %}
+        <a
+          class="col-11 col-md-5 border mt-5 rounded"
+          href="/collections/view/{{ i.id }}"
+        >
+          <div class="row">
+            {% for x in i.items%}
+            <div class="col-2 p-2">
+              <img class="img-fluid" src="/static/{{x.photo}}" />
+            </div>
+            {% endfor %}
+          </div>
+        </a>
+        {% endfor %}
       </div>
       <div class="row justify-content-around">
         {% for i in posts %}
@@ -156,7 +164,10 @@ current_user.is_authenticated %}
       {%for i in sampleCommunities%}
       <div class="row mt-3 justify-content-center">
         <div class="col-11 bg-secondary rounded">
-          <a href="/community/{{i.url}}" style="display: block; text-decoration: none; color: black;">
+          <a
+            href="/community/{{i.url}}"
+            style="display: block; text-decoration: none; color: black"
+          >
             <div class="row">
               <div class="col"><h1 class="text-center">{{i.name}}</h1></div>
             </div>
