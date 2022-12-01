@@ -1,4 +1,5 @@
 from kollekt import create_app
+import gunicorn
 
 app = create_app()
 
