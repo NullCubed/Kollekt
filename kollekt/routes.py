@@ -125,7 +125,7 @@ def userSettings():
                                id=id)
 
 
-@app.route("/userCard/<id>")
+@app.route("/userCard/<user_id>")
 @login_required
 def userCard(user_id):
     userInfo = User.query.filter_by(id=user_id).first()
@@ -190,12 +190,14 @@ def login():
 @app.route("/item/<item_id>", methods=['GET', 'POST'])
 def item_page(item_id):
     item = CollectionItem.query.filter_by(id=item_id).first()
-    user_name = current_user.username
+    user_id = item.user
+    user_true = User.query.filter_by(id=user_id).first()
+    user_name = user_true.username
     collection_id = item.collection_id
     item_collection = Collections.query.filter_by(id=collection_id).first()
     collection_name = item_collection.name
 
-    return render_template('item.html', item=item, username=user_name, collectionName=collection_name)
+    return render_template('item.html', item=item, username=user_name, collectionName=collection_name, user_id=user_id)
 
 
 @app.route("/register", methods=['GET', 'POST'])

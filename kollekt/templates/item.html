@@ -37,7 +37,12 @@
 
     <br>
     <img src="/static/{{item.photo}}" alt="" class="center"/>
-    <h3><strong>User:</strong> {{ username }}</h3>
+<!--    <h3><strong>User:</strong> {{ username }}</h3>-->
+
+<!--    <h3><strong>User:</strong> {{ username }}</h3>-->
+    <h3><strong><a href="/userCard/{{item.user}}">{{username}}</a></strong></h3>
+
+
     <h3><strong>Collection:</strong> {{ collectionName }}</h3>
     <h3><strong>Description:</strong> {{ item.desc }}</h3>
 
