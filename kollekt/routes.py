@@ -307,10 +307,10 @@ def filldb():
     db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
     db.session.add(Communities("Watches", "Timepieces"))
     db.session.add(Communities("Shoes", "Gloves for your feet"))
-    db.session.add(Collections(
-        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
-    db.session.add(Collections("Admins Watches",
-                               "A collection of all of admins shoes", 1, 1))
+    # #db.session.add(Collections(
+    #     "Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    # db.session.add(Collections("Admins Watches",
+    #                            "A collection of all of admins shoes", 1, 1))
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
 
