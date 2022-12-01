@@ -57,7 +57,7 @@ def home():
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allCollections=displayCollections, randomSelect=randomSelect)
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allCollections=displayCollections, randomSelect=randomSelect, User=User)
 
 
 @app.route("/userProfile")
