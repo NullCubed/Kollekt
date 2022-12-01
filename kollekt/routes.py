@@ -300,23 +300,6 @@ def viewCollection(collection_id):
     return render_template("collections.html", collection=collection)
 
 
-@app.route("/fillDB")
-def filldb():
-    db.drop_all()
-    db.create_all()
-    db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
-    db.session.add(Communities("Watches", "Timepieces"))
-    db.session.add(Communities("Shoes", "Gloves for your feet"))
-    db.session.add(Collections(
-        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
-    db.session.add(Collections("Admins Watches",
-                               "A collection of all of admins shoes", 1, 1))
-    db.session.commit()
-    login_user(User.query.filter_by(id=1).first())
-
-    return redirect(url_for('home'))
-
-
 @app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])
 def viewPost(community_url, post_id):
     post_to_view = Posts.query.filter_by(id=post_id).first()
