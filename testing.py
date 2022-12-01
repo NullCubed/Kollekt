@@ -53,8 +53,7 @@ def test_register_new_user(client):
 
 def test_register_existing_user(client):
     with client:
-        response = client.post("/register", data=
-        {
+        response = client.post("/register", data={
             'username': 'admin',
             'email': 'joe@joe.com',
             'password': 'admin',
@@ -93,3 +92,27 @@ def test_logged_in_homepage(app, client):
     # assert len(response.history) == 1
     # Check that the second request was to the index page.
     assert response.request.path == "/"
+
+
+def test_logout(client):
+    response = client.get("/logout", follow_redirects=True)
+    assert response.status_code == 200
+    assert response.request.path == "/"
+
+
+def test_bad_email_register(client):
+    response = client.post("/register", data={
+        "username": "test",
+        "email": "test",
+        "password": "test",
+        "confirm_password": "test"}, follow_redirects=True)
+    assert response.request.path == '/register'
+
+
+def test_bad_username_register(client):
+    response = client.post("/register", data={
+        "username": "a",
+        "email": "test",
+        "password": "test",
+        "confirm_password": "test"}, follow_redirects=True)
+    assert response.request.path == '/register'
