@@ -44,7 +44,7 @@ class User(db.Model, UserMixin):
     # communities = db.Column(db.BLOB)
     # collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
-    profile_picture = db.Column(db.BLOB)
+    profile_picture = db.Column(db.String)
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections = db.relationship(
@@ -302,7 +302,7 @@ class Communities(db.Model):
 
 class Photos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    photo_blob = db.Column(db.BLOB)
+    photo_blob = db.Column(db.String)
 
 
 class Posts(db.Model):
@@ -312,7 +312,7 @@ class Posts(db.Model):
     body = db.Column(db.String)
     timestamp = db.Column(db.String)
     meta = db.Column(db.String)
-    comments = db.Column(db.BLOB)
+    comments = db.Column(db.String)
     item_id = db.Column(db.Integer)
     community_id = db.Column(db.Integer)
     likes = db.relationship(
