@@ -45,8 +45,8 @@ def test_register_new_user(client):
         response = client.post("/register", data=dict(
             username="admin",
             email='joe@joe.com',
-            password="admin",
-            confirm_password="admin"), follow_redirects=True)
+            password="goodpassword",
+            confirm_password="goodpassword"), follow_redirects=True)
         assert response.status_code == 200
         assert response.request.path == '/'
 
@@ -56,8 +56,8 @@ def test_register_existing_user(client):
         response = client.post("/register", data={
             'username': 'admin',
             'email': 'joe@joe.com',
-            'password': 'admin',
-            'confirm_password': 'admin'
+            'password': 'goodpassword',
+            'confirm_password': 'goodpassword'
         }, follow_redirects=True)
     assert response.request.path == '/register'
 
@@ -65,7 +65,7 @@ def test_register_existing_user(client):
 def test_login_existing_user(client):
     response = client.post("/login", data=dict(
         username="admin",
-        password="admin", ), follow_redirects=True)
+        password="goodpassword", ), follow_redirects=True)
     assert response.status_code == 200
     assert response.request.path == '/'
 
@@ -73,7 +73,7 @@ def test_login_existing_user(client):
 def test_login_nonexisting_user(client):
     response = client.post('/login', data={
         'username': 'alphabetsoup',
-        'password': 'areallystrongpassword'
+        'password': 'goodpassword'
     }, follow_redirects=True)
     assert response.request.path == '/login'
 
@@ -84,8 +84,8 @@ def test_logged_in_homepage(app, client):
     response = client.post("/register", data={
         "username": "admin1",
         "email": "joe1@joe.com",
-        "password": "admin",
-        "confirm_password": "admin"}, follow_redirects=True)
+        "password": "goodpassword",
+        "confirm_password": "goodpassword"}, follow_redirects=True)
     # print(response.data).
     assert response.status_code == 200
     # Check that there was one redirect response.
@@ -112,7 +112,34 @@ def test_bad_email_register(client):
 def test_bad_username_register(client):
     response = client.post("/register", data={
         "username": "a",
-        "email": "test",
-        "password": "test",
-        "confirm_password": "test"}, follow_redirects=True)
+        "email": "test@test.com",
+        "password": "goodpassword",
+        "confirm_password": "goodpassword"}, follow_redirects=True)
+    assert response.request.path == '/register'
+
+
+def test_long_password_register(client):
+    response = client.post("/register", data={
+        "username": "goodusername",
+        "email": "test@test.com",
+        "password": "thispasswordiswaytoolong",
+        "confirm_password": "thispasswordiswaytoolong"}, follow_redirects=True)
+    assert response.request.path == '/register'
+
+
+def test_long_password_confirm(client):
+    response = client.post("/register", data={
+        "username": "goodusername",
+        "email": "test@test.com",
+        "password": "goodpassword",
+        "confirm_password": "goodpassword22"}, follow_redirects=True)
+    assert response.request.path == '/register'
+
+
+def test_insane_input(client):
+    response = client.post("/register", data={
+        "username": "goodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusername",
+        "email": "goodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusername@test.com",
+        "password": "goodpassword",
+        "confirm_password": "goodpassword"}, follow_redirects=True)
     assert response.request.path == '/register'

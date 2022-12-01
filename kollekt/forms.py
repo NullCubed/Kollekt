@@ -12,12 +12,13 @@ from . import db
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
-                           validators=[DataRequired(), Length(min=2, max=20)])
+                           validators=[DataRequired(), Length(min=3, max=15)])
     email = StringField('Email',
                         validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[
+                             DataRequired(), Length(min=8, max=15)])
     confirm_password = PasswordField('Confirm Password',
-                                     validators=[DataRequired(), EqualTo('password')])
+                                     validators=[DataRequired(), Length(min=8, max=20), EqualTo('password')])
     submit = SubmitField('Sign Up')
 
     def returnInfo(self):
@@ -53,7 +54,8 @@ class deleteCommunityForm(FlaskForm):
 
 class createCollectionForm(FlaskForm):
     name = StringField('Name of collection', validators=[DataRequired()])
-    desc = StringField('Description of collection', validators=[DataRequired()])
+    desc = StringField('Description of collection',
+                       validators=[DataRequired()])
     submit = SubmitField('Create Collection')
 
 
@@ -76,12 +78,14 @@ class deletePostForm(FlaskForm):
 
 
 class UserForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
+    username = StringField('Username', validators=[
+                           DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     bio = StringField('Biography', validators=[DataRequired()])
     submit = SubmitField("Submit")
 
 
 class createCommentForm(FlaskForm):
-    text = TextAreaField('Leave a comment below...', validators=[DataRequired()])
+    text = TextAreaField('Leave a comment below...',
+                         validators=[DataRequired()])
     submit = SubmitField('Post!')
