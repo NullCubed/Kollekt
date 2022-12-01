@@ -38,13 +38,13 @@ dislikes_on_posts = db.Table('dislikes_on_posts',
 class User(db.Model, UserMixin):
     # id = db.Column(db.Integer, unique=True, nullable=False)
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.Text, unique=True, nullable=False)
-    email = db.Column(db.Text, unique=True, nullable=False)
-    password = db.Column(db.bytea, nullable=False)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.BYTEA, nullable=False)
     # communities = db.Column(db.BLOB)
     # collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
-    profile_picture = db.Column(db.Text)
+    profile_picture = db.Column(db.String)
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections = db.relationship(
@@ -80,9 +80,9 @@ class User(db.Model, UserMixin):
 
 class CollectionItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text)
-    desc = db.Column(db.Text)
-    photo = db.Column(db.Text)
+    name = db.Column(db.String)
+    desc = db.Column(db.String)
+    photo = db.Column(db.String)
     # likes = db.Column(db.Integer)
     # dislikes = db.Column(db.Integer)
     community_id = db.Column(db.Integer, db.ForeignKey('communities.id'), nullable=False)
@@ -91,7 +91,7 @@ class CollectionItem(db.Model):
         'collections.id'), nullable=False)
 
     # picture = db.Column(db.BLOB)
-    # filename = db.Column(db.Text)
+    # filename = db.Column(db.String)
 
     # def convertToBinaryData(self, filepath):
     #     # Convert digital data to binary format
@@ -150,8 +150,8 @@ class CollectionItem(db.Model):
 
 class Collections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text)
-    desc = db.Column(db.Text)
+    name = db.Column(db.String)
+    desc = db.Column(db.String)
     items = db.relationship('CollectionItem', backref='Collections', lazy=True, cascade="all, delete-orphan")
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
@@ -180,9 +180,9 @@ class Collections(db.Model):
 
 class Communities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Text)
-    url = db.Column(db.Text)
-    desc = db.Column(db.Text)
+    name = db.Column(db.String)
+    url = db.Column(db.String)
+    desc = db.Column(db.String)
     collections = db.relationship(
         'Collections', backref='communities', lazy=True)
     users = db.relationship(
@@ -302,17 +302,17 @@ class Communities(db.Model):
 
 class Photos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    photo_blob = db.Column(db.Text)
+    photo_blob = db.Column(db.String)
 
 
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Text)
+    title = db.Column(db.String)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    body = db.Column(db.Text)
-    timestamp = db.Column(db.Text)
-    meta = db.Column(db.Text)
-    comments = db.Column(db.Text)
+    body = db.Column(db.String)
+    timestamp = db.Column(db.String)
+    meta = db.Column(db.String)
+    comments = db.Column(db.String)
     item_id = db.Column(db.Integer)
     community_id = db.Column(db.Integer)
     likes = db.relationship(
@@ -414,9 +414,9 @@ class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)
-    text = db.Column(db.Text)
-    timestamp = db.Column(db.Text)
-    meta = db.Column(db.Text)
+    text = db.Column(db.String)
+    timestamp = db.Column(db.String)
+    meta = db.Column(db.String)
     locked = db.Column(db.Boolean)
 
     def __init__(self, author_id, text, post_id):
