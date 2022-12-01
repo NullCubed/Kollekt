@@ -14,9 +14,6 @@ class RegistrationForm(FlaskForm):
                                      validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Sign Up')
 
-    def returnInfo(self):
-        return self.username.data, self.email.data, self.password.data
-
 
 class LoginForm(FlaskForm):
     username = StringField('Username',
