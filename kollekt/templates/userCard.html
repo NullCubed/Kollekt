@@ -6,14 +6,18 @@ margin-top: 10px;">
     </div>
     <div class="card-body" style="text-align: center">
         <p style="text-align: center; margin-top: 10px">
+            <!-- this needs to be fixed -->
             <img
                     height="200px"
                     src="../static/default_user.png"
                     width="200px"
+                    alt=""
             />
         </p>
         <strong>Username:</strong> {{ userInfo.username }}<br/>
         <strong>Email:</strong> {{ userInfo.email }}<br/>
         <strong>Description:</strong><br/>
         <p style="margin-left: 300px; margin-right: 300px"> {{ userInfo.bio }}</p>
-{%endblock content %}
+        {%endblock content %}
+    </div>
+</div>

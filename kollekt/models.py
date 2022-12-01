@@ -1,11 +1,7 @@
-import os
-
 from . import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
-
-import sqlalchemy as sa
 
 
 @login_manager.user_loader
@@ -60,22 +56,24 @@ class User(db.Model, UserMixin):
         self.email = email
         self.admin = admin
 
-
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)
 
     def getUserInfo(self):
         user = db.get_or_404(User, self.id)
         return user
-    def addCollection(self,collection):
+
+    def addCollection(self, collection):
         self.collections_list.append(collection)
         db.session.commit()
-    def removeCollection(self,collection):
+
+    def removeCollection(self, collection):
         if collection in self.collections_list:
-            #print(self.collections_list)
+            # print(self.collections_list)
             self.collections_list.remove(collection)
-            #print(self.collections_list)
+            # print(self.collections_list)
             db.session.commit()
+
     def __repr__(self):
         return f'<User {self.username}, {self.email}, {self.password}, {self.collections}>'
 
@@ -91,19 +89,20 @@ class CollectionItem(db.Model):
     user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
+
     # picture = db.Column(db.BLOB)
     # filename = db.Column(db.String)
 
-    def convertToBinaryData(self, filepath):
-        # Convert digital data to binary format
-        with open(filepath, 'rb') as file:
-            binaryData = file.read()
-        return binaryData
-
-    def write_file(self, data, filename):
-        # Convert binary data to proper format and write it on Hard Disk
-        with open(filename, 'wb') as file:
-            file.write(data)
+    # def convertToBinaryData(self, filepath):
+    #     # Convert digital data to binary format
+    #     with open(filepath, 'rb') as file:
+    #         binaryData = file.read()
+    #     return binaryData
+    #
+    # def write_file(self, data, filename):
+    #     # Convert binary data to proper format and write it on Hard Disk
+    #     with open(filename, 'wb') as file:
+    #         file.write(data)
 
     def __init__(self, user, community, photo, desc, collection, name):
         self.collection_id = collection
@@ -111,39 +110,40 @@ class CollectionItem(db.Model):
         self.community_id = community
         self.photo = photo
         self.desc = desc
-        self.likes = 0
-        self.dislikes = 0
-        self.likers = []
-        self.dislikers = []
+        # self.likes = 0
+        # self.dislikes = 0
+        # self.likers = []
+        # self.dislikers = []
         self.name = name
 
-    def add_like(self):
-        self.likes += 1
-        return (self.likes)
+    # def add_like(self):
+    #     self.likes += 1
+    #     return self.likes
+    #
+    # def add_dislike(self):
+    #     self.disliskes += 1
+    #     return self.disliskes
+    #
+    # def add_liker(self, user_who_liked):
+    #     if user_who_liked not in self.likers():
+    #         self.likers.append(user_who_liked)
+    #         self.likes += 1
+    #         return self.likes
+    #     else:
+    #         self.likers.remove(user_who_liked)
+    #         self.likes -= 1
+    #         return self.likes
+    #
+    # def add_disliker(self, user_who_disliked):
+    #     if user_who_disliked not in self.dislikers():
+    #         self.dislikers.append(user_who_disliked)
+    #         self.dislikes += 1
+    #         return self.dislikes
+    #     else:
+    #         self.dislikers.remove(user_who_disliked)
+    #         self.dislikes -= 1
+    #         return self.dislikes
 
-    def add_dislike(self):
-        self.disliskes += 1
-        return (self.disliskes)
-
-    def add_liker(self, user_who_liked):
-        if user_who_liked not in self.likers():
-            self.likers.append(user_who_liked)
-            self.likes += 1
-            return self.likes
-        else:
-            self.likers.remove(user_who_liked)
-            self.likes -= 1
-            return self.likes
-
-    def add_disliker(self, user_who_disliked):
-        if user_who_disliked not in self.dislikers():
-            self.dislikers.append(user_who_disliked)
-            self.dislikes += 1
-            return self.dislikes
-        else:
-            self.dislikers.remove(user_who_disliked)
-            self.dislikes -= 1
-            return self.dislikes
     def __repr__(self):
         return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
 
@@ -173,8 +173,10 @@ class Collections(db.Model):
         return f'<img src=\"../static/bantest.png\" width=100 height=100/>' \
                f'<br />' \
                f'<h4 class=\"text-center\">{item.name}<br/>{item.desc}</h4>'
+
     def getId(self):
         return self.user_id
+
 
 class Communities(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -185,7 +187,6 @@ class Communities(db.Model):
         'Collections', backref='communities', lazy=True)
     users = db.relationship(
         'User', secondary=users_in_community, backref='users')
-
 
     def __init__(self, name, desc):
         self.name = name
@@ -336,7 +337,7 @@ class Posts(db.Model):
         return Communities.query.filter_by(id=self.community_id).first()
 
     def getLinkedItem(self):
-        return Items.query.filter_by(id=self.item_id).first()
+        return CollectionItem.query.filter_by(id=self.item_id).first()
 
     def setLinkedItem(self, item_id):
         if item_id is not None:
@@ -442,16 +443,6 @@ class Comments(db.Model):
         self.text = "This comment has been removed by an administrator."
         self.locked = True
         db.session.commit()
-
-    def getTimestamp(self):
-        # returns post time if posted today, otherwise returns post date
-        now = str(datetime.datetime.now()).split(" ")
-        post_time_for_eval = self.timestamp.split(" ")
-        if now[0] == post_time_for_eval[0]:
-            # second return val used specifically for formatting on post display
-            return post_time_for_eval[1].split(".")[0], "at " + post_time_for_eval[1].split(".")[0]
-        else:
-            return post_time_for_eval[0], "on " + post_time_for_eval[0]
 
     def __repr__(self):
         return f'<comment #{self.id} under post #{self.post_id} in community "{self.getCommunity().url}">'

@@ -5,8 +5,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
-from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, createCommunityForm, \
-    deleteCommunityForm, createPostForm, createCommentForm, editPostForm, deletePostForm, createCollectionForm
+from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, CreateCommunityForm, \
+    DeleteCommunityForm, CreatePostForm, CreateCommentForm, EditPostForm, DeletePostForm, CreateCollectionForm
 
 
 # from .Components.Community import Community
@@ -19,7 +19,6 @@ def home():
     usersCommunities = []
     allCommunities = Communities.query.all()
     tempCommunities = allCommunities
-    tempUsers = []
     allItems = CollectionItem.query.all()
 
     if current_user.is_authenticated:
@@ -48,7 +47,8 @@ def home():
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allItems=allItems)
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts,
+                           allItems=allItems)
 
 
 @app.route("/userProfile")
@@ -62,13 +62,14 @@ def userProfile():
     posts = Posts.query.all()
     allCommunities = Communities.query.all()
     usersCommunities = []
+    # TODO: This needs to be fixed
     if current_user.is_authenticated:
         collection_user = current_user.collections
         items_user = []
         for i in collection_user:
-            for i in i.items:
-                items_user.append(i)
-
+            # Changed same variable in nested for loop
+            for x in i.items:
+                items_user.append(x)
 
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
@@ -97,18 +98,19 @@ def logout():
 @login_required
 def userSettings():
     form = UserForm()
-    id = current_user.id
-    name_to_update = User.query.get_or_404(id)
+    user_id = current_user.id
+    name_to_update = User.query.get_or_404(user_id)
     if request.method == "POST":
         name_to_update.username = request.form['username']
         name_to_update.email = request.form['email']
         name_to_update.bio = request.form['bio']
+        # TODO: Fix this to be different (?)
         try:
             db.session.commit()
             flash("User Updated Successfully!")
             return render_template("settings.html",
                                    form=form,
-                                   name_to_update=name_to_update, id=id)
+                                   name_to_update=name_to_update, id=user_id)
         except:
             flash("Error!  Looks like there was a problem...try again!")
             return render_template("settings.html",
@@ -124,8 +126,8 @@ def userSettings():
 
 @app.route("/userCard/<id>")
 @login_required
-def userCard(id):
-    userInfo = User.query.filter_by(id=id).first()
+def userCard(user_id):
+    userInfo = User.query.filter_by(id=user_id).first()
     return render_template('userCard.html', userInfo=userInfo)
 
 
@@ -220,7 +222,7 @@ def addNewCollectionItem(collection_id):
         form = ItemAddForm()
         add_community = Collections.query.filter_by(id=collection_id).first().community_id
         add_collection = Collections.query.filter_by(id=collection_id).first().id
-
+        # TODO: This needs to be fixed/removed
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -229,8 +231,6 @@ def addNewCollectionItem(collection_id):
             flash("IMAGE UPLOADED!")
             collection_item = CollectionItem(user=current_user.id, community=add_community, photo=filename,
                                              desc=form.text.data, collection=add_collection, name=form.name.data)
-
-
 
             db.session.add(collection_item)
             db.session.commit()
@@ -244,8 +244,8 @@ def addNewCollectionItem(collection_id):
 @app.route("/adminpage", methods=['GET', 'POST'])
 def adminpage():
     print(current_user.admin)
-    form = createCommunityForm()
-    delform = deleteCommunityForm()
+    form = CreateCommunityForm()
+    delform = DeleteCommunityForm()
     allCommunities = Communities.query.all()
     if form.validate_on_submit():
         checkCommunity = Communities.query.filter_by(
@@ -283,7 +283,7 @@ def adminpage():
 
 @app.route("/collections/create/<community_id>", methods=['GET', 'POST'])
 def createCollection(community_id):
-    form = createCollectionForm()
+    form = CreateCollectionForm()
 
     if form.validate_on_submit():
         collection = Collections(
@@ -313,7 +313,6 @@ def filldb():
                                "A collection of all of admins shoes", 1, 1))
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
-    allCommunities = Communities.query.all()
 
     return redirect(url_for('home'))
 
@@ -326,7 +325,7 @@ def viewPost(community_url, post_id):
     community = Communities.query.filter_by(url=community_url).first()
     if post_to_view.getCommunity() is not community:  # if correct id but wrong community, corrects url
         return redirect(url_for('viewPost', community_url=post_to_view.getCommunity().url, post_id=post_id))
-    form = createCommentForm()
+    form = CreateCommentForm()
     if form.validate_on_submit():
         new_comment = Comments(author_id=current_user.id,
                                text=form.text.data, post_id=post_id)
@@ -346,7 +345,7 @@ def addNewPost(community_url):
         if community.userHasJoined(current_user) is False:
             flash("Must be part of this community to make a post!", "danger")
             return redirect(url_for('communityPage', url=community_url))
-        form = createPostForm()
+        form = CreatePostForm()
         if form.validate_on_submit():
             if form.body.data == "":  # and form.item_id.data == "":
                 flash("Must enter text into the body or attach an item!", "danger")
@@ -370,7 +369,7 @@ def editPost(community_url, post_id):
     if post is None:
         return redirect(url_for('home'))
     if current_user.is_authenticated and post.getAuthor() == current_user:
-        form = editPostForm()
+        form = EditPostForm()
         if form.validate_on_submit():
             if form.body.data == "":  # and form.item_id.data == "":
                 flash("Must enter text into the body or attach an item!", "danger")
@@ -394,7 +393,7 @@ def delPost(community_url, post_id):
     if post is None:
         return redirect(url_for('home'))
     if current_user.is_authenticated and post.getAuthor() == current_user:
-        form = deletePostForm()
+        form = DeletePostForm()
         if form.validate_on_submit():
             if form.submitCancel.data:
                 return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
