@@ -7,8 +7,17 @@ current_user.is_authenticated %}
         <div class="col">
           <h4 class="text-center border-bottom pb-2">
             Top Communities / Recent Posts
+
           </h4>
         </div>
+      </div>
+      <div class="row justify-content-around">
+        {% for i in allItems %}
+        <div class="col-11 col-md-5 border mt-5 rounded">
+          <a href="/collections/view/{{ i.id }}"><img src=/static/{{i.photo}} style="width:25rem;"></a>
+
+        </div>
+                {% endfor %}
       </div>
       <div class="row justify-content-around">
         {% for i in posts %}

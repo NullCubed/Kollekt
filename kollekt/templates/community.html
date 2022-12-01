@@ -10,6 +10,9 @@
     <form action="/community/{{ community.url }}" method="post">
         {% if community.userHasJoined(current_user) %}
         <input name="join" style="font-size:18px;" type="submit" value="Leave Community">
+        <a href="{{url_for('createCollection', community_id=community.id)}}">
+            <input name="newCollection" style="font-size:18px" type="button" value="Create Collection">
+        </a>
         {% else %}
         <input name="join" style="font-size:18px;" type="submit" value="Join Community">
         {% endif %}
