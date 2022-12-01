@@ -124,7 +124,7 @@ def userSettings():
                                id=id)
 
 
-@app.route("/userCard/<id>")
+@app.route("/userCard/<user_id>")
 @login_required
 def userCard(user_id):
     userInfo = User.query.filter_by(id=user_id).first()
