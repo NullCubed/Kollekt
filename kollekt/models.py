@@ -44,7 +44,7 @@ class User(db.Model, UserMixin):
     # communities = db.Column(db.BLOB)
     # collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
-    profile_picture = db.Column(db.BLOB)
+    profile_picture = db.Column(db.String, nullable=True)
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections = db.relationship(

@@ -70,6 +70,8 @@ class UserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     bio = StringField('Biography', validators=[DataRequired()])
+    profile_picture = FileField('Profile Picture', validators=[FileRequired(),
+                                                FileAllowed(['jpg', 'png'], 'Images Only')])
     submit = SubmitField("Submit")
 
 

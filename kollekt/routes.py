@@ -7,8 +7,12 @@ from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
 from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, CreateCommunityForm, \
     DeleteCommunityForm, CreatePostForm, CreateCommentForm, EditPostForm, DeletePostForm, CreateCollectionForm
+from werkzeug.utils import secure_filename
+import uuid as uuid
+import os
 
-
+UPLOAD_FOLDER = '/kollekt/static/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
@@ -104,7 +108,12 @@ def userSettings():
         name_to_update.username = request.form['username']
         name_to_update.email = request.form['email']
         name_to_update.bio = request.form['bio']
-        # TODO: Fix this to be different (?)
+        name_to_update.profile_picture = request.files['profile_picture']
+        filename = secure_filename(form.profile_picture.data.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file_path = file_path.replace("\\", "/")
+        form.profile_picture.data.save(file_path)
+        db.session.commit()
         try:
             db.session.commit()
             flash("User Updated Successfully!")
