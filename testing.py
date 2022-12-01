@@ -1,4 +1,5 @@
 import pytest
+from kollekt import db
 
 
 @pytest.fixture(scope='module')
@@ -11,6 +12,7 @@ def app(request):
 def app_context(app):
     """Creates a flask app context"""
     with app.app_context():
+        app.config['WTF_CSRF_ENABLED'] = False
         yield app
 
 
@@ -36,7 +38,9 @@ def test_logged_out_homepage(client):
         </h3>""" in response.data
 
 
-def test_register(client):
+def test_register_new_user(client):
+    db.drop_all()
+    db.create_all()
     with client:
         response = client.post("/register", data=dict(
             username="admin",
@@ -44,21 +48,48 @@ def test_register(client):
             password="admin",
             confirm_password="admin"), follow_redirects=True)
         assert response.status_code == 200
-        response = client.post("/login", data=dict(
-            username="admin",
-            password="admin",), follow_redirects=True)
-        assert response.status_code == 200
+        assert response.request.path == '/'
 
 
-def test_logged_in_homepage(client):
+def test_register_existing_user(client):
     with client:
-        response = client.post("/register", data=dict(
-            username="admin",
-            email='joe@joe.com',
-            password="admin",
-            confirm_password="admin"), follow_redirects=True)
-        print(response.data)
-        # Check that there was one redirect response.
-        assert len(response.history) == 1
-        # Check that the second request was to the index page.
-        assert response.request.path == "/"
+        response = client.post("/register", data=
+        {
+            'username': 'admin',
+            'email': 'joe@joe.com',
+            'password': 'admin',
+            'confirm_password': 'admin'
+        }, follow_redirects=True)
+    assert response.request.path == '/register'
+
+
+def test_login_existing_user(client):
+    response = client.post("/login", data=dict(
+        username="admin",
+        password="admin", ), follow_redirects=True)
+    assert response.status_code == 200
+    assert response.request.path == '/'
+
+
+def test_login_nonexisting_user(client):
+    response = client.post('/login', data={
+        'username': 'alphabetsoup',
+        'password': 'areallystrongpassword'
+    }, follow_redirects=True)
+    assert response.request.path == '/login'
+
+
+def test_logged_in_homepage(app, client):
+    db.drop_all()
+    db.create_all()
+    response = client.post("/register", data={
+        "username": "admin1",
+        "email": "joe1@joe.com",
+        "password": "admin",
+        "confirm_password": "admin"}, follow_redirects=True)
+    # print(response.data).
+    assert response.status_code == 200
+    # Check that there was one redirect response.
+    # assert len(response.history) == 1
+    # Check that the second request was to the index page.
+    assert response.request.path == "/"
