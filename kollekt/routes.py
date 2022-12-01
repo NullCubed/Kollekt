@@ -62,10 +62,11 @@ def userProfile():
     posts = Posts.query.all()
     allCommunities = Communities.query.all()
     usersCommunities = []
+    collection_user = current_user.collections
+    items_user = []
     # TODO: This needs to be fixed
     if current_user.is_authenticated:
-        collection_user = current_user.collections
-        items_user = []
+
         for i in collection_user:
             # Changed same variable in nested for loop
             for x in i.items:
@@ -186,9 +187,15 @@ def login():
     return render_template('login.html', title='Login', form=form)
 
 
-@app.route("/item")
-def itemPage():
-    return render_template('item.html')
+@app.route("/item/<item_id>", methods=['GET', 'POST'])
+def item_page(item_id):
+    item = CollectionItem.query.filter_by(id=item_id).first()
+    user_name = current_user.username
+    collection_id = item.collection_id
+    item_collection = Collections.query.filter_by(id=collection_id).first()
+    collection_name = item_collection.name
+
+    return render_template('item.html', item=item, username=user_name, collectionName=collection_name)
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -234,8 +241,10 @@ def addNewCollectionItem(collection_id):
 
             db.session.add(collection_item)
             db.session.commit()
-
-            return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
+            item_collection = Collections.query.filter_by(id=collection_id).first()
+            collection_name = item_collection.name
+            user_name=current_user.username
+            return render_template("item.html", title="Your Item", item=collection_item, filename=filename,collectionName=collection_name,username=user_name)
         return render_template("addItem.html", title='Add Item', form=form)
     else:
         return redirect(url_for('login'))
