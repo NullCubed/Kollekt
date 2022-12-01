@@ -20,7 +20,7 @@ def create_app():
         if CONFIG_TYPE != 'config.ProductionConfig':
             db.drop_all()
             print("Dropped All Tables")
-        db.create_all()
+            db.create_all()
 
         print("Created All Tables From Models")
         return app
