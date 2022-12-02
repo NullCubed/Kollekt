@@ -6,10 +6,15 @@ from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
 from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, CreateCommunityForm, \
-    DeleteCommunityForm, CreatePostForm, CreateCommentForm, EditPostForm, DeletePostForm, \
-    CreateCollectionForm, DeleteItemForm
+    DeleteCommunityForm, CreatePostForm, CreateCommentForm, EditPostForm, DeletePostForm, CreateCollectionForm, \
+    DeleteItemForm
+from werkzeug.utils import secure_filename
+import uuid as uuid
+import os
 
 
+UPLOAD_FOLDER = '/kollekt/static/'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
@@ -92,7 +97,7 @@ def userProfile():
     return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
                            user=current_user, users_posts=users_posts, users_collections=collection_user,
-                           users_items=items_user)
+                           users_items=items_user, currentProfilePic=current_user.profile_picture)
 
 
 @app.route("/logout")
@@ -111,7 +116,7 @@ def userSettings():
         name_to_update.username = request.form['username']
         name_to_update.email = request.form['email']
         name_to_update.bio = request.form['bio']
-        # TODO: Fix this to be different (?)
+        name_to_update.profile_picture = request.form['profile_picture']
         try:
             db.session.commit()
             flash("User Updated Successfully!")
