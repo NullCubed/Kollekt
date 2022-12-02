@@ -53,7 +53,9 @@ def home():
     return render_template('home.html', postCount=postCount, collectionsCount=collectionsCount,
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts, allCollections=displayCollections, randomSelect=randomSelect, User=User)
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts,
+                           allCollections=displayCollections, User=User)
+
 
 @app.route("/userProfile")
 def userProfile():
@@ -74,7 +76,6 @@ def userProfile():
         for i in collection_user:
             for i in i.items:
                 items_user.append(i)
-
 
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
@@ -250,8 +251,9 @@ def addNewCollectionItem(collection_id):
             db.session.commit()
             item_collection = Collections.query.filter_by(id=collection_id).first()
             collection_name = item_collection.name
-            user_name=current_user.username
-            return render_template("item.html", title="Your Item", item=collection_item, filename=filename,collectionName=collection_name,username=user_name)
+            user_name = current_user.username
+            return render_template("item.html", title="Your Item", item=collection_item, filename=filename,
+                                   collectionName=collection_name, username=user_name)
         return render_template("addItem.html", title='Add Item', form=form)
     else:
         return redirect(url_for('login'))
