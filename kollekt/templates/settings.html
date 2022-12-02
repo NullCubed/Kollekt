@@ -23,7 +23,47 @@
             {{ form.bio(class="form-control", value=name_to_update.bio) }}
     
             <br/>
-            <div class="form-group">
+
+            {{ form.profile_picture.label(class="form-label") }}
+
+            {{ form.profile_picture(class="form-control", value=name_to_update.profile_picture) }}
+    
+            <br/>
+            <p style="text-align: center; margin-top: 10px">
+                <img
+                    height="150px"
+                    src="../static/LION2.PNG"
+                    width="150px"
+                    alt=""
+                    />
+                <img
+                    height="150px"
+                    src="../static/EAGLE.PNG"
+                    width="150px"
+                    alt=""
+                    />
+                <img
+                    height="150px"
+                    src="../static/ZEBRA2.PNG"
+                    width="150px"
+                    alt=""
+                    />
+                <img
+                    height="150px"
+                    src="../static/SNAKE.PNG"
+                    width="150px"
+                    alt=""
+                    />
+                <img
+                    height="150px"
+                    src="../static/PONY.PNG"
+                    width="150px"
+                    alt=""
+                    />
+                </p>
+
+                <br/>
+            <div class="form-group"; style="text-align: center">
                 {{ form.submit(class="btn btn-outline-info") }}
               </div>
     
