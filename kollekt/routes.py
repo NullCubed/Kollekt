@@ -6,7 +6,8 @@ from flask import current_app as app
 from flask import render_template, url_for, flash, redirect, request
 from werkzeug.utils import secure_filename
 from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, CreateCommunityForm, \
-    DeleteCommunityForm, CreatePostForm, CreateCommentForm, EditPostForm, DeletePostForm, CreateCollectionForm
+    DeleteCommunityForm, CreatePostForm, CreateCommentForm, EditPostForm, DeletePostForm, \
+    CreateCollectionForm, DeleteItemForm
 
 
 # from .Components.Community import Community
@@ -237,7 +238,7 @@ def addNewCollectionItem(collection_id):
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file_path = file_path.replace("\\", "/")
             form.photo.data.save(file_path)
-            flash("IMAGE UPLOADED!")
+            flash("IMAGE UPLOADED!", "danger")
             collection_item = CollectionItem(user=current_user.id, community=add_community, photo=filename,
                                              desc=form.text.data, collection=add_collection, name=form.name.data)
 
@@ -245,8 +246,9 @@ def addNewCollectionItem(collection_id):
             db.session.commit()
             item_collection = Collections.query.filter_by(id=collection_id).first()
             collection_name = item_collection.name
-            user_name=current_user.username
-            return render_template("item.html", title="Your Item", item=collection_item, filename=filename,collectionName=collection_name,username=user_name)
+            user_name = current_user.username
+            return render_template("item.html", title="Your Item", item=collection_item, filename=filename,
+                                   collectionName=collection_name, username=user_name)
         return render_template("addItem.html", title='Add Item', form=form)
     else:
         return redirect(url_for('login'))
@@ -433,3 +435,33 @@ def delComment(comment_id):
         flash("Comment deleted", "danger")
     # if current_user is admin, lock the post instead of deleting it
     return redirect(url_for('viewPost', community_url=community.url, post_id=post.id))
+
+
+@app.route("/item/<item_id>/delete", methods=['GET', 'POST'])
+def delItem(item_id):
+    item = CollectionItem.query.filter_by(id=item_id).first()
+    print(item_id)
+    if item is None:
+        return redirect(url_for('home'))
+        print('0')
+    print('1')
+    if item.user == current_user.id:
+        print('2')
+        form = DeleteItemForm()
+        print('4')
+        print("form val: ", form.validate_on_submit())
+        if form.validate_on_submit():
+            print(form.errors)
+            print('5')
+            if form.submitCancel.data:
+
+                return redirect(url_for('item_page', item_id=item_id))
+            elif form.submitConfirm.data:
+                db.session.delete(item)
+                db.session.commit()
+                flash("item " + item.name + " has been deleted", "danger")
+                return redirect(url_for('home'))
+        return render_template("delItem.html", title='Delete Item', form=form, item_id=item_id, item = item)
+    else:
+        print('3')
+        return redirect(url_for('item_page', item_id=item_id))

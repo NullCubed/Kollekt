@@ -60,11 +60,15 @@ class EditPostForm(FlaskForm):
     item_id = StringField('Attach an Item (Optional)')
     submit = SubmitField('Save')
 
+# class EditItemForm(FlaskForm):
 
 class DeletePostForm(FlaskForm):
     submitConfirm = SubmitField('Confirm')
     submitCancel = SubmitField('Cancel')
 
+class DeleteItemForm(FlaskForm):
+    submitConfirm =SubmitField('Confirm')
+    submitCancel = SubmitField('Cancel')
 
 class UserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
