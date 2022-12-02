@@ -1,13 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed, FileRequired
-from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
-
-from flask import url_for, redirect, render_template
-from flask_wtf.file import FileField
-from werkzeug.utils import secure_filename
-from kollekt.models import Communities, CollectionItem, Collections
-from . import db
 
 
 class RegistrationForm(FlaskForm):
@@ -19,9 +13,6 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Sign Up')
-
-    def returnInfo(self):
-        return self.username.data, self.email.data, self.password.data
 
 
 class LoginForm(FlaskForm):
@@ -35,42 +26,42 @@ class LoginForm(FlaskForm):
 class ItemAddForm(FlaskForm):
     text = StringField('Description', validators=[DataRequired()])
     photo = FileField('Your Photo', validators=[FileRequired(),
-                                                FileAllowed(['jpg', 'png'], 'Images Only')])
+                                                FileAllowed(['jpg', 'png', 'jpeg'], 'Images Only')])
     name = StringField("Item Name", validators=[DataRequired()])
     submit = SubmitField('Add')
 
 
-class createCommunityForm(FlaskForm):
+class CreateCommunityForm(FlaskForm):
     name = StringField('Community Name', validators=[DataRequired()])
     description = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Create')
 
 
-class deleteCommunityForm(FlaskForm):
+class DeleteCommunityForm(FlaskForm):
     name = StringField('Community to Delete', validators=[DataRequired()])
     submit = SubmitField('Delete')
 
 
-class createCollectionForm(FlaskForm):
+class CreateCollectionForm(FlaskForm):
     name = StringField('Name of collection', validators=[DataRequired()])
     desc = StringField('Description of collection', validators=[DataRequired()])
     submit = SubmitField('Create Collection')
 
 
-class createPostForm(FlaskForm):
+class CreatePostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     body = TextAreaField('Body')
     item_id = StringField('Attach an Item (Optional)')
     submit = SubmitField('Post!')
 
 
-class editPostForm(FlaskForm):
+class EditPostForm(FlaskForm):
     body = TextAreaField('Body')
     item_id = StringField('Attach an Item (Optional)')
     submit = SubmitField('Save')
 
 
-class deletePostForm(FlaskForm):
+class DeletePostForm(FlaskForm):
     submitConfirm = SubmitField('Confirm')
     submitCancel = SubmitField('Cancel')
 
@@ -82,6 +73,6 @@ class UserForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-class createCommentForm(FlaskForm):
+class CreateCommentForm(FlaskForm):
     text = TextAreaField('Leave a comment below...', validators=[DataRequired()])
     submit = SubmitField('Post!')
