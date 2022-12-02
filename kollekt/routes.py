@@ -89,7 +89,7 @@ def userProfile():
     return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
                            user=current_user, users_posts=users_posts, users_collections=collection_user,
-                           users_items=items_user)
+                           users_items=items_user, currentProfilePic=current_user.profile_picture)
 
 
 @app.route("/logout")
@@ -108,12 +108,7 @@ def userSettings():
         name_to_update.username = request.form['username']
         name_to_update.email = request.form['email']
         name_to_update.bio = request.form['bio']
-        name_to_update.profile_picture = request.files['profile_picture']
-        filename = secure_filename(form.profile_picture.data.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file_path = file_path.replace("\\", "/")
-        form.profile_picture.data.save(file_path)
-        db.session.commit()
+        name_to_update.profile_picture = request.form['profile_picture']
         try:
             db.session.commit()
             flash("User Updated Successfully!")
