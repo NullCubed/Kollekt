@@ -1,5 +1,5 @@
 import os
-
+import random
 from .models import User, Communities, Collections, Posts, db, CollectionItem, Comments
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
@@ -16,20 +16,26 @@ from kollekt.forms import RegistrationForm, LoginForm, UserForm, ItemAddForm, Cr
 
 @app.route("/")
 def home():
-    posts = Posts.query.all()
+    posts = Posts.query.all()[:10]
     usersCommunities = []
     allCommunities = Communities.query.all()
     tempCommunities = allCommunities
-    allItems = CollectionItem.query.all()
 
+    tempUsers = []
+    allCollections = Collections.query.all()[:10]
+    displayCollections = []
+
+    for i in allCollections:
+        if len(i.items) > 1:
+            posts.append(i)
     if current_user.is_authenticated:
-
         for community in allCommunities:
             tempUsers = []
             for i in community.getUsers():
                 tempUsers.append(i.username)
             if current_user.username in tempUsers:
                 usersCommunities.append(community)
+    random.shuffle(posts)
     tempComnames = []
     tempUserComNames = []
     for i in tempCommunities:
@@ -49,7 +55,7 @@ def home():
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts,
-                           allItems=allItems)
+                           allCollections=displayCollections, User=User)
 
 
 @app.route("/userProfile")
@@ -69,9 +75,8 @@ def userProfile():
     if current_user.is_authenticated:
 
         for i in collection_user:
-            # Changed same variable in nested for loop
-            for x in i.items:
-                items_user.append(x)
+            for i in i.items:
+                items_user.append(i)
 
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
@@ -230,9 +235,10 @@ def register():
 def addNewCollectionItem(collection_id):
     if current_user.is_authenticated:
         form = ItemAddForm()
-        add_community = Collections.query.filter_by(id=collection_id).first().community_id
-        add_collection = Collections.query.filter_by(id=collection_id).first().id
-        # TODO: This needs to be fixed/removed
+        add_community = Collections.query.filter_by(
+            id=collection_id).first().community_id
+        add_collection = Collections.query.filter_by(
+            id=collection_id).first().id
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
