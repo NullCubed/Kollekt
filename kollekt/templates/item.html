@@ -37,15 +37,17 @@
 
     <br>
     <img src="/static/{{item.photo}}" alt="" class="center"/>
-<!--    <h3><strong>User:</strong> {{ username }}</h3>-->
-
-<!--    <h3><strong>User:</strong> {{ username }}</h3>-->
     <h3><strong><a href="/userCard/{{item.user}}">{{username}}</a></strong></h3>
 
 
     <h3><strong>Collection:</strong> {{ collectionName }}</h3>
     <h3><strong>Description:</strong> {{ item.desc }}</h3>
 
+    {% if item.user == current_user.id %}
+
+    <button class="button text-center" type="button"><a href="{{url_for('delItem', item_id=item.id)}}">delete item</a></button>
+
+    {% endif %}
 
 </section>
 {% endblock content %}
