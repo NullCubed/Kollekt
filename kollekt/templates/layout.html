@@ -59,7 +59,7 @@
                     >
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{{url_for('logout')}}">Logout</a>
-                    {% if current_user.admin %}
+                    {% if current_user.admin == True %}
                     <a class="dropdown-item" href="{{url_for('adminpage')}}">Admin</a>
                     {% endif %}
                 </div>
