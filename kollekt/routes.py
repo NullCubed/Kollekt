@@ -97,6 +97,83 @@ def userProfile():
                            user=current_user, users_posts=users_posts, users_collections=collection_user,
                            users_items=items_user, currentProfilePic=current_user.profile_picture)
 
+@app.route("/userCommunities/<id>")
+@login_required
+def commCard(id):
+    posts = Posts.query.all()[:10]
+    usersCommunities = []
+    allCommunities = Communities.query.all()
+    tempCommunities = allCommunities
+
+    tempUsers = []
+    allCollections = Collections.query.all()[:10]
+    displayCollections = []
+
+    for i in allCollections:
+        if len(i.items) > 1:
+            posts.append(i)
+    if current_user.is_authenticated:
+        for community in allCommunities:
+            tempUsers = []
+            for i in community.getUsers():
+                tempUsers.append(i.username)
+            if current_user.username in tempUsers:
+                usersCommunities.append(community)
+    random.shuffle(posts)
+    tempComnames = []
+    tempUserComNames = []
+    for i in tempCommunities:
+        tempComnames.append(i.name)
+    for x in usersCommunities:
+        tempUserComNames.append(x.name)
+    for i in tempComnames:
+        if i in tempUserComNames:
+            tempCommunities.remove(Communities.query.filter_by(name=i).first())
+    sampleCollections = Collections.query.all()
+    sampleCommunities = Communities.query.all()
+    collectionsCount = len(sampleCollections)
+    communitiesCount = len(sampleCommunities)
+    postCount = len(posts)
+    usersCount = len(User.query.all())
+    return render_template('commCard.html', postCount=postCount, collectionsCount=collectionsCount,
+                           communitiesCount=communitiesCount, usersCount=usersCount,
+                           sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+                           usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts,
+                           allCollections=displayCollections, User=User)
+
+
+@app.route("/myCommunities/<user_id>")
+@login_required
+def myCommunities(user_id):
+    # allCommunities = Communities.query.all()
+    # usersCommunities = []
+    # collection_user = current_user.collections
+    # items_user = []
+    # # TODO: This needs to be fixed
+    # if current_user.is_authenticated:
+
+    #     for i in collection_user:
+    #         for i in i.items:
+    #             items_user.append(i)
+
+    #     for community in allCommunities:
+    #         userlist = community.getUsers()  # waiting for method implementation
+    #         finalUserList = []
+    #         for i in userlist:
+    #             finalUserList.append(i.username)
+    #         # userlist = []  # using this for now
+    #         if current_user.username in finalUserList:
+    #             usersCommunities.append(community)
+    #             allCommunities.remove(community)
+    # sampleCollections = Collections.query.all()
+    # sampleCommunities = Communities.query.all()
+    # return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
+    #                        usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
+    #                        user=current_user, users_posts=users_posts, users_collections=collection_user,
+    #                        users_items=items_user, currentProfilePic=current_user.profile_picture)
+    userInfo = User.query.filter_by(id=user_id).first()
+    return render_template('mycommunities.html', userInfo=userInfo)
+
 
 @app.route("/logout")
 def logout():
