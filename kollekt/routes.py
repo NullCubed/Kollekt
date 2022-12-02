@@ -21,15 +21,12 @@ def home():
     tempCommunities = allCommunities
     tempUsers = []
     allCollections = Collections.query.all()[:10]
-
     displayCollections = []
 
     for i in allCollections:
         if len(i.items) > 1:
             posts.append(i)
-
     if current_user.is_authenticated:
-
         for community in allCommunities:
             tempUsers = []
             for i in community.getUsers():
@@ -37,8 +34,6 @@ def home():
             if current_user.username in tempUsers:
                 usersCommunities.append(community)
     random.shuffle(posts)
-    randomSelect = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    random.shuffle(randomSelect)
     tempComnames = []
     tempUserComNames = []
     for i in tempCommunities:
