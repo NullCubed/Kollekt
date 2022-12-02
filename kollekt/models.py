@@ -59,10 +59,6 @@ class User(db.Model, UserMixin):
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)
 
-    def getUserInfo(self):
-        user = db.get_or_404(User, self.id)
-        return user
-
     def addCollection(self, collection):
         self.collections_list.append(collection)
         db.session.commit()
@@ -166,13 +162,6 @@ class Collections(db.Model):
 
     def __repr__(self):
         return f'<Collection {self.name}, {self.items}, {self.community_id}>'
-
-    def getItem(self):
-        item = self.items[0]
-        item.write_file(item.picture, item.picture_path)
-        return f'<img src=\"../static/bantest.png\" width=100 height=100/>' \
-               f'<br />' \
-               f'<h4 class=\"text-center\">{item.name}<br/>{item.desc}</h4>'
 
     def getId(self):
         return self.user_id
