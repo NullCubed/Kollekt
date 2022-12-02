@@ -40,11 +40,11 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
+    password = db.Column(db.String, nullable=False)
     # communities = db.Column(db.BLOB)
     # collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
-    profile_picture = db.Column(db.String, nullable=True)
+    profile_picture = db.Column(db.String)
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections = db.relationship(
@@ -58,11 +58,7 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)
-
-    def getUserInfo(self):
-        user = db.get_or_404(User, self.id)
-        return user
-
+        
     def addCollection(self, collection):
         self.collections_list.append(collection)
         db.session.commit()
@@ -85,7 +81,8 @@ class CollectionItem(db.Model):
     photo = db.Column(db.String)
     # likes = db.Column(db.Integer)
     # dislikes = db.Column(db.Integer)
-    community_id = db.Column(db.Integer, db.ForeignKey('communities.id'), nullable=False)
+    community_id = db.Column(db.Integer, db.ForeignKey(
+        'communities.id'), nullable=False)
     user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
@@ -143,7 +140,6 @@ class CollectionItem(db.Model):
     #         self.dislikers.remove(user_who_disliked)
     #         self.dislikes -= 1
     #         return self.dislikes
-
     def __repr__(self):
         return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
 
@@ -152,10 +148,12 @@ class Collections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    items = db.relationship('CollectionItem', backref='Collections', lazy=True, cascade="all, delete-orphan")
+    items = db.relationship(
+        'CollectionItem', backref='Collections', lazy=True, cascade="all, delete-orphan")
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
+    kind = db.Column(db.String)
 
     def __init__(self, name, desc, user_id, community_id):
         self.name = name
@@ -163,16 +161,10 @@ class Collections(db.Model):
         self.user_id = user_id
         self.community_id = community_id
         self.items = []
+        self.kind = "collection"
 
     def __repr__(self):
         return f'<Collection {self.name}, {self.items}, {self.community_id}>'
-
-    def getItem(self):
-        item = self.items[0]
-        item.write_file(item.picture, item.picture_path)
-        return f'<img src=\"../static/bantest.png\" width=100 height=100/>' \
-               f'<br />' \
-               f'<h4 class=\"text-center\">{item.name}<br/>{item.desc}</h4>'
 
     def getId(self):
         return self.user_id
@@ -302,7 +294,7 @@ class Communities(db.Model):
 
 class Photos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    photo_blob = db.Column(db.BLOB)
+    photo_blob = db.Column(db.String)
 
 
 class Posts(db.Model):
@@ -312,13 +304,14 @@ class Posts(db.Model):
     body = db.Column(db.String)
     timestamp = db.Column(db.String)
     meta = db.Column(db.String)
-    comments = db.Column(db.BLOB)
+    comments = db.Column(db.String)
     item_id = db.Column(db.Integer)
     community_id = db.Column(db.Integer)
     likes = db.relationship(
         'User', secondary=likes_on_posts, backref='usersWhoLiked')
     dislikes = db.relationship(
         'User', secondary=dislikes_on_posts, backref='usersWhoDisliked')
+    kind = db.Column(db.String)
 
     def __init__(self, author_id, title, body, community_id, item_id=None):
         self.author_id = author_id
@@ -329,6 +322,7 @@ class Posts(db.Model):
         self.likes = []
         self.dislikes = []
         self.item_id = item_id
+        self.kind = "post"
 
     def getAuthor(self):
         return User.query.filter_by(id=self.author_id).first()

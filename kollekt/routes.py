@@ -1,5 +1,5 @@
 import os
-
+import random
 from .models import User, Communities, Collections, Posts, db, CollectionItem, Comments
 from flask_login import login_user, current_user, logout_user, login_required
 from flask import current_app as app
@@ -19,20 +19,26 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/")
 def home():
-    posts = Posts.query.all()
+    posts = Posts.query.all()[:10]
     usersCommunities = []
     allCommunities = Communities.query.all()
     tempCommunities = allCommunities
-    allItems = CollectionItem.query.all()
 
+    tempUsers = []
+    allCollections = Collections.query.all()[:10]
+    displayCollections = []
+
+    for i in allCollections:
+        if len(i.items) > 1:
+            posts.append(i)
     if current_user.is_authenticated:
-
         for community in allCommunities:
             tempUsers = []
             for i in community.getUsers():
                 tempUsers.append(i.username)
             if current_user.username in tempUsers:
                 usersCommunities.append(community)
+    random.shuffle(posts)
     tempComnames = []
     tempUserComNames = []
     for i in tempCommunities:
@@ -52,7 +58,7 @@ def home():
                            communitiesCount=communitiesCount, usersCount=usersCount,
                            sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
                            usersCommunities=usersCommunities, allCommunities=tempCommunities, posts=posts,
-                           allItems=allItems)
+                           allCollections=displayCollections, User=User)
 
 
 @app.route("/userProfile")
@@ -66,14 +72,14 @@ def userProfile():
     posts = Posts.query.all()
     allCommunities = Communities.query.all()
     usersCommunities = []
+    collection_user = current_user.collections
+    items_user = []
     # TODO: This needs to be fixed
     if current_user.is_authenticated:
-        collection_user = current_user.collections
-        items_user = []
+
         for i in collection_user:
-            # Changed same variable in nested for loop
-            for x in i.items:
-                items_user.append(x)
+            for i in i.items:
+                items_user.append(i)
 
         for community in allCommunities:
             userlist = community.getUsers()  # waiting for method implementation
@@ -128,7 +134,7 @@ def userSettings():
                                id=id)
 
 
-@app.route("/userCard/<id>")
+@app.route("/userCard/<user_id>")
 @login_required
 def userCard(user_id):
     userInfo = User.query.filter_by(id=user_id).first()
@@ -190,9 +196,17 @@ def login():
     return render_template('login.html', title='Login', form=form)
 
 
-@app.route("/item")
-def itemPage():
-    return render_template('item.html')
+@app.route("/item/<item_id>", methods=['GET', 'POST'])
+def item_page(item_id):
+    item = CollectionItem.query.filter_by(id=item_id).first()
+    user_id = item.user
+    user_true = User.query.filter_by(id=user_id).first()
+    user_name = user_true.username
+    collection_id = item.collection_id
+    item_collection = Collections.query.filter_by(id=collection_id).first()
+    collection_name = item_collection.name
+
+    return render_template('item.html', item=item, username=user_name, collectionName=collection_name, user_id=user_id)
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -224,9 +238,10 @@ def register():
 def addNewCollectionItem(collection_id):
     if current_user.is_authenticated:
         form = ItemAddForm()
-        add_community = Collections.query.filter_by(id=collection_id).first().community_id
-        add_collection = Collections.query.filter_by(id=collection_id).first().id
-        # TODO: This needs to be fixed/removed
+        add_community = Collections.query.filter_by(
+            id=collection_id).first().community_id
+        add_collection = Collections.query.filter_by(
+            id=collection_id).first().id
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
@@ -238,8 +253,11 @@ def addNewCollectionItem(collection_id):
 
             db.session.add(collection_item)
             db.session.commit()
-
-            return render_template("item.html", title="Your Item", item=collection_item, filename=filename)
+            item_collection = Collections.query.filter_by(id=collection_id).first()
+            collection_name = item_collection.name
+            user_name = current_user.username
+            return render_template("item.html", title="Your Item", item=collection_item, filename=filename,
+                                   collectionName=collection_name, username=user_name)
         return render_template("addItem.html", title='Add Item', form=form)
     else:
         return redirect(url_for('login'))
@@ -302,23 +320,6 @@ def createCollection(community_id):
 def viewCollection(collection_id):
     collection = Collections.query.filter_by(id=collection_id).first()
     return render_template("collections.html", collection=collection)
-
-
-@app.route("/fillDB")
-def filldb():
-    db.drop_all()
-    db.create_all()
-    db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
-    db.session.add(Communities("Watches", "Timepieces"))
-    db.session.add(Communities("Shoes", "Gloves for your feet"))
-    db.session.add(Collections(
-        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
-    db.session.add(Collections("Admins Watches",
-                               "A collection of all of admins shoes", 1, 1))
-    db.session.commit()
-    login_user(User.query.filter_by(id=1).first())
-
-    return redirect(url_for('home'))
 
 
 @app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])
