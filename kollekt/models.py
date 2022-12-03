@@ -325,80 +325,55 @@ class Posts(db.Model):
         self.kind = "post"
 
     def getAuthor(self):
+        """
+        Gets the author of the post.
+        :return: User whose ID is stored in self.author_id
+        """
         return User.query.filter_by(id=self.author_id).first()
 
     def getCommunity(self):
+        """
+        Gets the community which the post belongs to.
+        :return: Community whose ID is stored in the post object
+        """
         return Communities.query.filter_by(id=self.community_id).first()
 
-    def getLinkedItem(self):
-        return CollectionItem.query.filter_by(id=self.item_id).first()
-
-    def setLinkedItem(self, item_id):
-        if item_id is not None:
-            # item = Items.query.filter_by(id=item_id).first()
-            # need a check here for if the new item matches the user
-            # this requires users and items or collections to be linked in database
-            if True:  # "if self.getAuthor() == item's owner"
-                self.item_id = item_id
-        else:
-            self.item_id = None
-
     def setBody(self, body):
+        """
+        Sets the text of the body of the post.
+        :param: body: the new text for the body.
+        :return: none
+        """
         self.body = body
 
     def getComments(self):
+        """
+        Gets all comments which are attached to the post.
+        :return: List of comments
+        """
         return Comments.query.filter_by(post_id=self.id).all()
 
     def clearComments(self):
-        # deletes all comments under a post; should only be called prior to deleting the post
+        """
+        Deletes all comments which are attached to the post; called prior to deleting the post.
+        :return: None
+        """
         comments = self.getComments()
         for i in comments:
             db.session.delete(i)
         db.session.commit()
 
-    def getLikes(self):
-        return len(self.likes)
-
-    def getDislikes(self):
-        return len(self.dislikes)
-
-    def userHasLiked(self, user_id):
-        if user_id in self.likes:
-            return True
-        return False
-
-    def userHasDisliked(self, user_id):
-        if user_id in self.dislikes:
-            return True
-        return False
-
-    def toggleLike(self, user_id):
-        if user_id in self.likes:
-            self.likes.remove(user_id)
-        else:
-            if user_id in self.dislikes:
-                self.dislikes.remove(user_id)
-            self.likes.append(user_id)
-        db.session.commit()
-
-    def toggleDislike(self, user_id):
-        if user_id in self.dislikes:
-            self.dislikes.remove(user_id)
-        else:
-            if user_id in self.likes:
-                self.likes.remove(user_id)
-            self.dislikes.append(user_id)
-        db.session.commit()
-
     def getTimestamp(self):
-        # returns post time if posted today, otherwise returns post date
+        """
+        Gets the raw timestamp and a formatted variant of it for display on the UI, depending on the current date.
+        :return: Tuple of the raw timestamp and the formatted version
+        """
         now = str(datetime.datetime.now()).split(" ")
         post_time_for_eval = self.timestamp.split(" ")
         if now[0] == post_time_for_eval[0]:
-            # second return val used specifically for formatting on post display
-            return post_time_for_eval[1].split(".")[0], "at " + post_time_for_eval[1].split(".")[0]
+            return self.timestamp, "at " + post_time_for_eval[1].split(".")[0]
         else:
-            return post_time_for_eval[0], "on " + post_time_for_eval[0]
+            return self.timestamp, "on " + post_time_for_eval[0]
 
     def __repr__(self):
         return f'<Post #{self.id} in Community "{self.getCommunity().url}">'
@@ -421,19 +396,41 @@ class Comments(db.Model):
         self.locked = False
 
     def getAuthor(self):
+        """
+        Gets the author of the comment.
+        :return: User whose ID is stored in self.author_id
+        """
         return User.query.filter_by(id=self.author_id).first()
 
     def getPost(self):
+        """
+        Gets the post to which the comment belongs.
+        :return: Post whose ID is stored in self.post_id
+        """
         return Posts.query.filter_by(id=self.post_id).first()
 
     def isLocked(self):
+        """
+        Determines if the post has been locked by an administrator.
+        :return: Boolean stored in self.locked.
+        """
         return self.locked
 
     def setText(self, text):
+        """
+        Sets the text of the comment.
+        :param: text: the new text for the comment.
+        :return: none
+        """
         self.text = text
         db.session.commit()
 
-    def lockPost(self):
+    def lockComment(self):
+        """
+        Locks the comment by setting self.locked to True and replacing the text. Used instead of deletion when a
+        specific comment to a post is deleted by an administrator.
+        :return: none
+        """
         self.text = "This comment has been removed by an administrator."
         self.locked = True
         db.session.commit()
