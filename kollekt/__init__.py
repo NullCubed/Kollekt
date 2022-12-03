@@ -17,9 +17,10 @@ def create_app():
 
     with app.app_context():
         from . import routes
-        db.drop_all()
-        print("Dropped All Tables")
-        db.create_all()
+        if CONFIG_TYPE != 'config.ProductionConfig':
+            db.drop_all()
+            print("Dropped All Tables")
+            db.create_all()
 
         print("Created All Tables From Models")
         return app

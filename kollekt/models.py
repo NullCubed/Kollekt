@@ -1,11 +1,7 @@
-import os
-
 from . import db, login_manager
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
-
-import sqlalchemy as sa
 
 
 @login_manager.user_loader
@@ -44,11 +40,11 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
+    password = db.Column(db.String, nullable=False)
     # communities = db.Column(db.BLOB)
     # collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
-    profile_picture = db.Column(db.BLOB)
+    profile_picture = db.Column(db.String)
     bio = db.Column(db.VARCHAR)
     posts = db.relationship('Posts', backref='author', lazy=True)
     collections = db.relationship(
@@ -62,11 +58,7 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, pwd):
         return check_password_hash(self.password, pwd)
-
-    def getUserInfo(self):
-        user = db.get_or_404(User, self.id)
-        return user
-
+        
     def addCollection(self, collection):
         self.collections_list.append(collection)
         db.session.commit()
@@ -89,7 +81,8 @@ class CollectionItem(db.Model):
     photo = db.Column(db.String)
     # likes = db.Column(db.Integer)
     # dislikes = db.Column(db.Integer)
-    community_id = db.Column(db.Integer, db.ForeignKey('communities.id'), nullable=False)
+    community_id = db.Column(db.Integer, db.ForeignKey(
+        'communities.id'), nullable=False)
     user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
@@ -97,16 +90,16 @@ class CollectionItem(db.Model):
     # picture = db.Column(db.BLOB)
     # filename = db.Column(db.String)
 
-    def convertToBinaryData(self, filepath):
-        # Convert digital data to binary format
-        with open(filepath, 'rb') as file:
-            binaryData = file.read()
-        return binaryData
-
-    def write_file(self, data, filename):
-        # Convert binary data to proper format and write it on Hard Disk
-        with open(filename, 'wb') as file:
-            file.write(data)
+    # def convertToBinaryData(self, filepath):
+    #     # Convert digital data to binary format
+    #     with open(filepath, 'rb') as file:
+    #         binaryData = file.read()
+    #     return binaryData
+    #
+    # def write_file(self, data, filename):
+    #     # Convert binary data to proper format and write it on Hard Disk
+    #     with open(filename, 'wb') as file:
+    #         file.write(data)
 
     def __init__(self, user, community, photo, desc, collection, name):
         self.collection_id = collection
@@ -114,40 +107,39 @@ class CollectionItem(db.Model):
         self.community_id = community
         self.photo = photo
         self.desc = desc
-        self.likes = 0
-        self.dislikes = 0
-        self.likers = []
-        self.dislikers = []
+        # self.likes = 0
+        # self.dislikes = 0
+        # self.likers = []
+        # self.dislikers = []
         self.name = name
 
-    def add_like(self):
-        self.likes += 1
-        return (self.likes)
-
-    def add_dislike(self):
-        self.disliskes += 1
-        return (self.disliskes)
-
-    def add_liker(self, user_who_liked):
-        if user_who_liked not in self.likers():
-            self.likers.append(user_who_liked)
-            self.likes += 1
-            return self.likes
-        else:
-            self.likers.remove(user_who_liked)
-            self.likes -= 1
-            return self.likes
-
-    def add_disliker(self, user_who_disliked):
-        if user_who_disliked not in self.dislikers():
-            self.dislikers.append(user_who_disliked)
-            self.dislikes += 1
-            return self.dislikes
-        else:
-            self.dislikers.remove(user_who_disliked)
-            self.dislikes -= 1
-            return self.dislikes
-
+    # def add_like(self):
+    #     self.likes += 1
+    #     return self.likes
+    #
+    # def add_dislike(self):
+    #     self.disliskes += 1
+    #     return self.disliskes
+    #
+    # def add_liker(self, user_who_liked):
+    #     if user_who_liked not in self.likers():
+    #         self.likers.append(user_who_liked)
+    #         self.likes += 1
+    #         return self.likes
+    #     else:
+    #         self.likers.remove(user_who_liked)
+    #         self.likes -= 1
+    #         return self.likes
+    #
+    # def add_disliker(self, user_who_disliked):
+    #     if user_who_disliked not in self.dislikers():
+    #         self.dislikers.append(user_who_disliked)
+    #         self.dislikes += 1
+    #         return self.dislikes
+    #     else:
+    #         self.dislikers.remove(user_who_disliked)
+    #         self.dislikes -= 1
+    #         return self.dislikes
     def __repr__(self):
         return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
 
@@ -156,10 +148,12 @@ class Collections(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
-    items = db.relationship('CollectionItem', backref='Collections', lazy=True, cascade="all, delete-orphan")
+    items = db.relationship(
+        'CollectionItem', backref='Collections', lazy=True, cascade="all, delete-orphan")
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     community_id = db.Column(
         db.Integer, db.ForeignKey('communities.id'), nullable=False)
+    kind = db.Column(db.String)
 
     def __init__(self, name, desc, user_id, community_id):
         self.name = name
@@ -167,16 +161,10 @@ class Collections(db.Model):
         self.user_id = user_id
         self.community_id = community_id
         self.items = []
+        self.kind = "collection"
 
     def __repr__(self):
         return f'<Collection {self.name}, {self.items}, {self.community_id}>'
-
-    def getItem(self):
-        item = self.items[0]
-        item.write_file(item.picture, item.picture_path)
-        return f'<img src=\"../static/bantest.png\" width=100 height=100/>' \
-               f'<br />' \
-               f'<h4 class=\"text-center\">{item.name}<br/>{item.desc}</h4>'
 
     def getId(self):
         return self.user_id
@@ -306,7 +294,7 @@ class Communities(db.Model):
 
 class Photos(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    photo_blob = db.Column(db.BLOB)
+    photo_blob = db.Column(db.String)
 
 
 class Posts(db.Model):
@@ -316,13 +304,14 @@ class Posts(db.Model):
     body = db.Column(db.String)
     timestamp = db.Column(db.String)
     meta = db.Column(db.String)
-    comments = db.Column(db.BLOB)
+    comments = db.Column(db.String)
     item_id = db.Column(db.Integer)
     community_id = db.Column(db.Integer)
     likes = db.relationship(
         'User', secondary=likes_on_posts, backref='usersWhoLiked')
     dislikes = db.relationship(
         'User', secondary=dislikes_on_posts, backref='usersWhoDisliked')
+    kind = db.Column(db.String)
 
     def __init__(self, author_id, title, body, community_id, item_id=None):
         self.author_id = author_id
@@ -333,112 +322,57 @@ class Posts(db.Model):
         self.likes = []
         self.dislikes = []
         self.item_id = item_id
+        self.kind = "post"
 
     def getAuthor(self):
-        """
-        Finds and returns the author of the post.
-        :return: User object of the author whose ID is stored in self.author_id.
-        """
         return User.query.filter_by(id=self.author_id).first()
 
     def getCommunity(self):
-        """
-        Finds and returns the community to which the post belongs.
-        :return: Object of the community whose ID is stored in self.community_id.
-        """
         return Communities.query.filter_by(id=self.community_id).first()
 
     def getLinkedItem(self):
-        """
-        Finds and returns the collection item linked to the post. [Possibly deprecated]
-        :return: Item object of the item whose ID is stored in self.item_id. If no item is linked, returns None.
-        """
-        if self.item_id is not None:
-            return CollectionItem.query.filter_by(id=self.item_id).first()
-        else:
-            return None
+        return CollectionItem.query.filter_by(id=self.item_id).first()
 
     def setLinkedItem(self, item_id):
-        """
-        Sets a collection item as the linked item to a post IFF the post and the item share the same author.
-        :param: item_id: The ID of the item to be linked.
-        :return: none
-        """
         if item_id is not None:
-            item = CollectionItem.query.filter_by(id=item_id).first()
+            # item = Items.query.filter_by(id=item_id).first()
             # need a check here for if the new item matches the user
             # this requires users and items or collections to be linked in database
-            if self.getAuthor() == item.user:
+            if True:  # "if self.getAuthor() == item's owner"
                 self.item_id = item_id
         else:
             self.item_id = None
 
     def setBody(self, body):
-        """
-        Sets the body of the post.
-        :param: body: The new text of the post.
-        :return: none
-        """
         self.body = body
 
     def getComments(self):
-        """
-        Parses the database for comments whose parent is the post (self).
-        :return: A list of comment objects.
-        """
         return Comments.query.filter_by(post_id=self.id).all()
 
     def clearComments(self):
-        """
-        Deletes all comments whose parent is the post (self). Used prior to deleting the post.
-        :return: none
-        """
+        # deletes all comments under a post; should only be called prior to deleting the post
         comments = self.getComments()
         for i in comments:
             db.session.delete(i)
         db.session.commit()
 
     def getLikes(self):
-        """
-        Returns the number of likes on a post, determined by the length of the list of users who liked the post. [possibly deprecated]
-        :return: Length of self.likes (integer value).
-        """
         return len(self.likes)
 
     def getDislikes(self):
-        """
-        Returns the number of dislikes on a post, determined by the length of the list of users who disliked the post. [possibly deprecated]
-        :return: Length of self.dislikes (integer value).
-        """
         return len(self.dislikes)
 
     def userHasLiked(self, user_id):
-        """
-        Checks if the specified user has liked the post.
-        :param: user_id: ID of the user to check.
-        :return: boolean
-        """
         if user_id in self.likes:
             return True
         return False
 
     def userHasDisliked(self, user_id):
-        """
-        Checks if the specified user has disliked the post.
-        :param: user_id: ID of the user to check.
-        :return: boolean
-        """
         if user_id in self.dislikes:
             return True
         return False
 
     def toggleLike(self, user_id):
-        """
-        Adds or removes a like from a user to/from the post, depending on if they have liked the post or not.
-        If the user disliked, their dislike is also removed along with a like being added.
-        :param: user_id: ID of the user adding/removing the like.
-        :return: none
-        """
         if user_id in self.likes:
             self.likes.remove(user_id)
         else:
@@ -448,12 +382,6 @@ class Posts(db.Model):
         db.session.commit()
 
     def toggleDislike(self, user_id):
-        """
-        Adds or removes a dislike from a user to/from the post, depending on if they have disliked the post or not.
-        If the user liked, their like is also removed along with a dislike being added.
-        :param: user_id: ID of the user adding/removing the dislike.
-        :return: none
-        """
         if user_id in self.dislikes:
             self.dislikes.remove(user_id)
         else:
@@ -463,17 +391,14 @@ class Posts(db.Model):
         db.session.commit()
 
     def getTimestamp(self):
-        """
-        Retrieves the timestamp of the post. Additionally, check if the timestamp was called on the same date as the
-        calling of the method, and returns a formatted variant of the timestamp for display on a given page.
-        :return: Tuple containing the raw timestamp and the formatted variant ([0] for raw, [1] for formatted).
-        """
+        # returns post time if posted today, otherwise returns post date
         now = str(datetime.datetime.now()).split(" ")
         post_time_for_eval = self.timestamp.split(" ")
         if now[0] == post_time_for_eval[0]:
-            return self.timestamp, "at " + post_time_for_eval[1].split(".")[0]
+            # second return val used specifically for formatting on post display
+            return post_time_for_eval[1].split(".")[0], "at " + post_time_for_eval[1].split(".")[0]
         else:
-            return self.timestamp, "on " + post_time_for_eval[0]
+            return post_time_for_eval[0], "on " + post_time_for_eval[0]
 
     def __repr__(self):
         return f'<Post #{self.id} in Community "{self.getCommunity().url}">'
@@ -496,57 +421,22 @@ class Comments(db.Model):
         self.locked = False
 
     def getAuthor(self):
-        """
-        Finds and returns the author of the comment.
-        :return: User object of the author whose ID is stored in self.author_id.
-        """
         return User.query.filter_by(id=self.author_id).first()
 
     def getPost(self):
-        """
-        Finds and returns the post which the comment belongs to.
-        :return: Post object of the post whose ID is stored in self.post_id.
-        """
         return Posts.query.filter_by(id=self.post_id).first()
 
     def isLocked(self):
-        """
-        Checks if the post has been locked by an administrator.
-        :return: boolean: self.locked
-        """
         return self.locked
 
     def setText(self, text):
-        """
-        Sets the text of the comment.
-        :param: text: the text of the comment.
-        :return: none
-        """
         self.text = text
         db.session.commit()
 
     def lockPost(self):
-        """
-        Locks a comment (which prevents the user from editing/deleting it) and sets the text. Equivalent to a deletion
-        for a reader, while notifying them that the comment was uniquely "removed" through administrator action.
-        :return: none
-        """
         self.text = "This comment has been removed by an administrator."
         self.locked = True
         db.session.commit()
-
-    def getTimestamp(self):
-        """
-        Retrieves the timestamp of the post. Additionally, check if the timestamp was called on the same date as the
-        calling of the method, and returns a formatted variant of the timestamp for display on a given page.
-        :return: Tuple containing the raw timestamp and the formatted variant ([0] for raw, [1] for formatted).
-        """
-        now = str(datetime.datetime.now()).split(" ")
-        post_time_for_eval = self.timestamp.split(" ")
-        if now[0] == post_time_for_eval[0]:
-            return self.timestamp, "at " + post_time_for_eval[1].split(".")[0]
-        else:
-            return self.timestamp, "on " + post_time_for_eval[0]
 
     def __repr__(self):
         return f'<comment #{self.id} under post #{self.post_id} in community "{self.getCommunity().url}">'
