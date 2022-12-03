@@ -26,9 +26,14 @@ def runner(app):
     return app.test_cli_runner()
 
 
-def test_login(client):
+def test_login_page(client):
     response = client.get("/login")
     assert b'<h5 class="text-center">Dont have an account? Register now</h5>' in response.data
+
+def test_register_page(client):
+    response = client.get("/register")
+    assert response.status_code == 200
+    assert b'<legend class="border-bottom mb-4 text-center">Sign Up</legend>' in response.data
 
 
 def test_logged_out_homepage(client):
@@ -36,6 +41,30 @@ def test_logged_out_homepage(client):
     assert b"""<h3 class="text-center" style="font-weight: bold">
           Log in to have a personalized experience
         </h3>""" in response.data
+
+
+def test_logged_in_homepage(app, client):
+    db.drop_all()
+    db.create_all()
+    response = client.post("/register", data={
+        "username": "admin1",
+        "email": "joe1@joe.com",
+        "password": "goodpassword",
+        "confirm_password": "goodpassword"}, follow_redirects=True)
+    # print(response.data).
+    assert response.request.path == "/"
+    login = client.post("/login", data={
+        "username": "admin1",
+        "password": "goodpassword"}, follow_redirects=True)
+    print(str(login.data))
+    assert b"""<h4 class="text-center border-bottom pb-2">
+            Top Communities / Recent Posts
+
+          </h4>""" in login.data
+    # Check that there was one redirect response.
+    # assert len(response.history) == 1
+    # Check that the second request was to the index page.
+
 
 
 def test_register_new_user(client):
@@ -70,6 +99,8 @@ def test_login_existing_user(client):
     assert response.request.path == '/'
 
 
+
+
 def test_login_nonexisting_user(client):
     response = client.post('/login', data={
         'username': 'alphabetsoup',
@@ -78,20 +109,6 @@ def test_login_nonexisting_user(client):
     assert response.request.path == '/login'
 
 
-def test_logged_in_homepage(app, client):
-    db.drop_all()
-    db.create_all()
-    response = client.post("/register", data={
-        "username": "admin1",
-        "email": "joe1@joe.com",
-        "password": "goodpassword",
-        "confirm_password": "goodpassword"}, follow_redirects=True)
-    # print(response.data).
-    assert response.status_code == 200
-    # Check that there was one redirect response.
-    # assert len(response.history) == 1
-    # Check that the second request was to the index page.
-    assert response.request.path == "/"
 
 
 def test_logout(client):
@@ -140,6 +157,33 @@ def test_insane_input(client):
     response = client.post("/register", data={
         "username": "goodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusername",
         "email": "goodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusername@test.com",
-        "password": "goodpassword",
-        "confirm_password": "goodpassword"}, follow_redirects=True)
+        "password": "goodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpassword",
+        "confirm_password": "goodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpassword"}, follow_redirects=True)
     assert response.request.path == '/register'
+
+def test_create_collection(client):
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    resposne = client.post ("/login", data={"username": "Admin", "password": "testing"})
+
+    response = client.post("/collections/create/1", data={"name": "test", "desc": "test"}, follow_redirects=True)
+    assert response.request.path == "/"
+    response = client.get("/collections/view/3")
+    assert b"""test""" in response.data
+
+
+def test_community_tab(client):
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    resposne = client.post ("/login", data={"username": "Admin", "password": "testing"})
+    response = client.get("/")
+    print(response.data)
+    assert b"""
+                Watches""" in response.data
+
+
+
+
+
