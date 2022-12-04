@@ -596,7 +596,7 @@ def fillDB():
     """
     Calls fill_the_database when in use.
     """
-    fill_the_database()
+    # fill_the_database()
     return redirect(url_for('home'))
 
 
