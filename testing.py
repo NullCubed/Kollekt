@@ -219,3 +219,14 @@ def test_update_long_username(client):
         "email": "test2@gmail.com",
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
+
+def test_create_item(client):
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    resposne = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/addItem/1", data={
+            "text": "test text", "photo":"3c8db28eeebc196d17988ec05c3cf059.jpg", "name":"name"}, follow_redirects=True)
+    assert response.request.path == '/item'
+    response = client.get("/collections/view/3")
+    assert b"""test""" in response.data
