@@ -190,6 +190,14 @@ def test_good_email_update(client):
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/userProfile'
 
+def test_update_existing_user(client):
+    with client:
+        response = client.post("/settings", data={
+        "username": "test",
+        "email": "test2@gmail.com",
+        "bio": "test"}, follow_redirects=True)
+    assert response.request.path == '/settings'
+
 def test_bad_email_update(client):
     response = client.post("/settings", data={
         "username": "test",
@@ -197,10 +205,17 @@ def test_bad_email_update(client):
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
 
-def test_update_existing_user(client):
+def test_blank_email_update(client):
+    response = client.post("/settings", data={
+        "username": "test",
+        "email": "   @    .   ",
+        "bio": "test"}, follow_redirects=True)
+    assert response.request.path == '/settings'
+
+def test_update_long_username(client):
     with client:
         response = client.post("/settings", data={
-        "username": "test",
+        "username": "testtesttesttesttesttesttesttesttesttest",
         "email": "test2@gmail.com",
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
