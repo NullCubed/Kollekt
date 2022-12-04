@@ -1,5 +1,6 @@
 import pytest
 from kollekt import db
+from flask_login import current_user
 
 
 @pytest.fixture(scope='module')
@@ -185,29 +186,30 @@ def test_community_tab(client):
 
 def test_good_email_update(client):
     response = client.post("/settings", data={
-        "username": "test",
+        "username": "tested",
         "email": "test2@gmail.com",
-        "bio": "test"}, follow_redirects=True)
-    assert response.request.path == '/userProfile'
+        "bio": "test",
+        "profile_picture": "lion"}, follow_redirects=True)
+    assert response.request.path == '/settings'
 
 def test_update_existing_user(client):
     with client:
         response = client.post("/settings", data={
-        "username": "test",
+        "username": "tested",
         "email": "test2@gmail.com",
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
 
 def test_bad_email_update(client):
     response = client.post("/settings", data={
-        "username": "test",
+        "username": "test2",
         "email": "test",
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
 
 def test_blank_email_update(client):
     response = client.post("/settings", data={
-        "username": "test",
+        "username": "test3",
         "email": "   @    .   ",
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
@@ -219,3 +221,15 @@ def test_update_long_username(client):
         "email": "test2@gmail.com",
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
+
+def test_update_good_user(client):
+    db.drop_all()
+    db.create_all()
+    with client:
+        response = client.post("/settings", data=dict(
+            username="tester",
+            email='testing@test.com',
+            bio="my bio"), follow_redirects=True)
+        response2 = client.get("/settings")
+        
+        assert response.data == response2.data
