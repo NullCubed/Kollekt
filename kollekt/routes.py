@@ -352,43 +352,45 @@ def adminpage():
     creates a route for admins to create communities
     @returns: admin page
     '''
-    print(current_user.admin)
-    form = CreateCommunityForm()
-    delform = DeleteCommunityForm()
-    allCommunities = Communities.query.all()
-    if form.validate_on_submit():
-        checkCommunity = Communities.query.filter_by(
-            name=form.name.data).first()
-        if checkCommunity:
-            flash("Community already exists", "danger")
-            return redirect(url_for('adminpage'))
-        else:
-            community = Communities(name=form.name.data,
-                                    desc=form.description.data)
-            db.session.add(community)
-            db.session.commit()
-        flash(f"Community Created: {community.name}", "success")
-        return redirect(url_for('adminpage'))
+    if current_user.is_authenticated and current_user.admin:
 
-    if delform.validate_on_submit():
-        checkCommunity = Communities.query.filter_by(
-            name=delform.name.data).first()
-        if checkCommunity:
-            postsToDelte = checkCommunity.getPosts()
-            for i in postsToDelte:
-                db.session.delete(i)
-            collectionsToDelete = checkCommunity.getCollections()
-            for i in collectionsToDelete:
-                db.session.delete(i)
-            db.session.delete(checkCommunity)
-            db.session.commit()
-            flash(f"Community Deleted {checkCommunity.name}", "success")
+        form = CreateCommunityForm()
+        delform = DeleteCommunityForm()
+        allCommunities = Communities.query.all()
+        if form.validate_on_submit():
+            checkCommunity = Communities.query.filter_by(
+                name=form.name.data).first()
+            if checkCommunity:
+                flash("Community already exists", "danger")
+                return redirect(url_for('adminpage'))
+            else:
+                community = Communities(name=form.name.data,
+                                        desc=form.description.data)
+                db.session.add(community)
+                db.session.commit()
+            flash(f"Community Created: {community.name}", "success")
             return redirect(url_for('adminpage'))
-        else:
-            flash("Community does not exist", "danger")
-            return redirect(url_for('adminpage'))
-    return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
 
+        if delform.validate_on_submit():
+            checkCommunity = Communities.query.filter_by(
+                name=delform.name.data).first()
+            if checkCommunity:
+                postsToDelte = checkCommunity.getPosts()
+                for i in postsToDelte:
+                    db.session.delete(i)
+                collectionsToDelete = checkCommunity.getCollections()
+                for i in collectionsToDelete:
+                    db.session.delete(i)
+                db.session.delete(checkCommunity)
+                db.session.commit()
+                flash(f"Community Deleted {checkCommunity.name}", "success")
+                return redirect(url_for('adminpage'))
+            else:
+                flash("Community does not exist", "danger")
+                return redirect(url_for('adminpage'))
+        return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
+    else:
+        return redirect(url_for('home'))
 
 @app.route("/collections/create/<community_id>", methods=['GET', 'POST'])
 def createCollection(community_id):
