@@ -19,10 +19,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
-
 @app.route("/")
 def home():
-    ''' Creates a route for the home page '''
+    """ Creates a route for the home page """
     posts = Posts.query.all()[:10]
     usersCommunities = []
     allCommunities = Communities.query.all()
@@ -67,7 +66,7 @@ def home():
 
 @app.route("/userProfile")
 def userProfile():
-    ''' Creates a route for the user's profile page '''
+    """ Creates a route for the user's profile page """
     users_posts = []
     all_posts = Posts.query.all()
     all_posts.reverse()
@@ -106,10 +105,10 @@ def userProfile():
 @app.route("/userCommunities/<id>")
 @login_required
 def commCard(id):
-    '''
+    """
     Creates a route for each user to display joined communities
     @param id: id assigned to user
-    '''
+    """
     posts = Posts.query.all()[:10]
     usersCommunities = []
     allCommunities = Communities.query.all()
@@ -154,7 +153,7 @@ def commCard(id):
 
 @app.route("/logout")
 def logout():
-    ''' Creates a route for the logout whcih returns to home '''
+    """ Creates a route for the logout whcih returns to home """
     logout_user()
     return redirect(url_for('home'))
 
@@ -162,7 +161,7 @@ def logout():
 @app.route("/userSettings", methods=['GET', 'POST'])
 @login_required
 def userSettings():
-    ''' Creates a route for user setting's page '''
+    """ Creates a route for user setting's page """
     form = UserForm()
     user_id = current_user.id
     name_to_update = User.query.get_or_404(user_id)
@@ -191,14 +190,14 @@ def userSettings():
 @app.route("/userCard/<user_id>")
 @login_required
 def userCard(user_id):
-    ''' creates a route for each user that display's the users information '''
+    """ creates a route for each user that display's the users information """
     userInfo = User.query.filter_by(id=user_id).first()
     return render_template('userCard.html', userInfo=userInfo)
 
 
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
-    ''' creates a route for each commmunity page created by an admin '''
+    """ creates a route for each commmunity page created by an admin """
     community = Communities.query.filter_by(url=url).first()
     posts_to_display = []
     all_posts = Posts.query.all()
@@ -228,7 +227,7 @@ def communityPage(url):
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    ''' creates a route to login '''
+    """ creates a route to login """
     if current_user.is_authenticated:
         flash(f'Login successful', 'success')
         return redirect(url_for('home'))
@@ -273,10 +272,10 @@ def item_page(item_id):
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
-    '''
+    """
     creates a route to register a new user
     @return: either home if registered or register if unsuccesfull
-    '''
+    """
     form = RegistrationForm()
     username = form.username.data
     password = form.password.data
@@ -342,10 +341,10 @@ def addNewCollectionItem(collection_id):
 
 @app.route("/adminpage", methods=['GET', 'POST'])
 def adminpage():
-    '''
+    """
     creates a route for admins to create communities
     @returns: admin page
-    '''
+    """
     print(current_user.admin)
     form = CreateCommunityForm()
     delform = DeleteCommunityForm()
@@ -415,12 +414,12 @@ def viewCollection(collection_id):
 
 @app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])
 def viewPost(community_url, post_id):
-    '''
+    """
     Creates a route for each post for a user to view
     @param community_url: the the url of the community the post is being viewed in.
     @param post_id: the id of the post being viewed.
     @returns the viewpost template and the values: community.url and post.id
-    '''
+    """
     post_to_view = Posts.query.filter_by(id=post_id).first()
     if post_to_view is None:
         return render_template('viewpost.html', post_to_view=post_to_view, community=None)
@@ -442,11 +441,11 @@ def viewPost(community_url, post_id):
 
 @app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])
 def addNewPost(community_url):
-    '''
+    """
     Creates a route for each post for the post to be created
     @param community_url: the the url of the community the post being is stored in.
     @returns the viewpost template and the values: community.url and post.id
-    '''
+    """
     if current_user.is_authenticated:
         community = Communities.query.filter_by(url=community_url).first()
         if community.userHasJoined(current_user) is False:
@@ -472,12 +471,12 @@ def addNewPost(community_url):
 
 @app.route("/community/<community_url>/<post_id>/edit", methods=['GET', 'POST'])
 def editPost(community_url, post_id):
-    '''
+    """
     Creates a route for each post for a edit method to occur
-    @param community_url: the the url of the community the post is being edited in.
+    @param community_url: the url of the community the post is being edited in.
     @param post_id: the id of the post being edited.
     @returns the viewpost template and the values: community.url and post.id
-    '''
+    """
     post = Posts.query.filter_by(id=post_id).first()
     if post is None:
         return redirect(url_for('home'))
@@ -502,12 +501,12 @@ def editPost(community_url, post_id):
 
 @app.route("/community/<community_url>/<post_id>/delete", methods=['GET', 'POST'])
 def delPost(community_url, post_id):
-    '''
+    """
     Creates a route for each post for a delete method to occur
-    @param community_url: the the url of the community the post being deleted is in.
+    @param community_url: the url of the community the post being deleted is in.
     @param post_id: the id of the post being deleted.
     @returns the viewpost template and the values: community.url and post.id
-    '''
+    """
     post = Posts.query.filter_by(id=post_id).first()
     if post is None:
         return redirect(url_for('home'))
@@ -530,11 +529,11 @@ def delPost(community_url, post_id):
 
 @app.route("/comment/<comment_id>/delete", methods=['GET', 'POST'])
 def delComment(comment_id):
-    '''
+    """
     Creates a route for each comment for a delete method to occur
     @param comment_id: the id of the comment being deleted
     @returns the viewpost template and the values: community.url and post.id
-    '''
+    """
     comment = Comments.query.filter_by(id=comment_id).first()
     if comment is None:
         return redirect(url_for('home'))
@@ -575,4 +574,33 @@ def delItem(item_id):
         return redirect(url_for('item_page', item_id=item_id))
 
 
+@app.route("/fillDB")
+def fillDB():
+    """
+    Calls fill_the_database when in use.
+    """
+    fill_the_database()
+    return redirect(url_for('home'))
 
+
+def fill_the_database():
+    """
+    Fills the database. Is called by the fillDB route
+    """
+    db.drop_all()
+    db.create_all()
+    db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
+    community1 = Communities("Watches", "Timepieces")
+    db.session.add(community1)
+    community2 = Communities("Shoes", "Gloves for your feet")
+    db.session.add(community2)
+    db.session.commit()
+    community1.addUser(User.query.filter_by(id=1).first())
+    community2.addUser(User.query.filter_by(id=1).first())
+    db.session.add(Collections(
+        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Collections("Admins Watches",
+                               "A collection of all of admins shoes", 1, 1))
+    db.session.commit()
+    login_user(User.query.filter_by(id=1).first())
+    allCommunities = Communities.query.all()

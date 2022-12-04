@@ -77,7 +77,7 @@ class User(db.Model, UserMixin):
         @return: returns True or False
         '''
         return check_password_hash(self.password, pwd)
-        
+
     def addCollection(self, collection):
         '''
         Function to add a collection
@@ -187,6 +187,7 @@ class CollectionItem(db.Model):
         Printable representation function
         '''
         return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
+
     def getUser(self):
         """
         Returns user of the item
