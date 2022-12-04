@@ -197,9 +197,7 @@ def userSettings():
         try:
             db.session.commit()
             flash("User Updated Successfully!")
-            return render_template("settings.html",
-                                   form=form,
-                                   name_to_update=name_to_update, id=user_id)
+            return redirect(url_for('userProfile'))
         except:
             flash("Error!  Looks like there was a problem...try again!")
             return render_template("settings.html",
