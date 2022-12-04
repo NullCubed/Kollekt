@@ -105,6 +105,7 @@ def userSettings():
         try:
             db.session.commit()
             flash("User Updated Successfully!")
+            return redirect(url_for('userProfile'))
             return render_template("settings.html",
                                    form=form,
                                    name_to_update=name_to_update, id=id)

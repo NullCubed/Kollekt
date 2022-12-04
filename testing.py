@@ -183,7 +183,24 @@ def test_community_tab(client):
     assert b"""
                 Watches""" in response.data
 
+def test_good_email_update(client):
+    response = client.post("/settings", data={
+        "username": "test",
+        "email": "test2@gmail.com",
+        "bio": "test"}, follow_redirects=True)
+    assert response.request.path == '/userProfile'
 
+def test_bad_email_update(client):
+    response = client.post("/settings", data={
+        "username": "test",
+        "email": "test",
+        "bio": "test"}, follow_redirects=True)
+    assert response.request.path == '/settings'
 
-
-
+def test_update_existing_user(client):
+    with client:
+        response = client.post("/settings", data={
+        "username": "test",
+        "email": "test2@gmail.com",
+        "bio": "test"}, follow_redirects=True)
+    assert response.request.path == '/settings'
