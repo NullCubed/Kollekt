@@ -197,7 +197,11 @@ def userCard(user_id):
 
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
-    """ creates a route for each commmunity page created by an admin """
+    """
+    Route for a community's page
+    @param url: the community's url-formatted name
+    @return: returns the html for the community page
+    """
     community = Communities.query.filter_by(url=url).first()
     posts_to_display = []
     all_posts = Posts.query.all()
@@ -209,6 +213,22 @@ def communityPage(url):
             posts_to_display.append(j)
         if k == 5:
             break
+    items_to_display = []
+    collection_ids = []
+    collections = []
+    item_iteration = []
+    all_items = CollectionItem.query.all()
+    all_items.reverse()
+    k = 0
+    for j in all_items:
+        if j.community_id == community.id and j.collection_id not in collection_ids:
+            item_iteration.append(k)
+            k += 1
+            items_to_display.append(j)
+            collection_ids.append(j.collection_id)
+            collections.append(Collections.query.filter_by(id=j.collection_id).first())
+        if k == 3:
+            break
     if request.method == 'POST':
         if current_user.is_authenticated:
             if request.form['join'] == 'Join Community':
@@ -219,10 +239,10 @@ def communityPage(url):
                     if i.community_id == community.id:
                         db.session.delete(i)
                         db.session.commit()
-
         else:
             return redirect(url_for('login'))
-    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display)
+    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display,
+                           items_to_display=items_to_display, collections=collections, item_iteration=item_iteration)
 
 
 @app.route("/login", methods=['GET', 'POST'])
