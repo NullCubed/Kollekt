@@ -71,7 +71,7 @@ class DeleteItemForm(FlaskForm):
     submitCancel = SubmitField('Cancel')
 
 class UserForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     bio = StringField('Biography', validators=[DataRequired()])
     profile_picture = SelectField('Profile Picture', validators=[DataRequired()], choices=[('lion', 'Lion'), ('eagle', 'Eagle'), ('zebra', 'Zebra'), ('snake', 'Snake'), ('pony', 'Pony')])
