@@ -163,28 +163,34 @@ def logout():
 def userSettings():
     """ Creates a route for user setting's page """
     form = UserForm()
-    user_id = current_user.id
-    name_to_update = User.query.get_or_404(user_id)
-    if request.method == "POST":
-        name_to_update.username = request.form['username']
-        name_to_update.email = request.form['email']
-        name_to_update.bio = request.form['bio']
-        name_to_update.profile_picture = request.form['profile_picture']
-        try:
-            db.session.commit()
-            flash("User Updated Successfully!")
-            return redirect(url_for('userProfile'))
-        except:
-            flash("Error!  Looks like there was a problem...try again!")
-            return render_template("settings.html",
-                                   form=form,
-                                   name_to_update=name_to_update,
-                                   id=id)
-    else:
-        return render_template("settings.html",
-                               form=form,
-                               name_to_update=name_to_update,
-                               id=id)
+    
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        eml = User.query.filter_by(email=form.email.data).first()
+        if not user and not eml:
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+            current_user.bio = form.bio.data
+            current_user.profile_picture = form.profile_picture.data
+        elif user:
+            flash("Username already taken", "danger")
+            return redirect(url_for('userSettings'))
+        elif eml:
+            flash("Email already used", "danger")
+            return redirect(url_for('userSettings'))
+        db.session.commit()
+        flash(f'Updated {current_user.username}', 'success')
+
+
+    return render_template("settings.html",
+                               form=form)
+
+
+
+    
+
+
+
 
 
 @app.route("/userCard/<user_id>")

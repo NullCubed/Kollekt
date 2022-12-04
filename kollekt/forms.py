@@ -102,10 +102,10 @@ class DeleteItemForm(FlaskForm):
 
 
 class UserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
     '''
     Class to create a form to change a user's settings
     '''
-    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     bio = StringField('Biography', validators=[DataRequired()])
     profile_picture = SelectField('Profile Picture', validators=[DataRequired()],
