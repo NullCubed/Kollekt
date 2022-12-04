@@ -246,13 +246,57 @@ def test_create_item(client):
         "text": "test text", "photo": "3c8db28eeebc196d17988ec05c3cf059.jpg", "name": "name"}, follow_redirects=True)
     assert response.request.path == '/item'
 
-
-def test_upload_image(client):
+def test_upload_item_image(client):
+    #Test #6, checks for status code of 200, then checks for image in html
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
-    resposne = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
     response = client.post("/addItem/1", data={
-        "text": "test text", "photo": "3c8db28eeebc196d17988ec05c3cf059.jpg", "name": "name"}, follow_redirects=True)
+        "text": "test text", "photo": "bantest.jpg", "name": "901239012309120931390"}, follow_redirects=True)
+    assert response.status_code == 200
+    assert b'bantest.jpg!' in response.data
 
-    assert b"""<img src="/static/3c8db28eeebc196d17988ec05c3cf059.jpg" class="center"/>""" in response.data
+def test_upload_item(client):
+    #Test #3, checks for status code of 200, then checks for flashed message
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/addItem/1", data={
+        "text": "test text", "photo": "bantest.jpg", "name": "901239012309120931390"}, follow_redirects=True)
+    print(response.status_code)
+    assert response.status_code == 200
+    assert b'IMAGE UPLOADED!' in response.data
+
+def test_communites_in_profile(client):
+    # 73 tests to ensure the user can see their communities/collections from their
+    # profile page
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    response = client.get('/userProfile')
+    assert b'Shoes' in response.data
+
+def items_on_profile_page(client):
+    # 47 tests to see if new items are showing on profile page
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/addItem/1", data={
+        "text": "test text", "photo": "bantest.jpg", "name": "901239012309120931390"}, follow_redirects=True)
+    response = client.post('/userProfile')
+    assert b'901239012309120931390' in response.data
+
+def items_in_collections(client):
+    # 46 tests to see if items are showing up in the correct collection
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/addItem/2", data={
+        "text": "test text", "photo": "bantest.jpg", "name": "901239012309120931390"}, follow_redirects=True)
+    response = client.post('/collections/view/2')
+    assert b'901239012309120931390' in response.data
+
