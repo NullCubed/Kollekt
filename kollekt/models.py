@@ -81,7 +81,7 @@ class User(db.Model, UserMixin):
     def addCollection(self, collection):
         '''
         Function to add a collection
-        @param collection: collection beign added
+        @param collection: collection being added
         '''
         self.collections_list.append(collection)
         db.session.commit()
@@ -441,27 +441,6 @@ class Posts(db.Model):
         '''
         return Communities.query.filter_by(id=self.community_id).first()
 
-    def getLinkedItem(self):
-        '''
-        Getter for items that are linked
-        @return: returns items linked to self
-        '''
-        return CollectionItem.query.filter_by(id=self.item_id).first()
-
-    def setLinkedItem(self, item_id):
-        '''
-        Setter to set linked items
-        @param item_id: id of the item being linked
-        '''
-        if item_id is not None:
-            # item = Items.query.filter_by(id=item_id).first()
-            # need a check here for if the new item matches the user
-            # this requires users and items or collections to be linked in database
-            if True:  # "if self.getAuthor() == item's owner"
-                self.item_id = item_id
-        else:
-            self.item_id = None
-
     def setBody(self, body):
         '''
         Setter to set the body
@@ -484,66 +463,6 @@ class Posts(db.Model):
         comments = self.getComments()
         for i in comments:
             db.session.delete(i)
-        db.session.commit()
-
-    def getLikes(self):
-        '''
-        Getter to get the number of likes
-        @return: returns the number of likes on a post
-        '''
-        return len(self.likes)
-
-    def getDislikes(self):
-        '''
-        Getter to get the number of dislikes
-        @return: returns the number of dislkies on a given post
-        '''
-        return len(self.dislikes)
-
-    def userHasLiked(self, user_id):
-        '''
-        Boolean statement to see if user has liked a post
-        @param user_id: id of the user being checked
-        @return: returns True or False
-        '''
-        if user_id in self.likes:
-            return True
-        return False
-
-    def userHasDisliked(self, user_id):
-        '''
-        Boolean statement to see if user has disliked a post
-        @param user_id: id of the user being checked
-        @return: returns True or False
-        '''
-        if user_id in self.dislikes:
-            return True
-        return False
-
-    def toggleLike(self, user_id):
-        '''
-        Function to disable the likes
-        @param user_id: id of the user toggling likes
-        '''
-        if user_id in self.likes:
-            self.likes.remove(user_id)
-        else:
-            if user_id in self.dislikes:
-                self.dislikes.remove(user_id)
-            self.likes.append(user_id)
-        db.session.commit()
-
-    def toggleDislike(self, user_id):
-        '''
-        Function to disable the dislikes
-        @param user_id: id of the user toggling dislikes
-        '''
-        if user_id in self.dislikes:
-            self.dislikes.remove(user_id)
-        else:
-            if user_id in self.likes:
-                self.likes.remove(user_id)
-            self.dislikes.append(user_id)
         db.session.commit()
 
     def getTimestamp(self):
@@ -621,9 +540,9 @@ class Comments(db.Model):
         self.text = text
         db.session.commit()
 
-    def lockPost(self):
+    def lockComment(self):
         '''
-        Function to lock the post
+        Locks the comment. Used instead of deletion when an admin removes a comment.
         '''
         self.text = "This comment has been removed by an administrator."
         self.locked = True

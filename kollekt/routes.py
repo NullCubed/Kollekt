@@ -473,17 +473,12 @@ def addNewPost(community_url):
             return redirect(url_for('communityPage', url=community_url))
         form = CreatePostForm()
         if form.validate_on_submit():
-            if form.body.data == "":  # and form.item_id.data == "":
-                flash("Must enter text into the body or attach an item!", "danger")
-                return redirect(url_for('addNewPost', community_url=community_url))
-            else:
-                new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
-                                 community_id=community.id)
-                db.session.add(new_post)
-                db.session.commit()
-                flash(
-                    f"Post {new_post.id} created in Community {community.url}", "success")
-                return redirect(url_for('viewPost', community_url=community_url, post_id=new_post.id))
+            new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
+                             community_id=community.id)
+            db.session.add(new_post)
+            db.session.commit()
+            flash(f"Post {new_post.id} created in Community {community.url}", "success")
+            return redirect(url_for('viewPost', community_url=community_url, post_id=new_post.id))
         return render_template("createpost.html", form=form)
     else:
         return redirect(url_for('login'))
@@ -503,16 +498,10 @@ def editPost(community_url, post_id):
     if current_user.is_authenticated and post.getAuthor() == current_user:
         form = EditPostForm()
         if form.validate_on_submit():
-            if form.body.data == "":  # and form.item_id.data == "":
-                flash("Must enter text into the body or attach an item!", "danger")
-                return redirect(url_for('editPost', community_url=community_url, post_id=post_id))
-            else:
-                # post.setLinkedItem(form.item_id.data)
-                post.setBody(form.body.data)
-                db.session.commit()
-                flash(
-                    f"Post {post.id} in Community {community_url} edited", "success")
-                return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
+            post.setBody(form.body.data)
+            db.session.commit()
+            flash(f"Post {post.id} in Community {community_url} edited", "success")
+            return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
         form.body.data = post.body
         return render_template("editpost.html", form=form, community_url=community_url, post_id=post_id)
     else:
@@ -563,7 +552,9 @@ def delComment(comment_id):
         db.session.delete(comment)
         db.session.commit()
         flash("Comment deleted", "danger")
-    # if current_user is admin, lock the post instead of deleting it
+    elif current_user.is_authenticated and current_user.admin is True:
+        comment.lockComment()
+        db.session.commit()
     return redirect(url_for('viewPost', community_url=community.url, post_id=post.id))
 
 
