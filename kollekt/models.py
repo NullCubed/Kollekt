@@ -75,6 +75,10 @@ class User(db.Model, UserMixin):
 
 
 class CollectionItem(db.Model):
+    """
+    CollectionItem creates the Items that belong to collections, and are categorized by user, collection, and community.
+    They have a photo, description, and name.
+    """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
@@ -102,6 +106,14 @@ class CollectionItem(db.Model):
     #         file.write(data)
 
     def __init__(self, user, community, photo, desc, collection, name):
+        """
+        @param user: The User that is creating the item
+        @param community: the community that the item and associated collection belongs to
+        @param photo: the file location of the image for the item
+        @param desc: the text description for the item
+        @param collection: the collection that the item belongs to
+        @param name: the name of the item
+        """
         self.collection_id = collection
         self.user = user
         self.community_id = community
@@ -142,9 +154,20 @@ class CollectionItem(db.Model):
     #         return self.dislikes
     def __repr__(self):
         return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
+    def getUser(self):
+        """
+        Returns user of the item
+        @return: user
+        """
+        return User.query.filter_by(id=self.user).first()
 
 
 class Collections(db.Model):
+    """
+    Collections creates a collection for a user. A collection contains the items that a user creates. A collection
+    belongs to a community, and cannot exist without the original community. A collection has a name and a description,
+    set by the user.
+    """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     desc = db.Column(db.String)
@@ -156,6 +179,12 @@ class Collections(db.Model):
     kind = db.Column(db.String)
 
     def __init__(self, name, desc, user_id, community_id):
+        """
+        @param name:The name of the collection
+        @param desc: The description of the collection
+        @param user_id:The ID of the user who owns the collection
+        @param community_id: The community ID that the collection is a part of
+        """
         self.name = name
         self.desc = desc
         self.user_id = user_id
@@ -167,6 +196,10 @@ class Collections(db.Model):
         return f'<Collection {self.name}, {self.items}, {self.community_id}>'
 
     def getId(self):
+        """
+        Returns the user ID of the item
+        :return: the associated user id of the collection
+        """
         return self.user_id
 
 

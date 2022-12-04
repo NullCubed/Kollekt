@@ -12,9 +12,10 @@ from werkzeug.utils import secure_filename
 import uuid as uuid
 import os
 
-
 UPLOAD_FOLDER = '/kollekt/static/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
@@ -98,6 +99,7 @@ def userProfile():
                            usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
                            user=current_user, users_posts=users_posts, users_collections=collection_user,
                            users_items=items_user, currentProfilePic=current_user.profile_picture)
+
 
 @app.route("/userCommunities/<id>")
 @login_required
@@ -275,6 +277,11 @@ def login():
 
 @app.route("/item/<item_id>", methods=['GET', 'POST'])
 def item_page(item_id):
+    """
+    Route for page to display items
+    @param item_id: The ID of the item to be displayed
+    @return: returns the html for the item page
+    """
     item = CollectionItem.query.filter_by(id=item_id).first()
     user_id = item.user
     user_true = User.query.filter_by(id=user_id).first()
@@ -313,15 +320,26 @@ def register():
 
 @app.route("/addItem/<collection_id>", methods=['GET', 'POST'])
 def addNewCollectionItem(collection_id):
-    if current_user.is_authenticated:
+    """
+    Route for creating a collection item. Also handles file saving
+    @param collection_id: The ID of the collection that the item belongs to
+    @return: Returns the item page for the new item when it is created, otherwise returns the login page if the user is
+    not authenticated
+    """
+    add_community = Collections.query.filter_by(
+        id=collection_id).first().community_id
+    add_collection = Collections.query.filter_by(
+        id=collection_id).first().id
+
+    collection_user = add_collection = Collections.query.filter_by(
+        id=collection_id).first().user_id
+    if current_user.is_authenticated and current_user.id == collection_user:
         form = ItemAddForm()
-        add_community = Collections.query.filter_by(
-            id=collection_id).first().community_id
-        add_collection = Collections.query.filter_by(
-            id=collection_id).first().id
+
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            basedir = os.path.abspath(os.path.dirname(__file__))
+            file_path = os.path.join(app.root_path, './static', filename)
             file_path = file_path.replace("\\", "/")
             form.photo.data.save(file_path)
             flash("IMAGE UPLOADED!", "danger")
@@ -382,6 +400,11 @@ def adminpage():
 
 @app.route("/collections/create/<community_id>", methods=['GET', 'POST'])
 def createCollection(community_id):
+    """
+    Route to create a user collection
+    @param community_id: The ID of the community that the collection belongs to
+    @return: returns to home when the collection is created
+    """
     form = CreateCollectionForm()
 
     if form.validate_on_submit():
@@ -395,6 +418,11 @@ def createCollection(community_id):
 
 @app.route("/collections/view/<collection_id>", methods=['GET', 'POST'])
 def viewCollection(collection_id):
+    """
+    Route to view a users collection
+    @param collection_id: The ID of the collection to view
+    @return: returns the html for viewing a collection
+    """
     collection = Collections.query.filter_by(id=collection_id).first()
     return render_template("collections.html", collection=collection)
 
@@ -508,29 +536,29 @@ def delComment(comment_id):
 
 @app.route("/item/<item_id>/delete", methods=['GET', 'POST'])
 def delItem(item_id):
+    """
+    Route to return page for deleting an item. Take the item id to be deleted, and renders html for user's choice
+    @param item_id:the id of the item that is being deleted
+    @return:Returns html for item if canceled or if the user is
+    not the owner of the item, returns home if item is deleted
+    """
     item = CollectionItem.query.filter_by(id=item_id).first()
-    print(item_id)
     if item is None:
         return redirect(url_for('home'))
-        print('0')
-    print('1')
     if item.user == current_user.id:
-        print('2')
-        form = DeleteItemForm()
-        print('4')
-        print("form val: ", form.validate_on_submit())
-        if form.validate_on_submit():
-            print(form.errors)
-            print('5')
-            if form.submitCancel.data:
 
+        form = DeleteItemForm()
+        if form.validate_on_submit():
+            if form.submitCancel.data:
                 return redirect(url_for('item_page', item_id=item_id))
             elif form.submitConfirm.data:
                 db.session.delete(item)
                 db.session.commit()
                 flash("item " + item.name + " has been deleted", "danger")
                 return redirect(url_for('home'))
-        return render_template("delItem.html", title='Delete Item', form=form, item_id=item_id, item = item)
+        return render_template("delItem.html", title='Delete Item', form=form, item_id=item_id, item=item)
     else:
-        print('3')
         return redirect(url_for('item_page', item_id=item_id))
+
+
+
