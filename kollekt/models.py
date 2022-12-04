@@ -6,6 +6,10 @@ import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
+    '''
+    Function to load the user
+    @param user_id: the user id that is being loaded
+    '''
     return User.query.get(int(user_id))
 
 
@@ -36,6 +40,9 @@ dislikes_on_posts = db.Table('dislikes_on_posts',
 
 
 class User(db.Model, UserMixin):
+    '''
+    Class for the User
+    '''
     # id = db.Column(db.Integer, unique=True, nullable=False)
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -51,19 +58,39 @@ class User(db.Model, UserMixin):
         'Collections', backref='collectionAuthor', lazy=True, cascade="all, delete-orphan")
 
     def __init__(self, username, email, password, admin):
+        '''
+        Constructor for the user Class
+        @param username: username of the user
+        @param email: email of the user
+        @param password: password of the user
+        @param admin: True if admin; false
+        '''
         self.username = username
         self.password = generate_password_hash(password)
         self.email = email
         self.admin = admin
 
     def verify_password(self, pwd):
+        '''
+        Function to verify password
+        @param pwd: password being verified
+        @return: returns True or False
+        '''
         return check_password_hash(self.password, pwd)
         
     def addCollection(self, collection):
+        '''
+        Function to add a collection
+        @param collection: collection beign added
+        '''
         self.collections_list.append(collection)
         db.session.commit()
 
     def removeCollection(self, collection):
+        '''
+        Function to remove a collection
+        @param collection: collection being removed
+        '''
         if collection in self.collections_list:
             # print(self.collections_list)
             self.collections_list.remove(collection)
@@ -71,6 +98,9 @@ class User(db.Model, UserMixin):
             db.session.commit()
 
     def __repr__(self):
+        '''
+        Printable representation function
+        '''
         return f'<User {self.username}, {self.email}, {self.password}, {self.collections}>'
 
 
@@ -153,6 +183,9 @@ class CollectionItem(db.Model):
     #         self.dislikes -= 1
     #         return self.dislikes
     def __repr__(self):
+        '''
+        Printable representation function
+        '''
         return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
     def getUser(self):
         """
@@ -193,6 +226,9 @@ class Collections(db.Model):
         self.kind = "collection"
 
     def __repr__(self):
+        '''
+        Printable representation function
+        '''
         return f'<Collection {self.name}, {self.items}, {self.community_id}>'
 
     def getId(self):
@@ -204,6 +240,9 @@ class Collections(db.Model):
 
 
 class Communities(db.Model):
+    '''
+    Class for the communities
+    '''
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     url = db.Column(db.String)
@@ -214,6 +253,11 @@ class Communities(db.Model):
         'User', secondary=users_in_community, backref='users')
 
     def __init__(self, name, desc):
+        '''
+        Constructor class cor communities class
+        @param name: name of the community
+        @param desc: community's description
+        '''
         self.name = name
         self.desc = desc
         self.url = name.lower().translate({ord(i): None for i in "'.,;:"}).replace('"', "").translate(
@@ -306,9 +350,17 @@ class Communities(db.Model):
             db.session.commit()
 
     def getUsers(self):
+        '''
+        Getter to get users
+        @return: returns the users
+        '''
         return self.users
 
     def memberCount(self):
+        '''
+        Counts the number of members
+        @returns the number of members
+        '''
         return len(self.users)
 
     def setName(self, name):
@@ -322,15 +374,24 @@ class Communities(db.Model):
         db.session.commit()
 
     def __repr__(self):
+        '''
+        Printable representation function
+        '''
         return f'<Community "{self.url}">'
 
 
 class Photos(db.Model):
+    '''
+    Class for the photos
+    '''
     id = db.Column(db.Integer, primary_key=True)
     photo_blob = db.Column(db.String)
 
 
 class Posts(db.Model):
+    '''
+    Class for the  posts
+    '''
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -347,6 +408,14 @@ class Posts(db.Model):
     kind = db.Column(db.String)
 
     def __init__(self, author_id, title, body, community_id, item_id=None):
+        '''
+        Constructor fore the posts class
+        @param author_id: id of the author
+        @param title: title of the post
+        @param body: body of the post
+        @param community_id: the id of the community
+        @param item_id: the id of the item in the post
+        '''
         self.author_id = author_id
         self.title = title
         self.body = body
@@ -358,15 +427,31 @@ class Posts(db.Model):
         self.kind = "post"
 
     def getAuthor(self):
+        '''
+        Getter to get the author of the post
+        @return: returns the author
+        '''
         return User.query.filter_by(id=self.author_id).first()
 
     def getCommunity(self):
+        '''
+        Getter to get the community of the post
+        @return: returns the community the post is in
+        '''
         return Communities.query.filter_by(id=self.community_id).first()
 
     def getLinkedItem(self):
+        '''
+        Getter for items that are linked
+        @return: returns items linked to self
+        '''
         return CollectionItem.query.filter_by(id=self.item_id).first()
 
     def setLinkedItem(self, item_id):
+        '''
+        Setter to set linked items
+        @param item_id: id of the item being linked
+        '''
         if item_id is not None:
             # item = Items.query.filter_by(id=item_id).first()
             # need a check here for if the new item matches the user
@@ -377,12 +462,23 @@ class Posts(db.Model):
             self.item_id = None
 
     def setBody(self, body):
+        '''
+        Setter to set the body
+        @param body: body that is being updated
+        '''
         self.body = body
 
     def getComments(self):
+        '''
+        Getter to get comments of a post
+        @return: returns the comments of a given post
+        '''
         return Comments.query.filter_by(post_id=self.id).all()
 
     def clearComments(self):
+        '''
+        function to delete comments on a post
+        '''
         # deletes all comments under a post; should only be called prior to deleting the post
         comments = self.getComments()
         for i in comments:
@@ -390,22 +486,44 @@ class Posts(db.Model):
         db.session.commit()
 
     def getLikes(self):
+        '''
+        Getter to get the number of likes
+        @return: returns the number of likes on a post
+        '''
         return len(self.likes)
 
     def getDislikes(self):
+        '''
+        Getter to get the number of dislikes
+        @return: returns the number of dislkies on a given post
+        '''
         return len(self.dislikes)
 
     def userHasLiked(self, user_id):
+        '''
+        Boolean statement to see if user has liked a post
+        @param user_id: id of the user being checked
+        @return: returns True or False
+        '''
         if user_id in self.likes:
             return True
         return False
 
     def userHasDisliked(self, user_id):
+        '''
+        Boolean statement to see if user has disliked a post
+        @param user_id: id of the user being checked
+        @return: returns True or False
+        '''
         if user_id in self.dislikes:
             return True
         return False
 
     def toggleLike(self, user_id):
+        '''
+        Function to disable the likes
+        @param user_id: id of the user toggling likes
+        '''
         if user_id in self.likes:
             self.likes.remove(user_id)
         else:
@@ -415,6 +533,10 @@ class Posts(db.Model):
         db.session.commit()
 
     def toggleDislike(self, user_id):
+        '''
+        Function to disable the dislikes
+        @param user_id: id of the user toggling dislikes
+        '''
         if user_id in self.dislikes:
             self.dislikes.remove(user_id)
         else:
@@ -424,6 +546,10 @@ class Posts(db.Model):
         db.session.commit()
 
     def getTimestamp(self):
+        '''
+        Getter to get the timestamp of a post
+        @return: returns a timestamp for the post
+        '''
         # returns post time if posted today, otherwise returns post date
         now = str(datetime.datetime.now()).split(" ")
         post_time_for_eval = self.timestamp.split(" ")
@@ -434,10 +560,16 @@ class Posts(db.Model):
             return post_time_for_eval[0], "on " + post_time_for_eval[0]
 
     def __repr__(self):
+        '''
+        Printable representation function
+        '''
         return f'<Post #{self.id} in Community "{self.getCommunity().url}">'
 
 
 class Comments(db.Model):
+    '''
+    Class for the comments of a post
+    '''
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)
@@ -447,6 +579,12 @@ class Comments(db.Model):
     locked = db.Column(db.Boolean)
 
     def __init__(self, author_id, text, post_id):
+        '''
+        Constructor for the comments class
+        @param author_id: id of the post's author
+        @param text: the text of the comment
+        @param post_id: id of the post being commented on
+        '''
         self.author_id = author_id
         self.post_id = post_id
         self.text = text
@@ -454,22 +592,44 @@ class Comments(db.Model):
         self.locked = False
 
     def getAuthor(self):
+        '''
+        Getter to get author
+        @return: returns the author
+        '''
         return User.query.filter_by(id=self.author_id).first()
 
     def getPost(self):
+        '''
+        getter to get the post
+        @return: returns the post
+        '''
         return Posts.query.filter_by(id=self.post_id).first()
 
     def isLocked(self):
+        '''
+        Boolean to decide if it is locked
+        @return: returns True or False
+        '''
         return self.locked
 
     def setText(self, text):
+        '''
+        Setter to set the text
+        @param text: text being set
+        '''
         self.text = text
         db.session.commit()
 
     def lockPost(self):
+        '''
+        Function to lock the post
+        '''
         self.text = "This comment has been removed by an administrator."
         self.locked = True
         db.session.commit()
 
     def __repr__(self):
+        '''
+        Printable representation function
+        '''
         return f'<comment #{self.id} under post #{self.post_id} in community "{self.getCommunity().url}">'

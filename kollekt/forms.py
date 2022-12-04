@@ -5,6 +5,9 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 
 class RegistrationForm(FlaskForm):
+    '''
+    Class to create form for registration
+    '''
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
@@ -16,6 +19,9 @@ class RegistrationForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
+    '''
+    Class to create form for login
+    '''
     username = StringField('Username',
                            validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
@@ -24,6 +30,9 @@ class LoginForm(FlaskForm):
 
 
 class ItemAddForm(FlaskForm):
+    '''
+    Class to create form for adding an item
+    '''
     text = StringField('Description', validators=[DataRequired()])
     photo = FileField('Your Photo', validators=[FileRequired(),
                                                 FileAllowed(['jpg', 'png', 'jpeg'], 'Images Only')])
@@ -32,23 +41,35 @@ class ItemAddForm(FlaskForm):
 
 
 class CreateCommunityForm(FlaskForm):
+    '''
+    Class to create form to create a community
+    '''
     name = StringField('Community Name', validators=[DataRequired()])
     description = StringField('Description', validators=[DataRequired()])
     submit = SubmitField('Create')
 
 
 class DeleteCommunityForm(FlaskForm):
+    '''
+    Class to create a form to delete a community
+    '''
     name = StringField('Community to Delete', validators=[DataRequired()])
     submit = SubmitField('Delete')
 
 
 class CreateCollectionForm(FlaskForm):
+    '''
+    Class to create a form to create a collection
+    '''
     name = StringField('Name of collection', validators=[DataRequired()])
     desc = StringField('Description of collection', validators=[DataRequired()])
     submit = SubmitField('Create Collection')
 
 
 class CreatePostForm(FlaskForm):
+    '''
+    Class to create a form to create a post
+    '''
     title = StringField('Title', validators=[DataRequired()])
     body = TextAreaField('Body')
     item_id = StringField('Attach an Item (Optional)')
@@ -56,6 +77,9 @@ class CreatePostForm(FlaskForm):
 
 
 class EditPostForm(FlaskForm):
+    '''
+    Class to create a form to edit a post
+    '''
     body = TextAreaField('Body')
     item_id = StringField('Attach an Item (Optional)')
     submit = SubmitField('Save')
@@ -63,15 +87,24 @@ class EditPostForm(FlaskForm):
 # class EditItemForm(FlaskForm):
 
 class DeletePostForm(FlaskForm):
+    '''
+    Class to create a form to delete a post
+    '''
     submitConfirm = SubmitField('Confirm')
     submitCancel = SubmitField('Cancel')
 
 class DeleteItemForm(FlaskForm):
+    '''
+    Class to create a form to delete an item
+    '''
     submitConfirm =SubmitField('Confirm')
     submitCancel = SubmitField('Cancel')
 
 class UserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
+    '''
+    Class to create a form to change a user's settings
+    '''
     email = StringField('Email', validators=[DataRequired(), Email()])
     bio = StringField('Biography', validators=[DataRequired()])
     profile_picture = SelectField('Profile Picture', validators=[DataRequired()], choices=[('lion', 'Lion'), ('eagle', 'Eagle'), ('zebra', 'Zebra'), ('snake', 'Snake'), ('pony', 'Pony')])
@@ -79,5 +112,8 @@ class UserForm(FlaskForm):
 
 
 class CreateCommentForm(FlaskForm):
+    '''
+    Class to create a form to create a comment
+    '''
     text = TextAreaField('Leave a comment below...', validators=[DataRequired()])
     submit = SubmitField('Post!')

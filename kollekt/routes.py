@@ -22,6 +22,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route("/")
 def home():
+    ''' Creates a route for the home page '''
     posts = Posts.query.all()[:10]
     usersCommunities = []
     allCommunities = Communities.query.all()
@@ -66,6 +67,7 @@ def home():
 
 @app.route("/userProfile")
 def userProfile():
+    ''' Creates a route for the user's profile page '''
     users_posts = []
     all_posts = Posts.query.all()
     all_posts.reverse()
@@ -104,6 +106,10 @@ def userProfile():
 @app.route("/userCommunities/<id>")
 @login_required
 def commCard(id):
+    '''
+    Creates a route for each user to display joined communities
+    @param id: id assigned to user
+    '''
     posts = Posts.query.all()[:10]
     usersCommunities = []
     allCommunities = Communities.query.all()
@@ -146,41 +152,9 @@ def commCard(id):
                            allCollections=displayCollections, User=User)
 
 
-@app.route("/myCommunities/<user_id>")
-@login_required
-def myCommunities(user_id):
-    # allCommunities = Communities.query.all()
-    # usersCommunities = []
-    # collection_user = current_user.collections
-    # items_user = []
-    # # TODO: This needs to be fixed
-    # if current_user.is_authenticated:
-
-    #     for i in collection_user:
-    #         for i in i.items:
-    #             items_user.append(i)
-
-    #     for community in allCommunities:
-    #         userlist = community.getUsers()  # waiting for method implementation
-    #         finalUserList = []
-    #         for i in userlist:
-    #             finalUserList.append(i.username)
-    #         # userlist = []  # using this for now
-    #         if current_user.username in finalUserList:
-    #             usersCommunities.append(community)
-    #             allCommunities.remove(community)
-    # sampleCollections = Collections.query.all()
-    # sampleCommunities = Communities.query.all()
-    # return render_template('test.html', sampleCommunities=sampleCommunities, sampleCollections=sampleCollections,
-    #                        usersCommunities=usersCommunities, allCommunities=allCommunities, posts=posts,
-    #                        user=current_user, users_posts=users_posts, users_collections=collection_user,
-    #                        users_items=items_user, currentProfilePic=current_user.profile_picture)
-    userInfo = User.query.filter_by(id=user_id).first()
-    return render_template('mycommunities.html', userInfo=userInfo)
-
-
 @app.route("/logout")
 def logout():
+    ''' Creates a route for the logout whcih returns to home '''
     logout_user()
     return redirect(url_for('home'))
 
@@ -188,6 +162,7 @@ def logout():
 @app.route("/userSettings", methods=['GET', 'POST'])
 @login_required
 def userSettings():
+    ''' Creates a route for user setting's page '''
     form = UserForm()
     
     if form.validate_on_submit():
@@ -222,12 +197,14 @@ def userSettings():
 @app.route("/userCard/<user_id>")
 @login_required
 def userCard(user_id):
+    ''' creates a route for each user that display's the users information '''
     userInfo = User.query.filter_by(id=user_id).first()
     return render_template('userCard.html', userInfo=userInfo)
 
 
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
+    ''' creates a route for each commmunity page created by an admin '''
     community = Communities.query.filter_by(url=url).first()
     posts_to_display = []
     all_posts = Posts.query.all()
@@ -257,6 +234,7 @@ def communityPage(url):
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    ''' creates a route to login '''
     if current_user.is_authenticated:
         flash(f'Login successful', 'success')
         return redirect(url_for('home'))
@@ -301,6 +279,10 @@ def item_page(item_id):
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    '''
+    creates a route to register a new user
+    @return: either home if registered or register if unsuccesfull
+    '''
     form = RegistrationForm()
     username = form.username.data
     password = form.password.data
@@ -366,6 +348,10 @@ def addNewCollectionItem(collection_id):
 
 @app.route("/adminpage", methods=['GET', 'POST'])
 def adminpage():
+    '''
+    creates a route for admins to create communities
+    @returns: admin page
+    '''
     print(current_user.admin)
     form = CreateCommunityForm()
     delform = DeleteCommunityForm()
@@ -435,6 +421,12 @@ def viewCollection(collection_id):
 
 @app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])
 def viewPost(community_url, post_id):
+    '''
+    Creates a route for each post for a user to view
+    @param community_url: the the url of the community the post is being viewed in.
+    @param post_id: the id of the post being viewed.
+    @returns the viewpost template and the values: community.url and post.id
+    '''
     post_to_view = Posts.query.filter_by(id=post_id).first()
     if post_to_view is None:
         return render_template('viewpost.html', post_to_view=post_to_view, community=None)
@@ -456,6 +448,11 @@ def viewPost(community_url, post_id):
 
 @app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])
 def addNewPost(community_url):
+    '''
+    Creates a route for each post for the post to be created
+    @param community_url: the the url of the community the post being is stored in.
+    @returns the viewpost template and the values: community.url and post.id
+    '''
     if current_user.is_authenticated:
         community = Communities.query.filter_by(url=community_url).first()
         if community.userHasJoined(current_user) is False:
@@ -481,6 +478,12 @@ def addNewPost(community_url):
 
 @app.route("/community/<community_url>/<post_id>/edit", methods=['GET', 'POST'])
 def editPost(community_url, post_id):
+    '''
+    Creates a route for each post for a edit method to occur
+    @param community_url: the the url of the community the post is being edited in.
+    @param post_id: the id of the post being edited.
+    @returns the viewpost template and the values: community.url and post.id
+    '''
     post = Posts.query.filter_by(id=post_id).first()
     if post is None:
         return redirect(url_for('home'))
@@ -505,6 +508,12 @@ def editPost(community_url, post_id):
 
 @app.route("/community/<community_url>/<post_id>/delete", methods=['GET', 'POST'])
 def delPost(community_url, post_id):
+    '''
+    Creates a route for each post for a delete method to occur
+    @param community_url: the the url of the community the post being deleted is in.
+    @param post_id: the id of the post being deleted.
+    @returns the viewpost template and the values: community.url and post.id
+    '''
     post = Posts.query.filter_by(id=post_id).first()
     if post is None:
         return redirect(url_for('home'))
@@ -527,6 +536,11 @@ def delPost(community_url, post_id):
 
 @app.route("/comment/<comment_id>/delete", methods=['GET', 'POST'])
 def delComment(comment_id):
+    '''
+    Creates a route for each comment for a delete method to occur
+    @param comment_id: the id of the comment being deleted
+    @returns the viewpost template and the values: community.url and post.id
+    '''
     comment = Comments.query.filter_by(id=comment_id).first()
     if comment is None:
         return redirect(url_for('home'))
