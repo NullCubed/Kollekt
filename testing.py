@@ -278,7 +278,7 @@ def test_communites_in_profile(client):
     response = client.get('/userProfile')
     assert b'Shoes' in response.data
 
-def items_on_profile_page(client):
+def test_items_on_profile_page(client):
     # 47 tests to see if new items are showing on profile page
     db.drop_all()
     db.create_all()
@@ -289,7 +289,7 @@ def items_on_profile_page(client):
     response = client.post('/userProfile')
     assert b'901239012309120931390' in response.data
 
-def items_in_collections(client):
+def test_items_in_collections(client):
     # 46 tests to see if items are showing up in the correct collection
     db.drop_all()
     db.create_all()
