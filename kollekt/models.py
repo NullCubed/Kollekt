@@ -154,6 +154,12 @@ class CollectionItem(db.Model):
     #         return self.dislikes
     def __repr__(self):
         return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
+    def getUser(self):
+        """
+        Returns user of the item
+        @return: user
+        """
+        return User.query.filter_by(id=self.user).first()
 
 
 class Collections(db.Model):
