@@ -1,5 +1,6 @@
 import pytest
 from kollekt import db
+from flask_login import current_user
 
 
 @pytest.fixture(scope='module')
@@ -185,29 +186,30 @@ def test_community_tab(client):
 
 def test_good_email_update(client):
     response = client.post("/settings", data={
-        "username": "test",
+        "username": "tested",
         "email": "test2@gmail.com",
-        "bio": "test"}, follow_redirects=True)
-    assert response.request.path == '/userProfile'
+        "bio": "test",
+        "profile_picture": "lion"}, follow_redirects=True)
+    assert response.request.path == '/settings'
 
 def test_update_existing_user(client):
     with client:
         response = client.post("/settings", data={
-        "username": "test",
+        "username": "tested",
         "email": "test2@gmail.com",
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
 
 def test_bad_email_update(client):
     response = client.post("/settings", data={
-        "username": "test",
+        "username": "test2",
         "email": "test",
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
 
 def test_blank_email_update(client):
     response = client.post("/settings", data={
-        "username": "test",
+        "username": "test3",
         "email": "   @    .   ",
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
@@ -220,20 +222,37 @@ def test_update_long_username(client):
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
 
+
+
+def test_update_good_user(client):
+    db.drop_all()
+    db.create_all()
+    with client:
+        response = client.post("/settings", data=dict(
+            username="tester",
+            email='testing@test.com',
+            bio="my bio"), follow_redirects=True)
+        response2 = client.get("/settings")
+        
+        assert response.data == response2.data
+
+
 def test_create_item(client):
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
     resposne = client.post("/login", data={"username": "Admin", "password": "testing"})
     response = client.post("/addItem/1", data={
-            "text": "test text", "photo":"3c8db28eeebc196d17988ec05c3cf059.jpg", "name":"name"}, follow_redirects=True)
+        "text": "test text", "photo": "3c8db28eeebc196d17988ec05c3cf059.jpg", "name": "name"}, follow_redirects=True)
     assert response.request.path == '/item'
+
+
 def test_upload_image(client):
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
     resposne = client.post("/login", data={"username": "Admin", "password": "testing"})
     response = client.post("/addItem/1", data={
-            "text": "test text", "photo":"3c8db28eeebc196d17988ec05c3cf059.jpg", "name":"name"}, follow_redirects=True)
-    
+        "text": "test text", "photo": "3c8db28eeebc196d17988ec05c3cf059.jpg", "name": "name"}, follow_redirects=True)
+
     assert b"""<img src="/static/3c8db28eeebc196d17988ec05c3cf059.jpg" class="center"/>""" in response.data
