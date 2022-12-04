@@ -228,5 +228,12 @@ def test_create_item(client):
     response = client.post("/addItem/1", data={
             "text": "test text", "photo":"3c8db28eeebc196d17988ec05c3cf059.jpg", "name":"name"}, follow_redirects=True)
     assert response.request.path == '/item'
-    response = client.get("/collections/view/3")
-    assert b"""test""" in response.data
+def test_upload_image(client):
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    resposne = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/addItem/1", data={
+            "text": "test text", "photo":"3c8db28eeebc196d17988ec05c3cf059.jpg", "name":"name"}, follow_redirects=True)
+    
+    assert b"""<img src="/static/3c8db28eeebc196d17988ec05c3cf059.jpg" class="center"/>""" in response.data
