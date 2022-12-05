@@ -164,10 +164,29 @@ def logout():
 def userSettings():
     ''' Creates a route for user setting's page '''
     form = UserForm()
-    
+    oldemail = False
+    oldusername = False
+    oldBio = False
+    oldPFP = False
+    if form.username.data == "":
+        form.username.data = current_user.username
+        oldusername = True
+    if form.email.data == "":
+        form.email.data = current_user.email
+        oldemail = True
+    if form.bio.data == "":
+        form.bio.data = current_user.bio
+        oldbio = True
+    if form.profile_picture.data == "":
+        form.profile_picture.data = current_user.profile_picture
+        oldPFP = True
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        eml = User.query.filter_by(email=form.email.data).first()
+        user = ''
+        if not oldusername:
+            user = User.query.filter_by(username=form.username.data).first()
+        if not oldemail:
+            eml = User.query.filter_by(email=form.email.data).first()
+        eml = ''
         if not user and not eml:
             current_user.username = form.username.data
             current_user.email = form.email.data
@@ -182,16 +201,8 @@ def userSettings():
         db.session.commit()
         flash(f'Updated {current_user.username}', 'success')
 
-
     return render_template("settings.html",
-                               form=form)
-
-
-
-    
-
-
-
+                           form=form)
 
 
 @app.route("/userCard/<user_id>")
@@ -356,42 +367,45 @@ def adminpage():
     creates a route for admins to create communities
     @returns: admin page
     '''
-    print(current_user.admin)
-    form = CreateCommunityForm()
-    delform = DeleteCommunityForm()
-    allCommunities = Communities.query.all()
-    if form.validate_on_submit():
-        checkCommunity = Communities.query.filter_by(
-            name=form.name.data).first()
-        if checkCommunity:
-            flash("Community already exists", "danger")
-            return redirect(url_for('adminpage'))
-        else:
-            community = Communities(name=form.name.data,
-                                    desc=form.description.data)
-            db.session.add(community)
-            db.session.commit()
-        flash(f"Community Created: {community.name}", "success")
-        return redirect(url_for('adminpage'))
+    if current_user.is_authenticated and current_user.admin:
 
-    if delform.validate_on_submit():
-        checkCommunity = Communities.query.filter_by(
-            name=delform.name.data).first()
-        if checkCommunity:
-            postsToDelte = checkCommunity.getPosts()
-            for i in postsToDelte:
-                db.session.delete(i)
-            collectionsToDelete = checkCommunity.getCollections()
-            for i in collectionsToDelete:
-                db.session.delete(i)
-            db.session.delete(checkCommunity)
-            db.session.commit()
-            flash(f"Community Deleted {checkCommunity.name}", "success")
+        form = CreateCommunityForm()
+        delform = DeleteCommunityForm()
+        allCommunities = Communities.query.all()
+        if form.validate_on_submit():
+            checkCommunity = Communities.query.filter_by(
+                name=form.name.data).first()
+            if checkCommunity:
+                flash("Community already exists", "danger")
+                return redirect(url_for('adminpage'))
+            else:
+                community = Communities(name=form.name.data,
+                                        desc=form.description.data)
+                db.session.add(community)
+                db.session.commit()
+            flash(f"Community Created: {community.name}", "success")
             return redirect(url_for('adminpage'))
-        else:
-            flash("Community does not exist", "danger")
-            return redirect(url_for('adminpage'))
-    return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
+
+        if delform.validate_on_submit():
+            checkCommunity = Communities.query.filter_by(
+                name=delform.name.data).first()
+            if checkCommunity:
+                postsToDelte = checkCommunity.getPosts()
+                for i in postsToDelte:
+                    db.session.delete(i)
+                collectionsToDelete = checkCommunity.getCollections()
+                for i in collectionsToDelete:
+                    db.session.delete(i)
+                db.session.delete(checkCommunity)
+                db.session.commit()
+                flash(f"Community Deleted {checkCommunity.name}", "success")
+                return redirect(url_for('adminpage'))
+            else:
+                flash("Community does not exist", "danger")
+                return redirect(url_for('adminpage'))
+        return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
+    else:
+        return redirect(url_for('home'))
 
 
 @app.route("/collections/create/<community_id>", methods=['GET', 'POST'])
@@ -447,7 +461,7 @@ def viewPost(community_url, post_id):
     # clears comment box upon posting; otherwise comment text remains in box
     form.text.data = ""
     return render_template('viewpost.html', post_to_view=post_to_view, community=community,
-                           comments=comments, comment_count=len(comments), form=form)
+                           comments=comments, form=form)
 
 
 @app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])
@@ -585,4 +599,50 @@ def delItem(item_id):
         return redirect(url_for('item_page', item_id=item_id))
 
 
+@app.route("/fillDB")
+def filldb():
+    """
+        Route to add items to the database
+        @param item_id:None
+        @return:Returns to homepage with database items added
+    """
+    db.drop_all()
+    db.create_all()
+    db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
+    db.session.add(Communities("Watches", "Timepieces"))
+    db.session.add(Communities("Shoes", "Gloves for your feet"))
+    db.session.add(Collections(
+        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Collections("Admins Watches",
+                               "A collection of all of admins shoes", 1, 1))
+    db.session.commit()
+    login_user(User.query.filter_by(id=1).first())
+    allCommunities = Communities.query.all()
 
+    return redirect(url_for('home'))
+
+
+@app.route("/fillDB2")
+def filldb2():
+    """
+    Route to add items to the database (used by Josh
+    @return:Returns to homepage with database items added
+    """
+    db.drop_all()
+    db.create_all()
+    db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
+    community1 = Communities("Watches", "Timepieces")
+    db.session.add(community1)
+    community2 = Communities("Shoes", "Gloves for your feet")
+    db.session.add(community2)
+    db.session.commit()
+    community1.addUser(User.query.filter_by(id=1).first())
+    community2.addUser(User.query.filter_by(id=1).first())
+    db.session.add(Collections(
+        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Collections("Admins Watches",
+                               "A collection of all of admins shoes", 1, 1))
+    db.session.commit()
+    login_user(User.query.filter_by(id=1).first())
+
+    return redirect(url_for('home'))

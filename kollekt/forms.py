@@ -71,8 +71,7 @@ class CreatePostForm(FlaskForm):
     Class to create a form to create a post
     '''
     title = StringField('Title', validators=[DataRequired()])
-    body = TextAreaField('Body')
-    item_id = StringField('Attach an Item (Optional)')
+    body = TextAreaField('Body', validators=[DataRequired()])
     submit = SubmitField('Post!')
 
 
@@ -80,9 +79,9 @@ class EditPostForm(FlaskForm):
     '''
     Class to create a form to edit a post
     '''
-    body = TextAreaField('Body')
-    item_id = StringField('Attach an Item (Optional)')
+    body = TextAreaField('Body', validators=[DataRequired()])
     submit = SubmitField('Save')
+
 
 # class EditItemForm(FlaskForm):
 
@@ -93,21 +92,23 @@ class DeletePostForm(FlaskForm):
     submitConfirm = SubmitField('Confirm')
     submitCancel = SubmitField('Cancel')
 
+
 class DeleteItemForm(FlaskForm):
     '''
     Class to create a form to delete an item
     '''
-    submitConfirm =SubmitField('Confirm')
+    submitConfirm = SubmitField('Confirm')
     submitCancel = SubmitField('Cancel')
 
+
 class UserForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
+    username = StringField('Username', validators=[Length(min=3, max=20)])
     '''
     Class to create a form to change a user's settings
     '''
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    bio = StringField('Biography', validators=[DataRequired()])
-    profile_picture = SelectField('Profile Picture', validators=[DataRequired()], choices=[('lion', 'Lion'), ('eagle', 'Eagle'), ('zebra', 'Zebra'), ('snake', 'Snake'), ('pony', 'Pony')])
+    email = StringField('Email', validators=[Email()])
+    bio = StringField('Biography')
+    profile_picture = SelectField('Profile Picture', choices=[('lion', 'Lion'), ('eagle', 'Eagle'), ('zebra', 'Zebra'), ('snake', 'Snake'), ('pony', 'Pony')])
     submit = SubmitField("Submit")
 
 

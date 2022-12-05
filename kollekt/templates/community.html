@@ -34,55 +34,30 @@
                         </div>
                     </div>
                     <div class="row">
+                        {% for i in item_iteration %}
                         <div class="col border">
-                            <div class="row">
-                                <div class="col"><h3 class="text-center">Testing</h3></div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="row">
-                                        <div class="col">
-                                            Testing
+                            <a href="/collections/view/{{ collections[i].id }}"
+                               style="display: block; text-decoration: none; color: black;">
+                                <div class="row">
+                                    <div class="col"><h3 class="text-center">{{items_to_display[i].name}}</h3></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="row">
+                                            <div class="col">
+                                        <img class="img-fluid" src=/static/{{items_to_display[i].photo}} alt="" style="width:5rem;"/>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col">Posted by {{items_to_display[i].getUser().username}} in "{{collections[i].name}}"</div>
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col">Post Reactions</div>
-                                    </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
-                        <div class="col border">
-                            <div class="row">
-                                <div class="col"><h3 class="text-center">Post Title</h3></div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="row">
-                                        <div class="col">Post Body</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">Post Reactions</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col border">
-                            <div class="row">
-                                <div class="col"><h3 class="text-center">Post Title</h3></div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="row">
-                                        <div class="col">Post Body</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">Post Reactions</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
-                </div><!-- <div class ""container mt-5" > -->
+                </div>
                 <div class="col-12 col-md-12 mt-3">
                     <div class="row">
                         <div class="col">
@@ -112,7 +87,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <p class="text-center">Posted by {{i.getAuthor().username}}
-                                            {{i.getTimestamp()[1]}}<br>{{i.getLikes()}} 👍 - 👎 {{i.getDislikes()}}</p>
+                                            {{i.getTimestamp()}}<br>{{i.getCommentCount()}}</p>
                                     </div>
                                 </div>
                             </a>
