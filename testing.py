@@ -32,8 +32,8 @@ def test_login_page(client):
     # 1 test page displays
     response = client.get("/login")
     assert (
-        b'<h5 class="text-center">Dont have an account? Register now</h5>'
-        in response.data
+            b'<h5 class="text-center">Dont have an account? Register now</h5>'
+            in response.data
     )
 
 
@@ -42,8 +42,8 @@ def test_register_page(client):
     response = client.get("/register")
     assert response.status_code == 200
     assert (
-        b'<legend class="border-bottom mb-4 text-center">Sign Up</legend>'
-        in response.data
+            b'<legend class="border-bottom mb-4 text-center">Sign Up</legend>'
+            in response.data
     )
 
 
@@ -51,10 +51,10 @@ def test_logged_out_homepage(client):
     # 51 check to see if the homepage renders general information when logged out
     response = client.get("/")
     assert (
-        b"""<h3 class="text-center" style="font-weight: bold">
-          Log in to have a personalized experience
-        </h3>"""
-        in response.data
+            b"""<h3 class="text-center" style="font-weight: bold">
+              Log in to have a personalized experience
+            </h3>"""
+            in response.data
     )
 
 
@@ -87,7 +87,13 @@ def test_logged_in_homepage(app, client):
 
 
 def test_register_new_user(client):
-    # 4 test to see if a user is redirected to the home page if all the information is accepted
+    # Done by Garrett McGhee
+    """
+    A test used to register a new user with an unnused username etc.
+    :param client:
+    :return:
+    """
+
     db.drop_all()
     db.create_all()
     with client:
@@ -106,7 +112,13 @@ def test_register_new_user(client):
 
 
 def test_register_existing_user(client):
-    # 4 test to see if
+    # Done by Garrett McGhee
+    """
+    A test to register a user with a taken username/email
+    :param client:
+    :return:
+    """
+
     with client:
         response = client.post(
             "/register",
@@ -167,7 +179,14 @@ def test_non_password_confirm(client):
 
 
 def test_login_existing_user(client):
-    # 1 test to see if user is directed to homepage after authentication
+
+    # Done by Garrett McGhee
+    """
+    A test to login as an existing user
+    :param client:
+    :return:
+    """
+
     response = client.post(
         "/login",
         data=dict(
@@ -181,7 +200,13 @@ def test_login_existing_user(client):
 
 
 def test_login_nonexisting_user(client):
-    # 1 Test to see if red wrong password is flashed
+    # Done by Garrett McGhee
+    """
+    A test to attempt logging in as a nonexistant user
+    :param client:
+    :return:
+    """
+
     response = client.post(
         "/login",
         data={"username": "alphabetsoup", "password": "goodpassword"},
@@ -276,7 +301,7 @@ def test_create_collection(client):
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
-    resposne = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
 
     response = client.post(
         "/collections/create/1",
@@ -293,13 +318,13 @@ def test_community_tab(client):
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
-    resposne = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
     response = client.get("/")
     print(response.data)
     assert (
-        b"""
-                Watches"""
-        in response.data
+            b"""
+                    Watches"""
+            in response.data
     )
 
 
@@ -322,7 +347,7 @@ def test_good_email_update(client):
 
 def test_update_existing_user(client):
     """
-    Tests to make sure a existing user that is created can not be recreated
+    Tests to make sure an existing user that is created can not be recreated
     """
     with client:
         response = client.post(
