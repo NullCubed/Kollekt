@@ -455,6 +455,19 @@ class Posts(db.Model):
         '''
         return Comments.query.filter_by(post_id=self.id).all()
 
+    def getCommentCount(self):
+        '''
+        Calculates number of comments and returns it in a formatted string
+        @return: returns formatted string indicating number of comments on the post
+        '''
+        comments = Comments.query.filter_by(post_id=self.id).all()
+        if comments is None or len(comments) == 0:
+            return "No comments"
+        elif len(comments) == 1:
+            return "1 comment"
+        else:
+            return str(len(comments)) + " comments"
+
     def clearComments(self):
         '''
         function to delete comments on a post

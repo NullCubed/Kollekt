@@ -54,7 +54,7 @@ current_user.is_authenticated %}
           <div class="row justify-content-center">
             <div class="col-auto col-lg-6">
               <p class="text-center mb-0">
-                Posted by {{i.getAuthor().username}} {{i.getTimestamp()}}
+                Posted by {{i.getAuthor().username}} {{i.getTimestamp()}} {{i.getCommentCount()}}
               </p>
             </div>
             <a

@@ -462,7 +462,7 @@ def viewPost(community_url, post_id):
     # clears comment box upon posting; otherwise comment text remains in box
     form.text.data = ""
     return render_template('viewpost.html', post_to_view=post_to_view, community=community,
-                           comments=comments, comment_count=len(comments), form=form)
+                           comments=comments, form=form)
 
 
 @app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])

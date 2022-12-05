@@ -22,7 +22,7 @@
                                 {{ post_to_view.getAuthor().username }}
                                 {% endif %}
                                 </strong>
-                                {{ post_to_view.getTimestamp()[1] }}</p>
+                                {{ post_to_view.getTimestamp() }}</p>
                                 {% if post_to_view.getAuthor() == current_user %}
                                 <form action="/community/{{ post_to_view.getCommunity().url }}/{{ post_to_view.id }}/edit" method="post">
                                     <input name="edit" type="submit" value="Edit">
@@ -35,7 +35,7 @@
                     <hr>
                     <div class="row">
                         <div class="col">
-                            <h4> {{comment_count}} Comments</h4>
+                            <h4>{{ post_to_view.getCommentCount() }}</h4>
                             {% if current_user.is_authenticated and community.userHasJoined(current_user) %}
                             <form action="" method="post" id="comment_button" style="display: block;">
                                 {{ form.hidden_tag() }}
