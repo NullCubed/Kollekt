@@ -43,13 +43,10 @@ class User(db.Model, UserMixin):
     '''
     Class for the User
     '''
-    # id = db.Column(db.Integer, unique=True, nullable=False)
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
-    # communities = db.Column(db.BLOB)
-    # collections = db.Column(db.BLOB)
     admin = db.Column(db.Boolean)
     profile_picture = db.Column(db.String)
     bio = db.Column(db.VARCHAR)
