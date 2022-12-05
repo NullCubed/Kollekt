@@ -299,3 +299,4 @@ def test_items_in_collections(client):
         "text": "test text", "photo": "bantest.jpg", "name": "901239012309120931390"}, follow_redirects=True)
     response = client.post('/collections/view/2')
     assert b'901239012309120931390' in response.data
+
