@@ -1,7 +1,7 @@
 {% extends "layout.html" %} {% block content %}
 {% if post_to_view == None %}
 <h2>Sorry, the specified post does not exist.</h2>
-<form action="../">
+<form action="../../">
     <input name="redirect" style="font-size:18px;" type="submit" value="Return to Home">
 </form>
 {% else %}
@@ -44,7 +44,7 @@
                                     {% if form.text.errors %}
                                     {{ form.text(class="form-control form-control-lg is-invalid") }}
                                     <div class="invalid-feedback">
-                                        {% for error in form.title.errors %}
+                                        {% for error in form.text.errors %}
                                         <span>{{ error }}</span>
                                         {% endfor %}
                                     </div>
@@ -70,10 +70,12 @@
                                         </strong>
                                         {{ j.getTimestamp() }}
                                     </p>
-                                    {% if j.getAuthor() == current_user and j.isLocked() == False %}
+                                    {% if j.isLocked() == False %}
+                                    {% if j.getAuthor() == current_user or current_user.admin == True %}
                                     <form action="/comment/{{ j.id }}/delete">
                                         <input name="delete" style="font-size: 1.0625em;" type="submit" value="Delete...">
                                     </form>
+                                    {% endif %}
                                     {% endif %}
                                     <p style="font-size: 0.9375em">{{ j.text }}</p>
                                 </div>

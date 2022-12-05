@@ -31,6 +31,7 @@ def test_login_page(client):
     response = client.get("/login")
     assert b'<h5 class="text-center">Dont have an account? Register now</h5>' in response.data
 
+
 def test_register_page(client):
     response = client.get("/register")
     assert response.status_code == 200
@@ -67,7 +68,6 @@ def test_logged_in_homepage(app, client):
     # Check that the second request was to the index page.
 
 
-
 def test_register_new_user(client):
     db.drop_all()
     db.create_all()
@@ -100,16 +100,12 @@ def test_login_existing_user(client):
     assert response.request.path == '/'
 
 
-
-
 def test_login_nonexisting_user(client):
     response = client.post('/login', data={
         'username': 'alphabetsoup',
         'password': 'goodpassword'
     }, follow_redirects=True)
     assert response.request.path == '/login'
-
-
 
 
 def test_logout(client):
@@ -159,14 +155,16 @@ def test_insane_input(client):
         "username": "goodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusername",
         "email": "goodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusernamegoodusername@test.com",
         "password": "goodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpassword",
-        "confirm_password": "goodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpassword"}, follow_redirects=True)
+        "confirm_password": "goodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpasswordgoodpassword"},
+                           follow_redirects=True)
     assert response.request.path == '/register'
+
 
 def test_create_collection(client):
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
-    resposne = client.post ("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
 
     response = client.post("/collections/create/1", data={"name": "test", "desc": "test"}, follow_redirects=True)
     assert response.request.path == "/"
@@ -178,11 +176,12 @@ def test_community_tab(client):
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
-    resposne = client.post ("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
     response = client.get("/")
     print(response.data)
     assert b"""
                 Watches""" in response.data
+
 
 def test_good_email_update(client):
     response = client.post("/settings", data={
@@ -192,13 +191,15 @@ def test_good_email_update(client):
         "profile_picture": "lion"}, follow_redirects=True)
     assert response.request.path == '/settings'
 
+
 def test_update_existing_user(client):
     with client:
         response = client.post("/settings", data={
-        "username": "tested",
-        "email": "test2@gmail.com",
-        "bio": "test"}, follow_redirects=True)
+            "username": "tested",
+            "email": "test2@gmail.com",
+            "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
+
 
 def test_bad_email_update(client):
     response = client.post("/settings", data={
@@ -207,6 +208,7 @@ def test_bad_email_update(client):
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
 
+
 def test_blank_email_update(client):
     response = client.post("/settings", data={
         "username": "test3",
@@ -214,14 +216,14 @@ def test_blank_email_update(client):
         "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
 
+
 def test_update_long_username(client):
     with client:
         response = client.post("/settings", data={
-        "username": "testtesttesttesttesttesttesttesttesttest",
-        "email": "test2@gmail.com",
-        "bio": "test"}, follow_redirects=True)
+            "username": "testtesttesttesttesttesttesttesttesttest",
+            "email": "test2@gmail.com",
+            "bio": "test"}, follow_redirects=True)
     assert response.request.path == '/settings'
-
 
 
 def test_update_good_user(client):
@@ -233,7 +235,7 @@ def test_update_good_user(client):
             email='testing@test.com',
             bio="my bio"), follow_redirects=True)
         response2 = client.get("/settings")
-        
+
         assert response.data == response2.data
 
 
@@ -246,8 +248,9 @@ def test_create_item(client):
         "text": "test text", "photo": "3c8db28eeebc196d17988ec05c3cf059.jpg", "name": "name"}, follow_redirects=True)
     assert response.request.path == '/item'
 
+
 def test_upload_item_image(client):
-    #Test #6, checks for status code of 200, then checks for image in html
+    # Test #6, checks for status code of 200, then checks for image in html
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
@@ -257,8 +260,9 @@ def test_upload_item_image(client):
     assert response.status_code == 200
     assert b'bantest.jpg!' in response.data
 
+
 def test_upload_item(client):
-    #Test #3, checks for status code of 200, then checks for flashed message
+    # Test #3, checks for status code of 200, then checks for flashed message
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
@@ -269,6 +273,7 @@ def test_upload_item(client):
     assert response.status_code == 200
     assert b'IMAGE UPLOADED!' in response.data
 
+
 def test_communites_in_profile(client):
     # 73 tests to ensure the user can see their communities/collections from their
     # profile page
@@ -277,6 +282,7 @@ def test_communites_in_profile(client):
     response = client.get("/fillDB")
     response = client.get('/userProfile')
     assert b'Shoes' in response.data
+
 
 def test_items_on_profile_page(client):
     # 47 tests to see if new items are showing on profile page
@@ -289,6 +295,7 @@ def test_items_on_profile_page(client):
     response = client.post('/userProfile')
     assert b'901239012309120931390' in response.data
 
+
 def test_items_in_collections(client):
     # 46 tests to see if items are showing up in the correct collection
     db.drop_all()
@@ -299,3 +306,250 @@ def test_items_in_collections(client):
         "text": "test text", "photo": "bantest.jpg", "name": "901239012309120931390"}, follow_redirects=True)
     response = client.post('/collections/view/2')
     assert b'901239012309120931390' in response.data
+
+
+def test_join_community_button(client):
+    # 7 tests to see if user can join a community
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post(
+        "/community/shoes", data={"join": "Join Community"}, follow_redirects=True
+    )
+    assert b"Create Collection" in response.data
+
+
+def test_leave_community_button(client):
+    # 7 tests to see if user can join a community
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post(
+        "/community/watches", data={"join": "Leave Community"}, follow_redirects=True
+    )
+    assert b"Create Collection" not in response.data
+
+
+def test_valid_post_and_edit_in_joined_community(client):
+    # 8 tests to see if a user can post in a community they joined, and also various editing outcomes
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    assert b'test title' in response.data
+    response = client.post("/community/watches/1/edit", follow_redirects=True)
+    assert b'Editing a post' in response.data
+    response = client.post("/community/watches/1/edit", data={"body": ""},
+                           follow_redirects=True)
+    assert b'Editing a post' in response.data
+    response = client.post("/community/watches/1/edit", data={"body": "new text added"},
+                           follow_redirects=True)
+    assert b'new text added' in response.data
+
+
+def test_delete_own_post(client):
+    # tests to see if a user can delete their post
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.get("/community/watches/1/delete", follow_redirects=True)
+    assert b'Are you sure' in response.data
+
+
+def test_admin_delete_post(client):
+    # tests to see if an admin can delete another user's post
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/community/watches/1/delete", follow_redirects=True)
+    assert b'Are you sure' in response.data
+
+
+def test_post_in_foreign_community(client):
+    # 8 tests to see if a user can post in a community they did not join
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/shoes/create_post",
+                           follow_redirects=True)
+    assert b'Must be part of this community to make a post' in response.data
+
+
+def test_post_while_logged_out(client):
+    # 8 tests to see if an unlogged user can post in a community
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/community/shoes/create_post",
+                           follow_redirects=True)
+    assert b'Register now' in response.data
+
+
+def test_blank_post_in_joined_community(client):
+    # 8 tests to see if a user can post an invalid post (blank) in a community they joined
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "aaa", "body": ""},
+                           follow_redirects=True)
+    assert b'Creating a new post' in response.data
+
+
+def test_untitled_post_in_joined_community(client):
+    # 8 tests to see if a user can post an invalid post (blank) in a community they joined
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "",
+                                                                   "body": "i didnt put a title because im lazy lol!"},
+                           follow_redirects=True)
+    assert b'Creating a new post' in response.data
+
+
+def test_cannot_edit_post_when_logged_out(client):
+    # tests to see if an unlogged user can access editing a post
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/community/watches/1")
+    assert b'Edit' not in response.data
+    response = client.post("/community/watches/1/edit")
+    assert b'Editing a post' not in response.data
+
+
+def test_cannot_edit_post_as_other_user(client):
+    # tests to see if a user can access editing another user's post
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/1")
+    assert b'Edit' not in response.data
+    response = client.post("/community/watches/1/edit")
+    assert b'Editing a post' not in response.data
+
+
+def test_valid_comment_in_joined_community(client):
+    # 9 tests to see if a user can comment on a post in a community they joined
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/1", data={"text": "blahblahblah"}, follow_redirects=True)
+    assert b'1 comment' in response.data
+
+
+def test_blank_comment_in_joined_community(client):
+    # 9 tests to see if a user can comment on a post when the text field is blank
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/1", data={"text": ""}, follow_redirects=True)
+    assert b'No comments' in response.data
+
+
+def test_comment_in_foreign_community(client):
+    # 9 tests to see if a user can access the comment form on a post in a community they did not join
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/community/shoes/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/shoes/1")
+    assert b'Leave a comment below' not in response.data
+
+
+def test_edit_and_comment_while_logged_out(client):
+    # 9 tests to see if a user can access the comment form on a post while logged out
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/community/shoes/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/community/shoes/1")
+    assert b'Leave a comment below' not in response.data
+
+
+def test_delete_own_comment(client):
+    # tests to see if a user can delete their own comment
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.post("/community/watches/1", data={"text": "blahblahblah"}, follow_redirects=True)
+    response = client.post("/comment/1/delete", follow_redirects=True)
+    assert b'No comments' in response.data
+
+
+def test_admin_delete_comment(client):
+    # tests to see if an admin can delete another users' comment
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.post("/community/watches/1", data={"text": "blahblahblah"}, follow_redirects=True)
+    assert b'blahblahblah' in response.data
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.get("/comment/1/delete", follow_redirects=True)
+    assert b'blahblahblah' not in response.data
+    assert b'comment has been removed by an administrator' not in response.data
+
+
+def test_cannot_delete_other_comment(client):
+    # tests to see if a user can delete their own comment
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB2")
+    response = client.post("/login", data={"username": "Admin", "password": "testing"})
+    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
+                           follow_redirects=True)
+    response = client.post("/community/watches/1", data={"text": "blahblahblah"}, follow_redirects=True)
+    assert b'1 comment' in response.data
+    response = client.get("/logout", follow_redirects=True)
+    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.get("/comment/1/delete", follow_redirects=True)
+    assert b'1 comment' in response.data

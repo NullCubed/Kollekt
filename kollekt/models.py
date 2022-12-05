@@ -470,20 +470,12 @@ class Posts(db.Model):
 
     def clearComments(self):
         '''
-        function to delete comments on a post
+        function to delete comments on a post. called prior to deleting the post itself
         '''
-        # deletes all comments under a post; should only be called prior to deleting the post
         comments = self.getComments()
         for i in comments:
             db.session.delete(i)
         db.session.commit()
-
-    def getRawTimestamp(self):
-        '''
-        Getter to get the raw timestamp of a post
-        @return: returns the raw timestamp for the post
-        '''
-        return self.timestamp
 
     def getTimestamp(self):
         '''
@@ -550,14 +542,6 @@ class Comments(db.Model):
         '''
         return self.locked
 
-    def setText(self, text):
-        '''
-        Setter to set the text
-        @param text: text being set
-        '''
-        self.text = text
-        db.session.commit()
-
     def lockComment(self):
         '''
         Locks the comment. Used instead of deletion when an admin removes a comment.
@@ -565,13 +549,6 @@ class Comments(db.Model):
         self.text = "This comment has been removed by an administrator."
         self.locked = True
         db.session.commit()
-
-    def getRawTimestamp(self):
-        '''
-        Getter to get the raw timestamp of a comment
-        @return: returns the raw timestamp for the comment
-        '''
-        return self.timestamp
 
     def getTimestamp(self):
         '''
