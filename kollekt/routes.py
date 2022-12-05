@@ -19,9 +19,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # from .Components.Community import Community
 # from .Components.Collection import CollectionItem
 
+
 @app.route("/")
 def home():
-    """ Creates a route for the home page """
+    ''' Creates a route for the home page '''
     posts = Posts.query.all()[:10]
     usersCommunities = []
     allCommunities = Communities.query.all()
@@ -66,7 +67,7 @@ def home():
 
 @app.route("/userProfile")
 def userProfile():
-    """ Creates a route for the user's profile page """
+    ''' Creates a route for the user's profile page '''
     users_posts = []
     all_posts = Posts.query.all()
     all_posts.reverse()
@@ -105,10 +106,10 @@ def userProfile():
 @app.route("/userCommunities/<id>")
 @login_required
 def commCard(id):
-    """
+    '''
     Creates a route for each user to display joined communities
     @param id: id assigned to user
-    """
+    '''
     posts = Posts.query.all()[:10]
     usersCommunities = []
     allCommunities = Communities.query.all()
@@ -153,7 +154,7 @@ def commCard(id):
 
 @app.route("/logout")
 def logout():
-    """ Creates a route for the logout whcih returns to home """
+    ''' Creates a route for the logout whcih returns to home '''
     logout_user()
     return redirect(url_for('home'))
 
@@ -161,12 +162,31 @@ def logout():
 @app.route("/userSettings", methods=['GET', 'POST'])
 @login_required
 def userSettings():
-    """ Creates a route for user setting's page """
+    ''' Creates a route for user setting's page '''
     form = UserForm()
-    
+    oldemail = False
+    oldusername = False
+    oldBio = False
+    oldPFP = False
+    if form.username.data == "":
+        form.username.data = current_user.username
+        oldusername = True
+    if form.email.data == "":
+        form.email.data = current_user.email
+        oldemail = True
+    if form.bio.data == "":
+        form.bio.data = current_user.bio
+        oldbio = True
+    if form.profile_picture.data == "":
+        form.profile_picture.data = current_user.profile_picture
+        oldPFP = True
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        eml = User.query.filter_by(email=form.email.data).first()
+        user = ''
+        if not oldusername:
+            user = User.query.filter_by(username=form.username.data).first()
+        if not oldemail:
+            eml = User.query.filter_by(email=form.email.data).first()
+        eml = ''
         if not user and not eml:
             current_user.username = form.username.data
             current_user.email = form.email.data
@@ -196,18 +216,14 @@ def userSettings():
 @app.route("/userCard/<user_id>")
 @login_required
 def userCard(user_id):
-    """ creates a route for each user that display's the users information """
+    ''' creates a route for each user that display's the users information '''
     userInfo = User.query.filter_by(id=user_id).first()
     return render_template('userCard.html', userInfo=userInfo)
 
 
 @app.route("/community/<url>", methods=['GET', 'POST'])
 def communityPage(url):
-    """
-    Route for a community's page
-    @param url: the community's url-formatted name
-    @return: returns the html for the community page
-    """
+    ''' creates a route for each commmunity page created by an admin '''
     community = Communities.query.filter_by(url=url).first()
     posts_to_display = []
     all_posts = Posts.query.all()
@@ -219,22 +235,6 @@ def communityPage(url):
             posts_to_display.append(j)
         if k == 5:
             break
-    items_to_display = []
-    collection_ids = []
-    collections = []
-    item_iteration = []
-    all_items = CollectionItem.query.all()
-    all_items.reverse()
-    k = 0
-    for j in all_items:
-        if j.community_id == community.id and j.collection_id not in collection_ids:
-            item_iteration.append(k)
-            k += 1
-            items_to_display.append(j)
-            collection_ids.append(j.collection_id)
-            collections.append(Collections.query.filter_by(id=j.collection_id).first())
-        if k == 3:
-            break
     if request.method == 'POST':
         if current_user.is_authenticated:
             if request.form['join'] == 'Join Community':
@@ -245,15 +245,15 @@ def communityPage(url):
                     if i.community_id == community.id:
                         db.session.delete(i)
                         db.session.commit()
+
         else:
             return redirect(url_for('login'))
-    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display,
-                           items_to_display=items_to_display, collections=collections, item_iteration=item_iteration)
+    return render_template('community.html', community=community, user=current_user, posts_to_display=posts_to_display)
 
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    """ creates a route to login """
+    ''' creates a route to login '''
     if current_user.is_authenticated:
         flash(f'Login successful', 'success')
         return redirect(url_for('home'))
@@ -298,10 +298,10 @@ def item_page(item_id):
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
-    """
+    '''
     creates a route to register a new user
     @return: either home if registered or register if unsuccesfull
-    """
+    '''
     form = RegistrationForm()
     username = form.username.data
     password = form.password.data
@@ -367,47 +367,49 @@ def addNewCollectionItem(collection_id):
 
 @app.route("/adminpage", methods=['GET', 'POST'])
 def adminpage():
-    """
+    '''
     creates a route for admins to create communities
     @returns: admin page
-    """
-    print(current_user.admin)
-    form = CreateCommunityForm()
-    delform = DeleteCommunityForm()
-    allCommunities = Communities.query.all()
-    if form.validate_on_submit():
-        checkCommunity = Communities.query.filter_by(
-            name=form.name.data).first()
-        if checkCommunity:
-            flash("Community already exists", "danger")
-            return redirect(url_for('adminpage'))
-        else:
-            community = Communities(name=form.name.data,
-                                    desc=form.description.data)
-            db.session.add(community)
-            db.session.commit()
-        flash(f"Community Created: {community.name}", "success")
-        return redirect(url_for('adminpage'))
+    '''
+    if current_user.is_authenticated and current_user.admin:
 
-    if delform.validate_on_submit():
-        checkCommunity = Communities.query.filter_by(
-            name=delform.name.data).first()
-        if checkCommunity:
-            postsToDelte = checkCommunity.getPosts()
-            for i in postsToDelte:
-                db.session.delete(i)
-            collectionsToDelete = checkCommunity.getCollections()
-            for i in collectionsToDelete:
-                db.session.delete(i)
-            db.session.delete(checkCommunity)
-            db.session.commit()
-            flash(f"Community Deleted {checkCommunity.name}", "success")
+        form = CreateCommunityForm()
+        delform = DeleteCommunityForm()
+        allCommunities = Communities.query.all()
+        if form.validate_on_submit():
+            checkCommunity = Communities.query.filter_by(
+                name=form.name.data).first()
+            if checkCommunity:
+                flash("Community already exists", "danger")
+                return redirect(url_for('adminpage'))
+            else:
+                community = Communities(name=form.name.data,
+                                        desc=form.description.data)
+                db.session.add(community)
+                db.session.commit()
+            flash(f"Community Created: {community.name}", "success")
             return redirect(url_for('adminpage'))
-        else:
-            flash("Community does not exist", "danger")
-            return redirect(url_for('adminpage'))
-    return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
 
+        if delform.validate_on_submit():
+            checkCommunity = Communities.query.filter_by(
+                name=delform.name.data).first()
+            if checkCommunity:
+                postsToDelte = checkCommunity.getPosts()
+                for i in postsToDelte:
+                    db.session.delete(i)
+                collectionsToDelete = checkCommunity.getCollections()
+                for i in collectionsToDelete:
+                    db.session.delete(i)
+                db.session.delete(checkCommunity)
+                db.session.commit()
+                flash(f"Community Deleted {checkCommunity.name}", "success")
+                return redirect(url_for('adminpage'))
+            else:
+                flash("Community does not exist", "danger")
+                return redirect(url_for('adminpage'))
+        return render_template('adminpage.html', form=form, delform=delform, allCommunities=allCommunities)
+    else:
+        return redirect(url_for('home'))
 
 @app.route("/collections/create/<community_id>", methods=['GET', 'POST'])
 def createCollection(community_id):
@@ -440,12 +442,12 @@ def viewCollection(collection_id):
 
 @app.route("/community/<community_url>/<post_id>", methods=['GET', 'POST'])
 def viewPost(community_url, post_id):
-    """
+    '''
     Creates a route for each post for a user to view
     @param community_url: the the url of the community the post is being viewed in.
     @param post_id: the id of the post being viewed.
     @returns the viewpost template and the values: community.url and post.id
-    """
+    '''
     post_to_view = Posts.query.filter_by(id=post_id).first()
     if post_to_view is None:
         return render_template('viewpost.html', post_to_view=post_to_view, community=None)
@@ -462,16 +464,16 @@ def viewPost(community_url, post_id):
     # clears comment box upon posting; otherwise comment text remains in box
     form.text.data = ""
     return render_template('viewpost.html', post_to_view=post_to_view, community=community,
-                           comments=comments, form=form)
+                           comments=comments, comment_count=len(comments), form=form)
 
 
 @app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])
 def addNewPost(community_url):
-    """
+    '''
     Creates a route for each post for the post to be created
     @param community_url: the the url of the community the post being is stored in.
     @returns the viewpost template and the values: community.url and post.id
-    """
+    '''
     if current_user.is_authenticated:
         community = Communities.query.filter_by(url=community_url).first()
         if community.userHasJoined(current_user) is False:
@@ -479,12 +481,17 @@ def addNewPost(community_url):
             return redirect(url_for('communityPage', url=community_url))
         form = CreatePostForm()
         if form.validate_on_submit():
-            new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
-                             community_id=community.id)
-            db.session.add(new_post)
-            db.session.commit()
-            flash(f"Post {new_post.id} created in Community {community.url}", "success")
-            return redirect(url_for('viewPost', community_url=community_url, post_id=new_post.id))
+            if form.body.data == "":  # and form.item_id.data == "":
+                flash("Must enter text into the body or attach an item!", "danger")
+                return redirect(url_for('addNewPost', community_url=community_url))
+            else:
+                new_post = Posts(author_id=current_user.id, title=form.title.data, body=form.body.data,
+                                 community_id=community.id)
+                db.session.add(new_post)
+                db.session.commit()
+                flash(
+                    f"Post {new_post.id} created in Community {community.url}", "success")
+                return redirect(url_for('viewPost', community_url=community_url, post_id=new_post.id))
         return render_template("createpost.html", form=form)
     else:
         return redirect(url_for('login'))
@@ -492,22 +499,28 @@ def addNewPost(community_url):
 
 @app.route("/community/<community_url>/<post_id>/edit", methods=['GET', 'POST'])
 def editPost(community_url, post_id):
-    """
+    '''
     Creates a route for each post for a edit method to occur
-    @param community_url: the url of the community the post is being edited in.
+    @param community_url: the the url of the community the post is being edited in.
     @param post_id: the id of the post being edited.
     @returns the viewpost template and the values: community.url and post.id
-    """
+    '''
     post = Posts.query.filter_by(id=post_id).first()
     if post is None:
         return redirect(url_for('home'))
     if current_user.is_authenticated and post.getAuthor() == current_user:
         form = EditPostForm()
         if form.validate_on_submit():
-            post.setBody(form.body.data)
-            db.session.commit()
-            flash(f"Post {post.id} in Community {community_url} edited", "success")
-            return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
+            if form.body.data == "":  # and form.item_id.data == "":
+                flash("Must enter text into the body or attach an item!", "danger")
+                return redirect(url_for('editPost', community_url=community_url, post_id=post_id))
+            else:
+                # post.setLinkedItem(form.item_id.data)
+                post.setBody(form.body.data)
+                db.session.commit()
+                flash(
+                    f"Post {post.id} in Community {community_url} edited", "success")
+                return redirect(url_for('viewPost', community_url=community_url, post_id=post_id))
         form.body.data = post.body
         return render_template("editpost.html", form=form, community_url=community_url, post_id=post_id)
     else:
@@ -516,12 +529,12 @@ def editPost(community_url, post_id):
 
 @app.route("/community/<community_url>/<post_id>/delete", methods=['GET', 'POST'])
 def delPost(community_url, post_id):
-    """
+    '''
     Creates a route for each post for a delete method to occur
-    @param community_url: the url of the community the post being deleted is in.
+    @param community_url: the the url of the community the post being deleted is in.
     @param post_id: the id of the post being deleted.
     @returns the viewpost template and the values: community.url and post.id
-    """
+    '''
     post = Posts.query.filter_by(id=post_id).first()
     if post is None:
         return redirect(url_for('home'))
@@ -544,11 +557,11 @@ def delPost(community_url, post_id):
 
 @app.route("/comment/<comment_id>/delete", methods=['GET', 'POST'])
 def delComment(comment_id):
-    """
+    '''
     Creates a route for each comment for a delete method to occur
     @param comment_id: the id of the comment being deleted
     @returns the viewpost template and the values: community.url and post.id
-    """
+    '''
     comment = Comments.query.filter_by(id=comment_id).first()
     if comment is None:
         return redirect(url_for('home'))
@@ -558,9 +571,7 @@ def delComment(comment_id):
         db.session.delete(comment)
         db.session.commit()
         flash("Comment deleted", "danger")
-    elif current_user.is_authenticated and current_user.admin is True:
-        comment.lockComment()
-        db.session.commit()
+    # if current_user is admin, lock the post instead of deleting it
     return redirect(url_for('viewPost', community_url=community.url, post_id=post.id))
 
 
@@ -591,29 +602,21 @@ def delItem(item_id):
         return redirect(url_for('item_page', item_id=item_id))
 
 
+
 @app.route("/fillDB")
-def fillDB():
-    """
-    Calls fill_the_database when in use.
-    """
-    # fill_the_database()
-    return redirect(url_for('home'))
 
 
-def fill_the_database():
+def filldb():
     """
-    Fills the database. Is called by the fillDB route
+        Route to add items to the database
+        @param item_id:None
+        @return:Returns to homepage with database items added
     """
     db.drop_all()
     db.create_all()
     db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
-    community1 = Communities("Watches", "Timepieces")
-    db.session.add(community1)
-    community2 = Communities("Shoes", "Gloves for your feet")
-    db.session.add(community2)
-    db.session.commit()
-    community1.addUser(User.query.filter_by(id=1).first())
-    community2.addUser(User.query.filter_by(id=1).first())
+    db.session.add(Communities("Watches", "Timepieces"))
+    db.session.add(Communities("Shoes", "Gloves for your feet"))
     db.session.add(Collections(
         "Admins Shoes", "A collection of all of admins shoes", 1, 2))
     db.session.add(Collections("Admins Watches",
@@ -621,3 +624,5 @@ def fill_the_database():
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
     allCommunities = Communities.query.all()
+
+    return redirect(url_for('home'))
