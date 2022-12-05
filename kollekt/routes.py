@@ -79,7 +79,6 @@ def userProfile():
     usersCommunities = []
     collection_user = current_user.collections
     items_user = []
-    # TODO: This needs to be fixed
     if current_user.is_authenticated:
 
         for i in collection_user:
@@ -87,11 +86,10 @@ def userProfile():
                 items_user.append(i)
 
         for community in allCommunities:
-            userlist = community.getUsers()  # waiting for method implementation
+            userlist = community.getUsers()
             finalUserList = []
             for i in userlist:
                 finalUserList.append(i.username)
-            # userlist = []  # using this for now
             if current_user.username in finalUserList:
                 usersCommunities.append(community)
                 allCommunities.remove(community)
