@@ -201,16 +201,8 @@ def userSettings():
         db.session.commit()
         flash(f'Updated {current_user.username}', 'success')
 
-
     return render_template("settings.html",
-                               form=form)
-
-
-
-    
-
-
-
+                           form=form)
 
 
 @app.route("/userCard/<user_id>")
@@ -411,6 +403,7 @@ def adminpage():
     else:
         return redirect(url_for('home'))
 
+
 @app.route("/collections/create/<community_id>", methods=['GET', 'POST'])
 def createCollection(community_id):
     """
@@ -464,7 +457,7 @@ def viewPost(community_url, post_id):
     # clears comment box upon posting; otherwise comment text remains in box
     form.text.data = ""
     return render_template('viewpost.html', post_to_view=post_to_view, community=community,
-                           comments=comments, comment_count=len(comments), form=form)
+                           comments=comments, form=form)
 
 
 @app.route("/community/<community_url>/create_post", methods=['GET', 'POST'])
@@ -602,10 +595,7 @@ def delItem(item_id):
         return redirect(url_for('item_page', item_id=item_id))
 
 
-
 @app.route("/fillDB")
-
-
 def filldb():
     """
         Route to add items to the database
@@ -624,5 +614,31 @@ def filldb():
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
     allCommunities = Communities.query.all()
+
+    return redirect(url_for('home'))
+
+
+@app.route("/fillDB2")
+def filldb2():
+    """
+    Route to add items to the database (used by Josh
+    @return:Returns to homepage with database items added
+    """
+    db.drop_all()
+    db.create_all()
+    db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
+    community1 = Communities("Watches", "Timepieces")
+    db.session.add(community1)
+    community2 = Communities("Shoes", "Gloves for your feet")
+    db.session.add(community2)
+    db.session.commit()
+    community1.addUser(User.query.filter_by(id=1).first())
+    community2.addUser(User.query.filter_by(id=1).first())
+    db.session.add(Collections(
+        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Collections("Admins Watches",
+                               "A collection of all of admins shoes", 1, 1))
+    db.session.commit()
+    login_user(User.query.filter_by(id=1).first())
 
     return redirect(url_for('home'))
