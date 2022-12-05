@@ -71,8 +71,7 @@ class CreatePostForm(FlaskForm):
     Class to create a form to create a post
     '''
     title = StringField('Title', validators=[DataRequired()])
-    body = TextAreaField('Body')
-    item_id = StringField('Attach an Item (Optional)')
+    body = TextAreaField('Body', validators=[DataRequired()])
     submit = SubmitField('Post!')
 
 
@@ -80,9 +79,9 @@ class EditPostForm(FlaskForm):
     '''
     Class to create a form to edit a post
     '''
-    body = TextAreaField('Body')
-    item_id = StringField('Attach an Item (Optional)')
+    body = TextAreaField('Body', validators=[DataRequired()])
     submit = SubmitField('Save')
+
 
 # class EditItemForm(FlaskForm):
 
@@ -93,12 +92,14 @@ class DeletePostForm(FlaskForm):
     submitConfirm = SubmitField('Confirm')
     submitCancel = SubmitField('Cancel')
 
+
 class DeleteItemForm(FlaskForm):
     '''
     Class to create a form to delete an item
     '''
-    submitConfirm =SubmitField('Confirm')
+    submitConfirm = SubmitField('Confirm')
     submitCancel = SubmitField('Cancel')
+
 
 class UserForm(FlaskForm):
     username = StringField('Username', validators=[Length(min=3, max=20)])

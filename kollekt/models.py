@@ -77,11 +77,11 @@ class User(db.Model, UserMixin):
         @return: returns True or False
         '''
         return check_password_hash(self.password, pwd)
-        
+
     def addCollection(self, collection):
         '''
         Function to add a collection
-        @param collection: collection beign added
+        @param collection: collection being added
         '''
         self.collections_list.append(collection)
         db.session.commit()
@@ -187,6 +187,7 @@ class CollectionItem(db.Model):
         Printable representation function
         '''
         return f'<CollectionItem {self.name}, {self.user}, {self.community_id}, {self.collection_id}>'
+
     def getUser(self):
         """
         Returns user of the item
@@ -440,27 +441,6 @@ class Posts(db.Model):
         '''
         return Communities.query.filter_by(id=self.community_id).first()
 
-    def getLinkedItem(self):
-        '''
-        Getter for items that are linked
-        @return: returns items linked to self
-        '''
-        return CollectionItem.query.filter_by(id=self.item_id).first()
-
-    def setLinkedItem(self, item_id):
-        '''
-        Setter to set linked items
-        @param item_id: id of the item being linked
-        '''
-        if item_id is not None:
-            # item = Items.query.filter_by(id=item_id).first()
-            # need a check here for if the new item matches the user
-            # this requires users and items or collections to be linked in database
-            if True:  # "if self.getAuthor() == item's owner"
-                self.item_id = item_id
-        else:
-            self.item_id = None
-
     def setBody(self, body):
         '''
         Setter to set the body
@@ -475,6 +455,19 @@ class Posts(db.Model):
         '''
         return Comments.query.filter_by(post_id=self.id).all()
 
+    def getCommentCount(self):
+        '''
+        Calculates number of comments and returns it in a formatted string
+        @return: returns formatted string indicating number of comments on the post
+        '''
+        comments = Comments.query.filter_by(post_id=self.id).all()
+        if comments is None or len(comments) == 0:
+            return "No comments"
+        elif len(comments) == 1:
+            return "1 comment"
+        else:
+            return str(len(comments)) + " comments"
+
     def clearComments(self):
         '''
         function to delete comments on a post
@@ -485,79 +478,24 @@ class Posts(db.Model):
             db.session.delete(i)
         db.session.commit()
 
-    def getLikes(self):
+    def getRawTimestamp(self):
         '''
-        Getter to get the number of likes
-        @return: returns the number of likes on a post
+        Getter to get the raw timestamp of a post
+        @return: returns the raw timestamp for the post
         '''
-        return len(self.likes)
-
-    def getDislikes(self):
-        '''
-        Getter to get the number of dislikes
-        @return: returns the number of dislkies on a given post
-        '''
-        return len(self.dislikes)
-
-    def userHasLiked(self, user_id):
-        '''
-        Boolean statement to see if user has liked a post
-        @param user_id: id of the user being checked
-        @return: returns True or False
-        '''
-        if user_id in self.likes:
-            return True
-        return False
-
-    def userHasDisliked(self, user_id):
-        '''
-        Boolean statement to see if user has disliked a post
-        @param user_id: id of the user being checked
-        @return: returns True or False
-        '''
-        if user_id in self.dislikes:
-            return True
-        return False
-
-    def toggleLike(self, user_id):
-        '''
-        Function to disable the likes
-        @param user_id: id of the user toggling likes
-        '''
-        if user_id in self.likes:
-            self.likes.remove(user_id)
-        else:
-            if user_id in self.dislikes:
-                self.dislikes.remove(user_id)
-            self.likes.append(user_id)
-        db.session.commit()
-
-    def toggleDislike(self, user_id):
-        '''
-        Function to disable the dislikes
-        @param user_id: id of the user toggling dislikes
-        '''
-        if user_id in self.dislikes:
-            self.dislikes.remove(user_id)
-        else:
-            if user_id in self.likes:
-                self.likes.remove(user_id)
-            self.dislikes.append(user_id)
-        db.session.commit()
+        return self.timestamp
 
     def getTimestamp(self):
         '''
-        Getter to get the timestamp of a post
-        @return: returns a timestamp for the post
+        Getter to get the formatted timestamp of a post
+        @return: returns the formatted timestamp for the post
         '''
-        # returns post time if posted today, otherwise returns post date
         now = str(datetime.datetime.now()).split(" ")
         post_time_for_eval = self.timestamp.split(" ")
         if now[0] == post_time_for_eval[0]:
-            # second return val used specifically for formatting on post display
-            return post_time_for_eval[1].split(".")[0], "at " + post_time_for_eval[1].split(".")[0]
+            return "at " + post_time_for_eval[1].split(".")[0]
         else:
-            return post_time_for_eval[0], "on " + post_time_for_eval[0]
+            return "on " + post_time_for_eval[0]
 
     def __repr__(self):
         '''
@@ -620,13 +558,32 @@ class Comments(db.Model):
         self.text = text
         db.session.commit()
 
-    def lockPost(self):
+    def lockComment(self):
         '''
-        Function to lock the post
+        Locks the comment. Used instead of deletion when an admin removes a comment.
         '''
         self.text = "This comment has been removed by an administrator."
         self.locked = True
         db.session.commit()
+
+    def getRawTimestamp(self):
+        '''
+        Getter to get the raw timestamp of a comment
+        @return: returns the raw timestamp for the comment
+        '''
+        return self.timestamp
+
+    def getTimestamp(self):
+        '''
+        Getter to get the formatted timestamp of a comment
+        @return: returns the formatted timestamp for the comment
+        '''
+        now = str(datetime.datetime.now()).split(" ")
+        post_time_for_eval = self.timestamp.split(" ")
+        if now[0] == post_time_for_eval[0]:
+            return "at " + post_time_for_eval[1].split(".")[0]
+        else:
+            return "on " + post_time_for_eval[0]
 
     def __repr__(self):
         '''
