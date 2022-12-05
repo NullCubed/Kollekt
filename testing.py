@@ -29,6 +29,7 @@ def runner(app):
 
 
 def test_login_page(client):
+    # 1 test page displays
     response = client.get("/login")
     assert (
             b'<h5 class="text-center">Dont have an account? Register now</h5>'
@@ -37,6 +38,7 @@ def test_login_page(client):
 
 
 def test_register_page(client):
+    # 4 Test to see if reigster page renders
     response = client.get("/register")
     assert response.status_code == 200
     assert (
@@ -46,6 +48,7 @@ def test_register_page(client):
 
 
 def test_logged_out_homepage(client):
+    # 51 check to see if the homepage renders general information when logged out
     response = client.get("/")
     assert (
             b"""<h3 class="text-center" style="font-weight: bold">
@@ -56,6 +59,7 @@ def test_logged_out_homepage(client):
 
 
 def test_logged_in_homepage(app, client):
+    # 51 check to see if the homepage renders personal information when logged in
     db.drop_all()
     db.create_all()
     response = client.post(
@@ -89,6 +93,7 @@ def test_register_new_user(client):
     :param client:
     :return:
     """
+
     db.drop_all()
     db.create_all()
     with client:
@@ -113,6 +118,7 @@ def test_register_existing_user(client):
     :param client:
     :return:
     """
+
     with client:
         response = client.post(
             "/register",
@@ -124,16 +130,63 @@ def test_register_existing_user(client):
             },
             follow_redirects=True,
         )
+    assert b"Username already taken" in response.data
+
+
+def test_bad_username_register(client):
+    # 4 test to see if nothing is done, since it renders non html flash
+    response = client.post(
+        "/register",
+        data={
+            "username": "a",
+            "email": "test@test.com",
+            "password": "goodpassword",
+            "confirm_password": "goodpassword",
+        },
+        follow_redirects=True,
+    )
+    assert response.request.path == "/register"
+
+
+def test_long_password_register(client):
+    # 4 test to see if nothing is done, since it renders non html flash
+    response = client.post(
+        "/register",
+        data={
+            "username": "goodusername",
+            "email": "test@test.com",
+            "password": "thispasswordiswaytoolong",
+            "confirm_password": "thispasswordiswaytoolong",
+        },
+        follow_redirects=True,
+    )
+    assert response.request.path == "/register"
+
+
+def test_non_password_confirm(client):
+    # 4 test to see if nothing is done, since it renders non html flash
+    response = client.post(
+        "/register",
+        data={
+            "username": "goodusername",
+            "email": "test@test.com",
+            "password": "goodpassword",
+            "confirm_password": "goodpassword22",
+        },
+        follow_redirects=True,
+    )
     assert response.request.path == "/register"
 
 
 def test_login_existing_user(client):
+
     # Done by Garrett McGhee
     """
     A test to login as an existing user
     :param client:
     :return:
     """
+
     response = client.post(
         "/login",
         data=dict(
@@ -153,21 +206,24 @@ def test_login_nonexisting_user(client):
     :param client:
     :return:
     """
+
     response = client.post(
         "/login",
         data={"username": "alphabetsoup", "password": "goodpassword"},
         follow_redirects=True,
     )
-    assert response.request.path == "/login"
+    assert b"Wrong Password" in response.data
 
 
 def test_logout(client):
+    # 1 ? test to see if user is directed to homepage after logging out
     response = client.get("/logout", follow_redirects=True)
     assert response.status_code == 200
     assert response.request.path == "/"
 
 
 def test_bad_email_register(client):
+    # 4 make sure no change, flashes something that doesnt render as html
     response = client.post(
         "/register",
         data={
@@ -182,6 +238,7 @@ def test_bad_email_register(client):
 
 
 def test_bad_username_register(client):
+    # 4 make sure no change, flashes something that doesnt render as html
     response = client.post(
         "/register",
         data={
@@ -196,6 +253,7 @@ def test_bad_username_register(client):
 
 
 def test_long_password_register(client):
+    # 4 make sure no change, flashes something that doesnt render as html
     response = client.post(
         "/register",
         data={
@@ -210,6 +268,7 @@ def test_long_password_register(client):
 
 
 def test_long_password_confirm(client):
+    # 4 make sure no change, flashes something that doesnt render as html
     response = client.post(
         "/register",
         data={
@@ -223,7 +282,8 @@ def test_long_password_confirm(client):
     assert response.request.path == "/register"
 
 
-def test_insane_input(client):
+def test_insane_register_input(client):
+    # 4 make sure no change, flashes something that doesnt render as html
     response = client.post(
         "/register",
         data={
@@ -254,6 +314,7 @@ def test_create_collection(client):
 
 
 def test_community_tab(client):
+    # 51 - Community tab should be visible to be interactive
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
@@ -376,7 +437,7 @@ def test_upload_item_image(client):
     # Test #6, checks for status code of 200, then checks for image in html
     db.drop_all()
     db.create_all()
-    response = client.get("/fillDB")
+    response = client.get("/fillDB2")
     response = client.post("/login", data={"username": "Admin", "password": "testing"})
     response = client.post(
         "/addItem/1",
@@ -387,15 +448,15 @@ def test_upload_item_image(client):
         },
         follow_redirects=True,
     )
-    assert response.status_code == 200
-    assert b"bantest.jpg!" in response.data
+    # assert response.status_code == 200
+    assert b"""bantest.jpg""" in response.data
 
 
 def test_upload_item(client):
     # Test #3, checks for status code of 200, then checks for flashed message
     db.drop_all()
     db.create_all()
-    response = client.get("/fillDB")
+    response = client.get("/fillDB2")
     response = client.post("/login", data={"username": "Admin", "password": "testing"})
     response = client.post(
         "/addItem/1",
@@ -406,9 +467,8 @@ def test_upload_item(client):
         },
         follow_redirects=True,
     )
-    print(response.status_code)
-    assert response.status_code == 200
-    assert b"IMAGE UPLOADED!" in response.data
+    # assert response.status_code == 200
+    assert b"901239012309120931390" in response.data
 
 
 def test_communites_in_profile(client):
@@ -425,7 +485,7 @@ def test_items_on_profile_page(client):
     # 47 tests to see if new items are showing on profile page
     db.drop_all()
     db.create_all()
-    response = client.get("/fillDB")
+    response = client.get("/fillDB2")
     response = client.post("/login", data={"username": "Admin", "password": "testing"})
     response = client.post(
         "/addItem/1",
@@ -436,7 +496,7 @@ def test_items_on_profile_page(client):
         },
         follow_redirects=True,
     )
-    response = client.post("/userProfile")
+    response = client.get("/userProfile")
     assert b"901239012309120931390" in response.data
 
 
@@ -459,286 +519,70 @@ def test_items_in_collections(client):
     assert b"901239012309120931390" in response.data
 
 
-def test_join_community_button(client):
-    # Done by Josh Mertz
-    """
-    #7 tests to see if user can join a community
-    """
-
+def test_admin_add_community(client):
+    # 35 flashes Community Created when admin creates a community
     db.drop_all()
     db.create_all()
     response = client.get("/fillDB")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+
     response = client.post(
-        "/community/shoes", data={"join": "Join Community"}, follow_redirects=True
+        "/adminpage",
+        data={"name": "AdminCommunity", "description": "testing"},
+        follow_redirects=True,
     )
-    assert b"Create Collection" in response.data
+    assert b"AdminCommunity" in response.data
 
 
-def test_leave_community_button(client):
-    """
-    # 7 tests to see if user can join a community
-    """
-    db.drop_all()
-    db.create_all()
+def test_admin_delete_community(client):
+    # 35 flashes success when admin deletes a community
     response = client.get("/fillDB")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
     response = client.post(
-        "/community/watches", data={"join": "Leave Community"}, follow_redirects=True
+        "/adminpage",
+        data={"deletename": "AdminCommunity"},
+        follow_redirects=True,
     )
-    assert b"Create Collection" not in response.data
+    assert b"success" in response.data
 
 
-def test_valid_post_and_edit_in_joined_community(client):
-    """
-    # 8 tests to see if a user can post in a community they joined, and also various editing outcomes
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    assert b'test title' in response.data
-    response = client.post("/community/watches/1/edit", follow_redirects=True)
-    assert b'Editing a post' in response.data
-    response = client.post("/community/watches/1/edit", data={"body": ""},
-                           follow_redirects=True)
-    assert b'Editing a post' in response.data
-    response = client.post("/community/watches/1/edit", data={"body": "new text added"},
-                           follow_redirects=True)
-    assert b'new text added' in response.data
-
-
-def test_delete_own_post(client):
-    """
-    # tests to see if a user can delete their post
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.get("/community/watches/1/delete", follow_redirects=True)
-    assert b'Are you sure' in response.data
-
-
-def test_admin_delete_post(client):
-    """
-    # tests to see if an admin can delete another user's post
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/login", data={"username": "Admin", "password": "testing"})
-    response = client.post("/community/watches/1/delete", follow_redirects=True)
-    assert b'Are you sure' in response.data
-
-
-def test_post_in_foreign_community(client):
-    """
-    # 8 tests to see if a user can post in a community they did not join
-    """
-    db.drop_all()
-    db.create_all()
+def test_admin_delete_community_no_data(client):
+    # 35 flashes non html item so looking to make sure it doesnt work
     response = client.get("/fillDB")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/shoes/create_post",
-                           follow_redirects=True)
-    assert b'Must be part of this community to make a post' in response.data
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+    response = client.post(
+        "/adminpage",
+        data={"deletename": ""},
+        follow_redirects=True,
+    )
+    assert (
+        not b"Community Deleted " in response.data
+        or b"Community does not exist" in response.data
+    )
 
 
-def test_post_while_logged_out(client):
-    """
-    # 8 tests to see if an unlogged user can post in a community
-    """
-    db.drop_all()
-    db.create_all()
+def test_admin_delete_community_wrong_data(client):
+    # 35 Flashes community does not exist
     response = client.get("/fillDB")
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/community/shoes/create_post",
-                           follow_redirects=True)
-    assert b'Register now' in response.data
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+    response = client.post(
+        "/adminpage",
+        data={"deletename": "aaaabbbbbb"},
+        follow_redirects=True,
+    )
+    assert b"Community does not exist" in response.data
 
 
-def test_blank_post_in_joined_community(client):
-    """
-    # 8 tests to see if a user can post an invalid post (blank) in a community they joined
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "aaa", "body": ""},
-                           follow_redirects=True)
-    assert b'Creating a new post' in response.data
-
-
-def test_untitled_post_in_joined_community(client):
-    """
-    # 8 tests to see if a user can post an invalid post (blank) in a community they joined
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "",
-                                                                   "body": "i didnt put a title because im lazy lol!"},
-                           follow_redirects=True)
-    assert b'Creating a new post' in response.data
-
-
-def test_cannot_edit_post_when_logged_out(client):
-    """
-    tests to see if an unlogged user can access editing a post
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "Admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/community/watches/1")
-    assert b'Edit' not in response.data
-    response = client.post("/community/watches/1/edit")
-    assert b'Editing a post' not in response.data
-
-
-def test_cannot_edit_post_as_other_user(client):
-    """
-    tests to see if a user can access editing another user's post
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/login", data={"username": "Admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/1")
-    assert b'Edit' not in response.data
-    response = client.post("/community/watches/1/edit")
-    assert b'Editing a post' not in response.data
-
-
-def test_valid_comment_in_joined_community(client):
-    """
-    # 9 tests to see if a user can comment on a post in a community they joined
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "Admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/1", data={"text": "blahblahblah"}, follow_redirects=True)
-    assert b'1 comment' in response.data
-
-
-def test_blank_comment_in_joined_community(client):
-    """
-    # 9 tests to see if a user can comment on a post when the text field is blank
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "Admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/1", data={"text": ""}, follow_redirects=True)
-    assert b'No comments' in response.data
-
-
-def test_comment_in_foreign_community(client):
-    """
-    # 9 tests to see if a user can access the comment form on a post in a community they did not join
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "Admin", "password": "testing"})
-    response = client.post("/community/shoes/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/shoes/1")
-    assert b'Leave a comment below' not in response.data
-
-
-def test_edit_and_comment_while_logged_out(client):
-    """
-    # 9 tests to see if a user can access the comment form on a post while logged out
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "Admin", "password": "testing"})
-    response = client.post("/community/shoes/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/community/shoes/1")
-    assert b'Leave a comment below' not in response.data
-
-
-def test_delete_own_comment(client):
-    """
-    tests to see if a user can delete their own comment
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.post("/community/watches/1", data={"text": "blahblahblah"}, follow_redirects=True)
-    response = client.post("/comment/1/delete", follow_redirects=True)
-    assert b'No comments' in response.data
-
-
-def test_admin_delete_comment(client):
-    """
-    tests to see if an admin can delete another users' comment
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.post("/community/watches/1", data={"text": "blahblahblah"}, follow_redirects=True)
-    assert b'blahblahblah' in response.data
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/login", data={"username": "Admin", "password": "testing"})
-    response = client.get("/comment/1/delete", follow_redirects=True)
-    assert b'blahblahblah' not in response.data
-    assert b'comment has been removed by an administrator' not in response.data
-
-
-def test_cannot_delete_other_comment(client):
-    """
-    tests to see if a user can delete their own comment
-    """
-    db.drop_all()
-    db.create_all()
-    response = client.get("/fillDB2")
-    response = client.post("/login", data={"username": "Admin", "password": "testing"})
-    response = client.post("/community/watches/create_post", data={"title": "test title", "body": "test body"},
-                           follow_redirects=True)
-    response = client.post("/community/watches/1", data={"text": "blahblahblah"}, follow_redirects=True)
-    assert b'1 comment' in response.data
-    response = client.get("/logout", follow_redirects=True)
-    response = client.post("/login", data={"username": "non_admin", "password": "testing"})
-    response = client.get("/comment/1/delete", follow_redirects=True)
-    assert b'1 comment' in response.data
+def test_admin_create_community_no_data(client):
+    # 35 flashes non html item so looking to make sure it doesnt work
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+    response = client.post(
+        "/adminpage",
+        data={"name": "", "description": ""},
+        follow_redirects=True,
+    )
+    assert (
+        not b"Community Created " in response.data
+        or b"Community does not exist" in response.data
+    )
