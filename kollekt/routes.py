@@ -164,10 +164,29 @@ def logout():
 def userSettings():
     ''' Creates a route for user setting's page '''
     form = UserForm()
-    
+    oldemail = False
+    oldusername = False
+    oldBio = False
+    oldPFP = False
+    if form.username.data == "":
+        form.username.data = current_user.username
+        oldusername = True
+    if form.email.data == "":
+        form.email.data = current_user.email
+        oldemail = True
+    if form.bio.data == "":
+        form.bio.data = current_user.bio
+        oldbio = True
+    if form.profile_picture.data == "":
+        form.profile_picture.data = current_user.profile_picture
+        oldPFP = True
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        eml = User.query.filter_by(email=form.email.data).first()
+        user = ''
+        if not oldusername:
+            user = User.query.filter_by(username=form.username.data).first()
+        if not oldemail:
+            eml = User.query.filter_by(email=form.email.data).first()
+        eml = ''
         if not user and not eml:
             current_user.username = form.username.data
             current_user.email = form.email.data
@@ -584,3 +603,26 @@ def delItem(item_id):
 
 
 
+@app.route("/fillDB")
+
+
+def filldb():
+    """
+        Route to add items to the database
+        @param item_id:None
+        @return:Returns to homepage with database items added
+    """
+    db.drop_all()
+    db.create_all()
+    db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
+    db.session.add(Communities("Watches", "Timepieces"))
+    db.session.add(Communities("Shoes", "Gloves for your feet"))
+    db.session.add(Collections(
+        "Admins Shoes", "A collection of all of admins shoes", 1, 2))
+    db.session.add(Collections("Admins Watches",
+                               "A collection of all of admins shoes", 1, 1))
+    db.session.commit()
+    login_user(User.query.filter_by(id=1).first())
+    allCommunities = Communities.query.all()
+
+    return redirect(url_for('home'))

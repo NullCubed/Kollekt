@@ -101,13 +101,13 @@ class DeleteItemForm(FlaskForm):
     submitCancel = SubmitField('Cancel')
 
 class UserForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=20)])
+    username = StringField('Username', validators=[Length(min=3, max=20)])
     '''
     Class to create a form to change a user's settings
     '''
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    bio = StringField('Biography', validators=[DataRequired()])
-    profile_picture = SelectField('Profile Picture', validators=[DataRequired()], choices=[('lion', 'Lion'), ('eagle', 'Eagle'), ('zebra', 'Zebra'), ('snake', 'Snake'), ('pony', 'Pony')])
+    email = StringField('Email', validators=[Email()])
+    bio = StringField('Biography')
+    profile_picture = SelectField('Profile Picture', choices=[('lion', 'Lion'), ('eagle', 'Eagle'), ('zebra', 'Zebra'), ('snake', 'Snake'), ('pony', 'Pony')])
     submit = SubmitField("Submit")
 
 
