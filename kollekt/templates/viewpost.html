@@ -68,7 +68,7 @@
                                         {{ post_to_view.getAuthor().username }}
                                         {% endif %}
                                         </strong>
-                                        {{ j.getTimestamp()[1] }}
+                                        {{ j.getTimestamp() }}
                                     </p>
                                     {% if j.getAuthor() == current_user and j.isLocked() == False %}
                                     <form action="/comment/{{ j.id }}/delete">

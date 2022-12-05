@@ -465,19 +465,24 @@ class Posts(db.Model):
             db.session.delete(i)
         db.session.commit()
 
+    def getRawTimestamp(self):
+        '''
+        Getter to get the raw timestamp of a post
+        @return: returns the raw timestamp for the post
+        '''
+        return self.timestamp
+
     def getTimestamp(self):
         '''
-        Getter to get the timestamp of a post
-        @return: returns a timestamp for the post
+        Getter to get the formatted timestamp of a post
+        @return: returns the formatted timestamp for the post
         '''
-        # returns post time if posted today, otherwise returns post date
         now = str(datetime.datetime.now()).split(" ")
         post_time_for_eval = self.timestamp.split(" ")
         if now[0] == post_time_for_eval[0]:
-            # second return val used specifically for formatting on post display
-            return post_time_for_eval[1].split(".")[0], "at " + post_time_for_eval[1].split(".")[0]
+            return "at " + post_time_for_eval[1].split(".")[0]
         else:
-            return post_time_for_eval[0], "on " + post_time_for_eval[0]
+            return "on " + post_time_for_eval[0]
 
     def __repr__(self):
         '''
@@ -547,6 +552,25 @@ class Comments(db.Model):
         self.text = "This comment has been removed by an administrator."
         self.locked = True
         db.session.commit()
+
+    def getRawTimestamp(self):
+        '''
+        Getter to get the raw timestamp of a comment
+        @return: returns the raw timestamp for the comment
+        '''
+        return self.timestamp
+
+    def getTimestamp(self):
+        '''
+        Getter to get the formatted timestamp of a comment
+        @return: returns the formatted timestamp for the comment
+        '''
+        now = str(datetime.datetime.now()).split(" ")
+        post_time_for_eval = self.timestamp.split(" ")
+        if now[0] == post_time_for_eval[0]:
+            return "at " + post_time_for_eval[1].split(".")[0]
+        else:
+            return "on " + post_time_for_eval[0]
 
     def __repr__(self):
         '''
