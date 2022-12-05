@@ -63,7 +63,7 @@ class DeleteCommunityForm(FlaskForm):
     Class to create a form to delete a community
     """
 
-    name = StringField("Community to Delete", validators=[DataRequired()])
+    deletename = StringField("Community to Delete", validators=[DataRequired()])
     submit = SubmitField("Delete")
 
 
