@@ -244,9 +244,9 @@ def test_community_tab(client):
 
 
 def test_good_email_update(client):
-    '''
+    """
     Tests to see if a good account is updated correctly
-    '''
+    """
     response = client.post(
         "/settings",
         data={
@@ -261,9 +261,9 @@ def test_good_email_update(client):
 
 
 def test_update_existing_user(client):
-    '''
+    """
     Tests to make sure a existing user that is created can not be recreated
-    '''
+    """
     with client:
         response = client.post(
             "/settings",
@@ -274,9 +274,9 @@ def test_update_existing_user(client):
 
 
 def test_bad_email_update(client):
-    '''
+    """
     tests to make sure that a bad email is handled correctly
-    '''
+    """
     response = client.post(
         "/settings",
         data={"username": "test2", "email": "test", "bio": "test"},
@@ -286,9 +286,9 @@ def test_bad_email_update(client):
 
 
 def test_blank_email_update(client):
-    '''
+    """
     tests to make sure a blank email is a handled correctly
-    '''
+    """
     response = client.post(
         "/settings",
         data={"username": "test3", "email": "   @    .   ", "bio": "test"},
@@ -298,9 +298,9 @@ def test_blank_email_update(client):
 
 
 def test_update_long_username(client):
-    '''
+    """
     test to make sure a username that is too long is handled correctly
-    '''
+    """
     with client:
         response = client.post(
             "/settings",
@@ -315,9 +315,9 @@ def test_update_long_username(client):
 
 
 def test_update_good_user(client):
-    '''
+    """
     Tests to make sure a good user is stored correctly
-    '''
+    """
     db.drop_all()
     db.create_all()
     with client:
@@ -433,3 +433,78 @@ def test_items_in_collections(client):
     )
     response = client.post("/collections/view/2")
     assert b"901239012309120931390" in response.data
+
+
+def test_admin_add_community(client):
+    db.drop_all()
+    db.create_all()
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+
+    response = client.post(
+        "/adminpage",
+        data={"name": "AdminCommunity", "description": "testing"},
+        follow_redirects=True,
+    )
+    assert b"AdminCommunity" in response.data
+
+
+def test_admin_delete_community(client):
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+    response = client.post(
+        "/adminpage",
+        data={"deletename": "AdminCommunity"},
+        follow_redirects=True,
+    )
+    assert not b"AdminCommunity" in response.data
+
+
+def test_admin_delete_community_no_data(client):
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+    response = client.post(
+        "/adminpage",
+        data={"deletename": ""},
+        follow_redirects=True,
+    )
+    assert (
+        not b"Community Deleted " in response.data
+        or b"Community does not exist" in response.data
+    )
+
+
+def test_admin_delete_community_wrong_data(client):
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+    response = client.post(
+        "/adminpage",
+        data={"deletename": "aaaabbbbbb"},
+        follow_redirects=True,
+    )
+    assert b"Community does not exist" in response.data
+
+
+def test_admin_create_community(client):
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+    response = client.post(
+        "/adminpage",
+        data={"name": "Admintesting123", "description": "testing"},
+        follow_redirects=True,
+    )
+    assert b"Admintesting123" in response.data
+
+
+def test_admin_create_community_no_data(client):
+    response = client.get("/fillDB")
+    response = client.post("/login", data={"name": "Admin", "password": "testing"})
+    response = client.post(
+        "/adminpage",
+        data={"name": "", "description": ""},
+        follow_redirects=True,
+    )
+    assert (
+        not b"Community Created " in response.data
+        or b"Community does not exist" in response.data
+    )
