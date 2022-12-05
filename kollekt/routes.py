@@ -318,14 +318,18 @@ def addNewCollectionItem(collection_id):
         id=collection_id).first().community_id
     add_collection = Collections.query.filter_by(
         id=collection_id).first().id
-
+    all_items = CollectionItem.query.all()
     collection_user = add_collection = Collections.query.filter_by(
         id=collection_id).first().user_id
     if current_user.is_authenticated and current_user.id == collection_user:
         form = ItemAddForm()
-
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
+            for i in all_items:
+                if i.photo == filename:
+                    name, ext = os.path.splitext(filename)
+                    name = name + str(len(all_items)+1)
+                    filename = "{name}{ext}".format(name=name, ext=ext)
             basedir = os.path.abspath(os.path.dirname(__file__))
             file_path = os.path.join(app.root_path, './static', filename)
             file_path = file_path.replace("\\", "/")
