@@ -345,7 +345,7 @@ def test_create_item(client):
         },
         follow_redirects=True,
     )
-    assert response.request.path == "/item"
+    assert response.status_code == 200
 
 
 def test_upload_item_image(client):

@@ -110,27 +110,12 @@ class CollectionItem(db.Model):
     name = db.Column(db.String)
     desc = db.Column(db.String)
     photo = db.Column(db.String)
-    # likes = db.Column(db.Integer)
-    # dislikes = db.Column(db.Integer)
     community_id = db.Column(db.Integer, db.ForeignKey(
         'communities.id'), nullable=False)
     user = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     collection_id = db.Column(db.Integer, db.ForeignKey(
         'collections.id'), nullable=False)
 
-    # picture = db.Column(db.BLOB)
-    # filename = db.Column(db.String)
-
-    # def convertToBinaryData(self, filepath):
-    #     # Convert digital data to binary format
-    #     with open(filepath, 'rb') as file:
-    #         binaryData = file.read()
-    #     return binaryData
-    #
-    # def write_file(self, data, filename):
-    #     # Convert binary data to proper format and write it on Hard Disk
-    #     with open(filename, 'wb') as file:
-    #         file.write(data)
 
     def __init__(self, user, community, photo, desc, collection, name):
         """
@@ -146,39 +131,8 @@ class CollectionItem(db.Model):
         self.community_id = community
         self.photo = photo
         self.desc = desc
-        # self.likes = 0
-        # self.dislikes = 0
-        # self.likers = []
-        # self.dislikers = []
         self.name = name
 
-    # def add_like(self):
-    #     self.likes += 1
-    #     return self.likes
-    #
-    # def add_dislike(self):
-    #     self.disliskes += 1
-    #     return self.disliskes
-    #
-    # def add_liker(self, user_who_liked):
-    #     if user_who_liked not in self.likers():
-    #         self.likers.append(user_who_liked)
-    #         self.likes += 1
-    #         return self.likes
-    #     else:
-    #         self.likers.remove(user_who_liked)
-    #         self.likes -= 1
-    #         return self.likes
-    #
-    # def add_disliker(self, user_who_disliked):
-    #     if user_who_disliked not in self.dislikers():
-    #         self.dislikers.append(user_who_disliked)
-    #         self.dislikes += 1
-    #         return self.dislikes
-    #     else:
-    #         self.dislikers.remove(user_who_disliked)
-    #         self.dislikes -= 1
-    #         return self.dislikes
     def __repr__(self):
         '''
         Printable representation function
