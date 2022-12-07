@@ -396,7 +396,7 @@ def addNewCollectionItem(collection_id):
                 community=add_community,
                 photo=filename,
                 desc=form.text.data,
-                collection=add_collection,
+                collection=collection_id,
                 name=form.name.data,
             )
 
@@ -742,12 +742,12 @@ def filldb2():
     db.session.commit()
     community1.addUser(User.query.filter_by(id=1).first())
     community2.addUser(User.query.filter_by(id=1).first())
-    db.session.add(
-        Collections("Admins Shoes", "A collection of all of admins shoes", 1, 2)
-    )
-    db.session.add(
-        Collections("Admins Watches", "A collection of all of admins shoes", 1, 1)
-    )
+    # db.session.add(
+    #     Collections("Admins Shoes", "A collection of all of admins shoes", 1, 2)
+    # )
+    # db.session.add(
+    #     Collections("Admins Watches", "A collection of all of admins shoes", 1, 1)
+    # )
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
 
