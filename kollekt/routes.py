@@ -378,6 +378,12 @@ def addNewCollectionItem(collection_id):
         Collections.query.filter_by(id=collection_id).first().user_id
     )
     if current_user.is_authenticated and current_user.id == collection_user:
+        c_list = []
+        for i in Collections.query.all():
+            c_list.append((i.id))
+        if int(collection_id) not in c_list:
+            flash("Collection Error, Try Again")
+            return redirect(url_for("home"))
         form = ItemAddForm()
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
@@ -396,7 +402,7 @@ def addNewCollectionItem(collection_id):
                 community=add_community,
                 photo=filename,
                 desc=form.text.data,
-                collection=collection_id,
+                collection=int(collection_id),
                 name=form.name.data,
             )
 
@@ -713,12 +719,12 @@ def filldb():
     db.session.add(User("Admin", "admin@kollekt.com", "testing", True))
     db.session.add(Communities("Watches", "Timepieces"))
     db.session.add(Communities("Shoes", "Gloves for your feet"))
-    db.session.add(
-        Collections("Admins Shoes", "A collection of all of admins shoes", 1, 2)
-    )
-    db.session.add(
-        Collections("Admins Watches", "A collection of all of admins shoes", 1, 1)
-    )
+    # db.session.add(
+    #     Collections("Admins Shoes", "A collection of all of admins shoes", 1, 2)
+    # )
+    # db.session.add(
+    #     Collections("Admins Watches", "A collection of all of admins shoes", 1, 1)
+    # )
     db.session.commit()
     login_user(User.query.filter_by(id=1).first())
     allCommunities = Communities.query.all()
