@@ -371,13 +371,26 @@ def addNewCollectionItem(collection_id):
     @return: Returns the item page for the new item when it is created, otherwise returns the login page if the user is
     not authenticated
     """
+    collection_check = []
+    for i in Collections.query.all():
+        collection_check.append(i.id)
+    if int(collection_id) not in collection_check:
+        flash("Collection doesn't exist, Try Again", 'danger')
+        return redirect(url_for("home"))
     add_community = Collections.query.filter_by(id=collection_id).first().community_id
     add_collection = Collections.query.filter_by(id=collection_id).first().id
+    collection_origin = Collections.query.filter_by(id=collection_id).first()
     all_items = CollectionItem.query.all()
     collection_user = add_collection = (
         Collections.query.filter_by(id=collection_id).first().user_id
     )
     if current_user.is_authenticated and current_user.id == collection_user:
+        c_list = []
+        for i in Collections.query.all():
+            c_list.append((i.id))
+        if int(collection_id) not in c_list:
+            flash("Collection Error, Try Again",'danger')
+            return redirect(url_for("home"))
         form = ItemAddForm()
         if form.validate_on_submit():
             filename = secure_filename(form.photo.data.filename)
@@ -396,7 +409,7 @@ def addNewCollectionItem(collection_id):
                 community=add_community,
                 photo=filename,
                 desc=form.text.data,
-                collection=add_collection,
+                collection=int(collection_id),
                 name=form.name.data,
             )
 
@@ -413,9 +426,9 @@ def addNewCollectionItem(collection_id):
                 collectionName=collection_name,
                 username=user_name,
             )
-        return render_template("addItem.html", title="Add Item", form=form)
+        return render_template("addItem.html", title="Add Item", form=form, collection_origin=collection_origin)
     else:
-        return redirect(url_for("login"))
+        return redirect(url_for("home"))
 
 
 @app.route("/adminpage", methods=["GET", "POST"])
