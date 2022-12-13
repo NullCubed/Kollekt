@@ -381,9 +381,7 @@ def addNewCollectionItem(collection_id):
     add_collection = Collections.query.filter_by(id=collection_id).first().id
     collection_origin = Collections.query.filter_by(id=collection_id).first()
     all_items = CollectionItem.query.all()
-    collection_user = add_collection = (
-        Collections.query.filter_by(id=collection_id).first().user_id
-    )
+    collection_user = Collections.query.filter_by(id=collection_id).first().user_id
     if current_user.is_authenticated and current_user.id == collection_user:
         c_list = []
         for i in Collections.query.all():
