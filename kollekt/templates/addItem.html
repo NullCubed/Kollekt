@@ -4,8 +4,9 @@
     #mainBox {
         width: 50%;
         margin: auto;
-        background-color: MediumTurquoise;
+        background-color: PowderBlue;
         min-height: 100%;
+        border-radius: 25px;
     }
 
     #mainBox ul {
@@ -26,11 +27,12 @@
 
 <br>
 
-<body style="background-color:#1c87c9;">
+<body>
 
 
 <section id="mainBox">
     <h1>Add item to Collection</h1>
+    <p>Collection: {{collection_origin.name}}</p>
     <form action="" method="POST" enctype="multipart/form-data">
         {{form.hidden_tag()}}
         <div class="form-group m-5">
@@ -80,8 +82,8 @@
             {% endif %}
 
         </div>
-        {{form.submit(class="btn-lg btn-primary m-5")}}
+        {{form.submit(class="btn btn-outline-primary")}}
     </form>
-
+    <br/>
 </section>
 {% endblock content %}
