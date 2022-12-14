@@ -88,6 +88,9 @@ margin-top: 10px;">
     <div class="card-header bg-primary">
         <h2>My Posts</h2>
     </div>
+    {% if users_posts == [] %}
+    <h3 style="text-align: center;">No Posts to Display.</h3>
+    {% endif %}
     {% for i in users_posts %}
     <div class="card-body" style="text-align: center;">
         <div class="card border-primary mb-3" style="max-width: 200rem;">
@@ -110,6 +113,9 @@ margin-top: 10px;">
         <div class="card-header bg-primary">
             <h2>My Collections</h2>
         </div>
+        {% if users_collections == [] %}
+        <h3 style="text-align: center;">No Collections to Display.</h3>
+        {% endif %}
         {% for i in users_collections %}
         <div class="card-body" style="text-align: center;">
             <div class="card border-primary mb-3" style="max-width: 200rem;">
@@ -128,6 +134,9 @@ margin-top: 10px;">
         <div class="card-header bg-primary">
             <h2>My Items</h2>
         </div>
+        {% if users_items == [] %}
+        <h3 style="text-align: center;">No Items to Display.</h3>
+        {% endif %}
         {% for i in users_items %}
         <div class="card-body" style="text-align: center;">
             <div class="card border-primary mb-3" style="max-width: 30rem; margin: auto;">
