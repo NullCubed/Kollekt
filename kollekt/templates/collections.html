@@ -11,9 +11,11 @@
         <div class="col text-center">
             <h1 class="text-center">{{ collection.name }} </h1>
             <br>
+            <h2 class="text-center"/>{{collection.desc}} </h2>
+            <br>
             <h3 class="text-center">All items inside this collection</h3>
             {% if collection.user_id == current_user.id %}
-            <button class="button text-center" type="button"><a
+            <button class="btn btn-outline-primary text-center" type="button"><a
                     href="{{url_for('addNewCollectionItem', collection_id=collection.id)}}">Add an Item</a></button>
             {%endif%}
             <br>
