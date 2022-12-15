@@ -15,18 +15,19 @@
                 <div class="container mt-5">
                     <div class="row">
                         <div class="col">
-                            <p style="font-size: 1.375em">Posted by<strong>
+                            <span style="font-size: 1.375em">Posted by<strong>
                                 {% if current_user.is_authenticated %}
                                 <a href="/userCard/{{post_to_view.getAuthor().id}}">{{post_to_view.getAuthor().username}}</a>
                                 {% else %}
                                 {{ post_to_view.getAuthor().username }}
                                 {% endif %}
                                 </strong>
-                                {{ post_to_view.getTimestamp() }}</p>
+                                {{ post_to_view.getTimestamp() }}
+                            </span>
                                 {% if post_to_view.getAuthor() == current_user %}
-                                <form action="/community/{{ post_to_view.getCommunity().url }}/{{ post_to_view.id }}/edit" method="post">
-                                    <input name="edit" type="submit" value="Edit">
-                                </form>
+                            <form action="/community/{{ post_to_view.getCommunity().url }}/{{ post_to_view.id }}/edit" method="post" style="display: inline;">
+                                <input name="edit" class="btn btn-outline-warning" type="submit" value="Edit" style="margin-bottom: .5em;">
+                            </form>
                                 {% endif %}
                             <h2>{{ post_to_view.title }}</h2>
                             {{ post_to_view.body }}
@@ -72,7 +73,7 @@
                                     </p>
                                     {% if j.getAuthor() == current_user and j.isLocked() == False %}
                                     <form action="/comment/{{ j.id }}/delete">
-                                        <input name="delete" style="font-size: 1.0625em;" type="submit" value="Delete...">
+                                        <input name="delete" class="btn btn-outline-danger btn-sm" type="submit" value="Delete...">
                                     </form>
                                     {% endif %}
                                     <p style="font-size: 0.9375em">{{ j.text }}</p>
