@@ -73,7 +73,7 @@
                                     </p>
                                     {% if j.getAuthor() == current_user and j.isLocked() == False %}
                                     <form action="/comment/{{ j.id }}/delete">
-                                        <input name="delete" style="font-size: 1.0625em;" type="submit" value="Delete...">
+                                        <input name="delete" class="btn btn-outline-danger btn-sm" type="submit" value="Delete...">
                                     </form>
                                     {% endif %}
                                     <p style="font-size: 0.9375em">{{ j.text }}</p>
