@@ -22,7 +22,7 @@
   <div class="row">
     <div class="col-12 col-md-9 mt-3">
       <div class="d-grid gap-2 text-center">
-        <div class="container mt-5">
+        <div class="container">
           <div class="row">
             <div class="col">
               <h2 class="text-center underline">Recent Collection Items in {{ community.name }}</h2>
@@ -57,7 +57,7 @@
           <div class="row">
             <div class="col">
               <div class="text-center border-bottom pb-2">
-                  <h4 class="d-inline-block align-bottom">Recent Posts</h4>
+                  <h4 class="d-inline-block align-bottom">Recent Posts&nbsp;</h4>
                   <form action="/community/{{ community.url }}/create_post" class="d-inline-block align-text-top">
                     <input name="join" class="btn btn-outline-success" type="submit" value="Create Post">
                   </form>
@@ -97,10 +97,10 @@
     <div class="col-12 col-md-3 mt-3">
       <div class="row">
         <div class="col">
-          <h5 class="text-center border-bottom">Users in this Community</h5>
+          <h5 class="text-center border-bottom pb-2">Users in this Community</h5>
           <ul style="list-style-type: none;">
             {% for i in community.users %}
-            <li>{{ i.username }}</li>
+            <li><a href="/userCard/{{ i.id }}">{{ i.username }}</a></li>
             {% endfor %}
           </ul>
         </div>
